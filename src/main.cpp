@@ -1,12 +1,13 @@
-#define DEBUG 1
+#define DEBUG
+#include "linkedlist.cpp"
 #include <iostream>
-#include "linkedlist.h"
 
 int main()
 {
     std::cout << "Beyluta is sweet\n" << std::endl;
-    LinkedList::LinkedList myList;
+    LinkedList::SList myList;
     myList.AddToEnd("aaaaaaaaaaaaaaaaa");
+    myList.AddToEnd("BBBBBBbbbbbbbbbbbbbbbbb");
 #ifdef DEBUG
     myList.PrintLIst();
 #endif

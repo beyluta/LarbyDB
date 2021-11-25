@@ -1,16 +1,16 @@
-#include <iostream>
-#include <string>
 #include "linkedlist.h"
+#include <string>
+#include <iostream>
 
 namespace LinkedList
 {
-    LinkedList::LinkedList()
+    SList::SList()
     {
         first = nullptr;
         last = nullptr;
     }
 
-    void LinkedList::AddToEnd(std::string data)
+    void SList::AddToEnd(std::string data)
     {
         Node* temp = new Node;
         temp->data = new std::string(data);
@@ -26,7 +26,7 @@ namespace LinkedList
         last = temp;
     }
 
-    void LinkedList::Push(std::string data)
+    void SList::Push(std::string data)
     {
         Node* temp = new Node;
         temp->data = new std::string(data);
@@ -39,7 +39,7 @@ namespace LinkedList
         first = temp;
     }
 
-    std::string* LinkedList::Pop()
+    std::string* SList::Pop()
     {
         try
         {
@@ -58,11 +58,28 @@ namespace LinkedList
         catch (const char* msg)
         {
             std::cerr << msg << '\n';
+            return nullptr;
         }
     }
 
-    #ifdef DEBUG
-    void LinkedList::PrintLIst()
+    void SList::OnDestruct()
+    {
+        if (first != nullptr)
+        {
+            this->Pop();
+            this->OnDestruct();
+        }
+        else
+            std::cout << "list deleted";
+    }
+
+    SList::~SList()
+    {
+        this->OnDestruct();
+    }
+
+#ifdef DEBUG
+    void SList::PrintLIst()
     {
         std::cout << "Linked list:\n";
         if (first == nullptr)
@@ -79,5 +96,5 @@ namespace LinkedList
         }
         std::cout << *temp->data << " ]\n";
     }
-    #endif
+#endif
 }

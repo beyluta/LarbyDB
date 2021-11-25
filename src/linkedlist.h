@@ -8,7 +8,7 @@ namespace LinkedList
         Node* next;
     };
 
-    class LinkedList
+    class SList
     {
         Node* first;
         Node* last;
@@ -27,13 +27,13 @@ namespace LinkedList
             return last;
         }
 
-        LinkedList();
+        SList();
         void AddToEnd(std::string data);
         void Push(std::string data);
         std::string* Pop();
-        ~LinkedList();
-    #ifdef DEBUG
+        ~SList();
+#ifdef DEBUG
         void PrintLIst();
-    #endif
+#endif
     };
 }
