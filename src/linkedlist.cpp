@@ -4,65 +4,13 @@
 
 namespace LinkedList
 {
-    SList::SList()
+    SLList::SLList()
     {
         first = nullptr;
         last = nullptr;
     }
-
-    void SList::AddToEnd(std::string data)
-    {
-        Node* temp = new Node;
-        temp->data = new std::string(data);
-        temp->next = nullptr;
-        
-        if (first == nullptr)
-        {
-            first = temp;
-            last = temp;
-            return;
-        }
-        last->next = temp;
-        last = temp;
-    }
-
-    void SList::Push(std::string data)
-    {
-        Node* temp = new Node;
-        temp->data = new std::string(data);
-        temp->next = first;
-
-        if (first == nullptr)
-        {
-            last = temp;
-        }
-        first = temp;
-    }
-
-    std::string* SList::Pop()
-    {
-        try
-        {
-            if (first == nullptr)
-            {
-                throw "list empty, nothing to remove.";
-            }
-            Node* temp = first;
-            std::string* deletedVal = first->data;
-            
-            delete first->data;
-            delete first;
-            first = temp;
-            return deletedVal;
-        }
-        catch (const char* msg)
-        {
-            std::cerr << msg << '\n';
-            return nullptr;
-        }
-    }
-
-    void SList::OnDestruct()
+    
+    void SLList::OnDestruct()
     {
         if (first != nullptr)
         {
@@ -70,28 +18,129 @@ namespace LinkedList
             this->OnDestruct();
         }
         else
-            std::cout << "list deleted";
+        {
+            std::cout << "linked list deleted\n";
+        }
     }
 
-    SList::~SList()
+    SLList::~SLList()
     {
         this->OnDestruct();
     }
 
-#ifdef DEBUG
-    void SList::PrintLIst()
+    SLList::Node* SLList::First()
     {
-        std::cout << "Linked list:\n";
+        return first;
+    }
+
+    SLList::Node* SLList::Last()
+    {
+        return last;
+    }
+
+    void SLList::AddToEnd(std::string& d)
+    {
+        Node* temp = new Node;
+        temp->data = new std::string (d);
+        temp->next = nullptr;
+
         if (first == nullptr)
         {
-            std::cout << "(nothing)\n";
+            first = temp;
+            last = temp;
+            return;
+        }
+        
+        last->next = temp;
+        last = temp;
+    }
+
+    void SLList::Insert(std::string& d, unsigned int pos)
+    {
+        std::cout << "[inserting(data: " << d << ", pos: " << pos << ")]: ";//debug
+        if (first == nullptr)
+        {
+            std::cout << "list was empty, adding as first element\n";
+            Push(d);
+            return;
+        }
+
+        int currentPos = 0;
+        Node** ptr = &first;
+
+        while (currentPos != pos && (*ptr)->next != nullptr)
+        {
+            ptr = &(*ptr)->next;
+            currentPos++;
+        }
+
+        Node* newNode = new Node;
+        newNode->data = new std::string (d);
+        newNode->next = nullptr;
+
+        if ((*ptr)->next == nullptr)
+        {
+            std::cout << "end of the list reached, adding as last element\n"; //debug
+            (*ptr)->next = newNode;
+            last = newNode;
+            return;
+        }
+        std::cout << "after " << *(*ptr)->data << " before " << *(*ptr)->next->data << '\n'; //debug
+
+        newNode->next = (*ptr)->next;
+        (*ptr)->next = newNode;
+    }
+
+    void SLList::Push(std::string& d)
+    {
+        Node* temp = new Node;
+        temp->data = new std::string (d);
+        temp->next = first;
+
+        if (first == nullptr)
+        {
+            last = temp;
+        }
+
+        first = temp;
+    }
+
+    std::string SLList::Pop()
+    {
+        try
+        {
+            if (first == nullptr)
+            {
+                throw "Cannot remove elements from an empty list!";
+            }
+            Node* temp = first;
+            std::string deletedValue = *first->data;
+            temp = first->next;
+            delete first;
+            first = temp;
+            return deletedValue;
+        }
+        catch (const char* msg)
+        {
+            std::cerr << msg << std::endl;
+            return nullptr;
+        }
+    }
+
+#ifdef DEBUG
+    void SLList::PrintList()
+    {
+        std::cout << "Linked list: ";
+        if (first == nullptr)
+        {
+            std::cout << "[ empty list ]\n\n";
             return;
         }
         Node* temp = first;
         std::cout << "[ ";
         while (temp->next != nullptr)
         {
-            std::cout << *temp->data << " ; ";
+            std::cout << *temp->data << " > ";
             temp = temp->next;
         }
         std::cout << *temp->data << " ]\n";

@@ -1,39 +1,41 @@
 #pragma once
-#include <string>
+#include <iostream>
+
 namespace LinkedList
 {
-    struct Node
+    class SLList
     {
-        std::string* data;
-        Node* next;
-    };
+        struct Node
+        {
+            std::string* data;
+            Node* next;
 
-    class SList
-    {
+            ~Node()
+            {
+                //data->~basic_string();
+                delete data;
+                delete next;
+            }
+        };
+
         Node* first;
         Node* last;
 
         void OnDestruct();
 
-        public:
+    public:
 
-        Node* First()
-        {
-            return first;
-        }
+        SLList();
+        ~SLList();
 
-        Node* Last()
-        {
-            return last;
-        }
+        Node* First();
+        Node* Last();
 
-        SList();
-        void AddToEnd(std::string data);
-        void Push(std::string data);
-        std::string* Pop();
-        ~SList();
-#ifdef DEBUG
-        void PrintLIst();
-#endif
+        void AddToEnd(std::string& d);
+        void Insert(std::string& d, unsigned int pos);
+        void Push(std::string& d);
+        std::string Pop();
+
+        void PrintList();
     };
 }
