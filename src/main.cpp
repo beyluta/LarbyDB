@@ -1,4 +1,4 @@
-#define DEBUG
+//#define DEBUG
 //#define MEM_DEBUG
 #include "linkedlist.cpp"
 #include <iostream>
@@ -48,19 +48,11 @@ int main()
     PrintMemoryUsage();
     std::cout << "Beyluta is sweet\n" << std::endl;
     LinkedList::SLList myList;
-    std::string test;
-    std::cin >> test;
-    myList.AddToEnd(test);
-#ifdef DEBUG
+    myList.AddToEnd("list item 1");
     myList.PrintList();
-    test.~basic_string();
-    std::cin >> test;
-    myList.AddToEnd(test);
+    myList.AddToEnd("list item 2");
     myList.PrintList();
-    std::cout << myList.Peek() << '\n';
-    std::cout << "popped " << myList.Pop() << '\n';
-    std::cout << myList.Peek() << '\n';
-    myList.PrintList();
-#endif
+    std::string str = myList.ToString();
+    std::cout << str << '\n';
     return 0;
 }
