@@ -9,13 +9,6 @@ namespace LinkedList
         {
             std::string* data;
             Node* next;
-
-            ~Node()
-            {
-                //data->~basic_string();
-                delete data;
-                delete next;
-            }
         };
 
         Node* first;
@@ -31,10 +24,11 @@ namespace LinkedList
         Node* First();
         Node* Last();
 
-        void AddToEnd(std::string& d);
-        void Insert(std::string& d, unsigned int pos);
-        void Push(std::string& d);
+        void AddToEnd(std::string d);
+        void Insert(std::string d, unsigned int pos);
+        void Push(std::string d);
         std::string Pop();
+        std::string Peek();
 
         void PrintList();
     };

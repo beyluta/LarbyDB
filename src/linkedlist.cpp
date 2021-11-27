@@ -16,11 +16,9 @@ namespace LinkedList
         {
             this->Pop();
             this->OnDestruct();
+            return;
         }
-        else
-        {
-            std::cout << "linked list deleted\n";
-        }
+        std::cout << "linked list deleted\n";
     }
 
     SLList::~SLList()
@@ -38,10 +36,10 @@ namespace LinkedList
         return last;
     }
 
-    void SLList::AddToEnd(std::string& d)
+    void SLList::AddToEnd(std::string d)
     {
         Node* temp = new Node;
-        temp->data = new std::string (d);
+        temp->data = &d;
         temp->next = nullptr;
 
         if (first == nullptr)
@@ -55,9 +53,9 @@ namespace LinkedList
         last = temp;
     }
 
-    void SLList::Insert(std::string& d, unsigned int pos)
+    void SLList::Insert(std::string d, unsigned int pos)
     {
-        std::cout << "[inserting(data: " << d << ", pos: " << pos << ")]: ";//debug
+        std::cout << "[inserting(data: " << d << ", pos: " << pos << ")]: ";
         if (first == nullptr)
         {
             std::cout << "list was empty, adding as first element\n";
@@ -75,7 +73,7 @@ namespace LinkedList
         }
 
         Node* newNode = new Node;
-        newNode->data = new std::string (d);
+        newNode->data = &d;
         newNode->next = nullptr;
 
         if ((*ptr)->next == nullptr)
@@ -91,10 +89,10 @@ namespace LinkedList
         (*ptr)->next = newNode;
     }
 
-    void SLList::Push(std::string& d)
+    void SLList::Push(std::string d)
     {
         Node* temp = new Node;
-        temp->data = new std::string (d);
+        temp->data = &d;
         temp->next = first;
 
         if (first == nullptr)
@@ -103,6 +101,15 @@ namespace LinkedList
         }
 
         first = temp;
+    }
+
+    std::string SLList::Peek()
+    {
+        if (first == nullptr)
+        {
+            return "";
+        }
+        return *(first->data);
     }
 
     std::string SLList::Pop()
@@ -116,6 +123,7 @@ namespace LinkedList
             Node* temp = first;
             std::string deletedValue = *first->data;
             temp = first->next;
+            first->data = nullptr;
             delete first;
             first = temp;
             return deletedValue;
