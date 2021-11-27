@@ -1,7 +1,7 @@
 #define DEBUG
+//#define MEM_DEBUG
 #include "linkedlist.cpp"
 #include <iostream>
-
 
 #ifdef MEM_DEBUG
 struct MemoryAllocationMetrics
@@ -45,13 +45,21 @@ void PrintMemoryUsage()
 
 int main()
 {
-#ifdef DEBUG
     PrintMemoryUsage();
     std::cout << "Beyluta is sweet\n" << std::endl;
     LinkedList::SLList myList;
     std::string test;
     std::cin >> test;
     myList.AddToEnd(test);
+#ifdef DEBUG
+    myList.PrintList();
+    test.~basic_string();
+    std::cin >> test;
+    myList.AddToEnd(test);
+    myList.PrintList();
+    std::cout << myList.Peek() << '\n';
+    std::cout << "popped " << myList.Pop() << '\n';
+    std::cout << myList.Peek() << '\n';
     myList.PrintList();
 #endif
     return 0;
