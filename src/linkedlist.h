@@ -31,5 +31,6 @@ namespace LinkedList
         std::string Peek();
 
         void PrintList();
+        std::string ToString();
     };
 }
