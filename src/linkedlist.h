@@ -14,6 +14,7 @@ namespace LinkedList
         Node* first;
         Node* last;
 
+        int length;
         void OnDestruct();
 
     public:
@@ -24,6 +25,8 @@ namespace LinkedList
         Node* First();
         Node* Last();
 
+        int GetLength();
+
         void AddToEnd(std::string d);
         void Insert(std::string d, unsigned int pos);
         void Push(std::string d);
@@ -32,5 +35,6 @@ namespace LinkedList
 
         void PrintList();
         std::string ToString();
+        std::string* ToArray();
     };
 }

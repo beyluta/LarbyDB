@@ -9,6 +9,7 @@ namespace LinkedList
     {
         first = nullptr;
         last = nullptr;
+        length = 0;
     }
     
     void SLList::OnDestruct()
@@ -37,8 +38,14 @@ namespace LinkedList
         return last;
     }
 
+    int SLList::GetLength()
+    {
+        return length;
+    }
+
     void SLList::AddToEnd(std::string d)
     {
+        length++;
         Node* temp = new Node;
         temp->data = new std::string(d);
         temp->next = nullptr;
@@ -73,6 +80,7 @@ namespace LinkedList
             currentPos++;
         }
 
+        length++;
         Node* newNode = new Node;
         newNode->data = new std::string(d);
         newNode->next = nullptr;
@@ -92,6 +100,7 @@ namespace LinkedList
 
     void SLList::Push(std::string d)
     {
+        length++;
         Node* temp = new Node;
         temp->data = new std::string(d);
         temp->next = first;
@@ -115,25 +124,18 @@ namespace LinkedList
 
     std::string SLList::Pop()
     {
-        try
+        if (first == nullptr)
         {
-            if (first == nullptr)
-            {
-                throw "Cannot remove elements from an empty list!";
-            }
-            Node* temp = first;
-            std::string deletedValue = *first->data;
-            temp = first->next;
-            delete first->data;
-            delete first;
-            first = temp;
-            return deletedValue;
+            return "";
         }
-        catch (const char* msg)
-        {
-            std::cerr << msg << std::endl;
-            return nullptr;
-        }
+        length--;
+        Node* temp = first;
+        std::string deletedValue = *first->data;
+        temp = first->next;
+        delete first->data;
+        delete first;
+        first = temp;
+        return deletedValue;
     }
 
     void SLList::PrintList()
@@ -164,6 +166,24 @@ namespace LinkedList
             {
                 result.append(*temp->data);
                 temp = temp->next;
+            }
+        }
+        return result;
+    }
+
+    //make sure to delete[] it after use!
+    std::string* SLList::ToArray()
+    {
+        std::string* result = new std::string[GetLength()];
+        if (first != nullptr)
+        {
+            Node* temp = first;
+            int count = 0;
+            while (temp != nullptr)
+            {
+                result[count] = *temp->data;
+                temp = temp->next;
+                count++;
             }
         }
         return result;
