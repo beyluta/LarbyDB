@@ -36,5 +36,6 @@ namespace LinkedList
         void PrintList();
         std::string ToString();
         std::string* ToArray();
+        bool Contains(std::string input);
     };
 }

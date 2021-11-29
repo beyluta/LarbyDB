@@ -16,21 +16,12 @@ int main()
     std::cout << myList.Pop() << '\n';
     std::cout << myList.GetLength() << '\n';
     myList.PrintList();
-    std::string* myArr = myList.ToArray();
-
-    for (int i = 0; i < myList.GetLength(); i++)
-        std::cout << myArr[i] << '\t';
-    std::cout << '\n';
     myList.Pop();
+    std::cout << myList.Contains("new 1") << '\n';
     myList.Push("new 1");
     myList.AddToEnd("new 2");
-    delete[] myArr;
-    myArr = myList.ToArray();
-
-    for (int i = 0; i < myList.GetLength(); i++)
-        std::cout << myArr[i] << '\t';
-    std::cout << '\n';
-    delete[] myArr;
+    myList.PrintList();
+    std::cout << myList.Contains("new 1") << '\n';
 
     return 0;
 }

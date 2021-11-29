@@ -189,4 +189,19 @@ namespace LinkedList
         return result;
     }
 
+    bool SLList::Contains(std::string input)
+    {
+        bool result = false;
+        Node* temp = first;
+        while (temp != nullptr)
+        {
+            if (input == *temp->data)
+            {
+                result = true;
+                break;
+            }
+            temp = temp->next;
+        }
+        return result;
+    }
 }
