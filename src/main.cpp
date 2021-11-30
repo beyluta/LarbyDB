@@ -9,6 +9,11 @@ int main()
 {
     Hashtable h = Hashtable();
     h.Push("Larry");
+    h.Push("Beyluta");
+    h.Push("Micha");
+    h.Push("Sebastian");
+    h.Push("Patrick");
+    h.PrintAllTables();
 
     
     // std::cout << "Beyluta is sweet\n" << std::endl;
