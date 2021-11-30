@@ -28,7 +28,7 @@ public:
 
         if (hash > size)
         {
-            std::cout << "Expanded array to " << hash << std::endl;
+            // std::cout << "Expanded array to " << hash << std::endl;
             SLList *newArr = new SLList[hash];
             for (int i = 0; i < size; i++)
             {
@@ -36,14 +36,14 @@ public:
                 for (int j = 0; j < arr[i].GetLength(); j++)
                 {
                     newArr[i].Push(content[j]);
-                    std::cout << "pushed" << content[i] << " into the array" << std::endl;
+                    std::cout << "pushed " << content[j] << " into the array" << std::endl;
                 }
             }
             arr = newArr;
             size = hash;
         }
 
-        std::cout << "add " << value << std::endl;
+        // std::cout << "add " << value << std::endl;
         arr[hash].Push(value);
     }
 

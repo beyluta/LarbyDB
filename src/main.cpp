@@ -7,15 +7,35 @@
 
 int main()
 {
-    Hashtable h = Hashtable();
-    h.Push("Larry");
-    h.Push("Beyluta");
-    h.Push("Micha");
-    h.Push("Sebastian");
-    h.Push("Patrick");
-    h.PrintAllTables();
+    // Hashtable h = Hashtable();
+    // h.Push("Larry");
+    // h.Push("Beyluta");
+    // h.Push("Micha");
+    // h.Push("Sebastian");
+    // h.Push("Patrick");
+    // h.PrintAllTables();
 
+    SLList* l = new SLList[10];
+    l[2].Push("Beyluta");
+    l[2].Push("Larry");
+    l[6].Push("Sebastian");
+    l[6].Push("Micha");
+    l[10].Push("Patrick");
+    l[10].Push("Burak");
+
+    auto x = l[2].ToArray();
     
+    // for(int i=0;i<11; i++){
+    //     std::cout<<l[i].GetLength()<<std::endl;
+    //     std::string* x = l[i].ToArray();
+    //     delete[] x;
+    //     // auto content = l[i].ToArray();
+    //     // for (int j=0;j<l[i].GetLength();j++){
+    //     //     std::cout<<content[j]<<std::endl;
+    //     // }
+    // }
+   
+
     // std::cout << "Beyluta is sweet\n" << std::endl;
     // LinkedList::SLList myList;
     // myList.Push("4");
