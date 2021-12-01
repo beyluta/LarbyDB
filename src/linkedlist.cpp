@@ -11,7 +11,7 @@ namespace LinkedList
         last = nullptr;
         length = 0;
     }
-    
+
     void SLList::OnDestruct()
     {
         if (first != nullptr)
@@ -28,12 +28,12 @@ namespace LinkedList
         this->OnDestruct();
     }
 
-    SLList::Node* SLList::First()
+    SLList::Node *SLList::First()
     {
         return first;
     }
 
-    SLList::Node* SLList::Last()
+    SLList::Node *SLList::Last()
     {
         return last;
     }
@@ -46,7 +46,7 @@ namespace LinkedList
     void SLList::AddToEnd(std::string d)
     {
         length++;
-        Node* temp = new Node;
+        Node *temp = new Node;
         temp->data = new std::string(d);
         temp->next = nullptr;
 
@@ -56,7 +56,7 @@ namespace LinkedList
             last = temp;
             return;
         }
-        
+
         last->next = temp;
         last = temp;
     }
@@ -72,7 +72,7 @@ namespace LinkedList
         }
 
         int currentPos = 0;
-        Node** ptr = &first;
+        Node **ptr = &first;
 
         while (currentPos != pos && (*ptr)->next != nullptr)
         {
@@ -81,7 +81,7 @@ namespace LinkedList
         }
 
         length++;
-        Node* newNode = new Node;
+        Node *newNode = new Node;
         newNode->data = new std::string(d);
         newNode->next = nullptr;
 
@@ -101,7 +101,7 @@ namespace LinkedList
     void SLList::Push(std::string d)
     {
         length++;
-        Node* temp = new Node;
+        Node *temp = new Node;
         temp->data = new std::string(d);
         temp->next = first;
 
@@ -129,7 +129,7 @@ namespace LinkedList
             return "";
         }
         length--;
-        Node* temp = first;
+        Node *temp = first;
         std::string deletedValue = *first->data;
         temp = first->next;
         delete first->data;
@@ -146,7 +146,7 @@ namespace LinkedList
             std::cout << "[ empty list ]\n\n";
             return;
         }
-        Node* temp = first;
+        Node *temp = first;
         std::cout << "[ ";
         while (temp->next != nullptr)
         {
@@ -161,7 +161,7 @@ namespace LinkedList
         std::string result;
         if (first != nullptr)
         {
-            Node* temp = first;
+            Node *temp = first;
             while (temp != nullptr)
             {
                 result.append(*temp->data);
@@ -172,12 +172,12 @@ namespace LinkedList
     }
 
     //make sure to delete[] it after use!
-    std::string* SLList::ToArray()
+    std::string *SLList::ToArray()
     {
-        std::string* result = new std::string[GetLength()];
+        std::string *result = new std::string[GetLength()];
         if (first != nullptr)
         {
-            Node* temp = first;
+            Node *temp = first;
             int count = 0;
             while (temp != nullptr)
             {
@@ -188,11 +188,10 @@ namespace LinkedList
         }
         return result;
     }
-
     bool SLList::Contains(std::string input)
     {
         bool result = false;
-        Node* temp = first;
+        Node *temp = first;
         while (temp != nullptr)
         {
             if (input == *temp->data)
@@ -201,21 +200,24 @@ namespace LinkedList
                 break;
             }
             temp = temp->next;
-        return result;
         }
+        return result;
     }
-
-    const char** SLList::ToCharArray() {
-        const char** result = new const char*[GetLength()];
-        if (first != nullptr) {
-            Node* temp = first;
+    const char **SLList::ToCharArray()
+    {
+        const char **result = new const char *[GetLength()];
+        if (first != nullptr)
+        {
+            Node *temp = first;
             int count = 0;
-            while (temp != nullptr) {
+            while (temp != nullptr)
+            {
                 std::string d = *temp->data;
                 result[count] = d.c_str();
                 temp = temp->next;
                 count++;
             }
         }
+        return result;
     }
 }
