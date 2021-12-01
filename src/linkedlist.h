@@ -37,5 +37,6 @@ namespace LinkedList
         std::string ToString();
         std::string* ToArray();
         const char** ToCharArray();
+        bool Contains(std::string input);
     };
 }
