@@ -44,6 +44,15 @@ public:
         arr[hash].Push(value);
     }
 
+    bool Contains(const char* value) {
+        int hash = Hash(value);
+        if (hash < size + 1) {
+            bool result = arr[hash].Contains(value);
+            return result;
+        }
+        return false;
+    }
+
     void PrintAllTables()
     {
         for (int i = 0; i < size + 1; i++)
