@@ -28,28 +28,25 @@ public:
 
         if (hash > size)
         {
-            // std::cout << "Expanded array to " << hash << std::endl;
-            SLList *newArr = new SLList[hash];
+            SLList *newArr = new SLList[hash + 1];
             for (int i = 0; i < size; i++)
             {
                 auto content = arr[i].ToArray();
                 for (int j = 0; j < arr[i].GetLength(); j++)
                 {
                     newArr[i].Push(content[j]);
-                    std::cout << "pushed " << content[j] << " into the array" << std::endl;
                 }
             }
             arr = newArr;
             size = hash;
         }
 
-        // std::cout << "add " << value << std::endl;
         arr[hash].Push(value);
     }
 
     void PrintAllTables()
     {
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < size + 1; i++)
         {
             if (arr[i].GetLength() > 0)
             {
