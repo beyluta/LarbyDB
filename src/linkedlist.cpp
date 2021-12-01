@@ -201,7 +201,21 @@ namespace LinkedList
                 break;
             }
             temp = temp->next;
-        }
         return result;
+        }
+    }
+
+    const char** SLList::ToCharArray() {
+        const char** result = new const char*[GetLength()];
+        if (first != nullptr) {
+            Node* temp = first;
+            int count = 0;
+            while (temp != nullptr) {
+                std::string d = *temp->data;
+                result[count] = d.c_str();
+                temp = temp->next;
+                count++;
+            }
+        }
     }
 }
