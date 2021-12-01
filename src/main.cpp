@@ -15,15 +15,21 @@ int main()
     // h.Push("Patrick");
     // h.PrintAllTables();
 
-    SLList* l = new SLList[10];
+    SLList* l = new SLList[11];
     l[2].Push("Beyluta");
     l[2].Push("Larry");
     l[6].Push("Sebastian");
     l[6].Push("Micha");
     l[10].Push("Patrick");
     l[10].Push("Burak");
+    l[2].PrintList();
 
     auto x = l[2].ToArray();
+    std::cout << x[0] << " " << x[1] << '\n';
+
+    delete[] x;
+    delete[] l;
+
     
     // for(int i=0;i<11; i++){
     //     std::cout<<l[i].GetLength()<<std::endl;
