@@ -32,5 +32,9 @@ int main()
     std::cout << '\n';
     delete[] myArr;
 
+    const char* myChar = new char[14];
+    myChar = "chars go here";
+    std::cout << myChar << '\n';
+
     return 0;
 }
