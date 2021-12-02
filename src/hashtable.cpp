@@ -57,19 +57,20 @@ public:
         return false;
     }
 
-    void PrintAllTables()
+    LinkedList::SLList* GetAllValues()
     {
+        LinkedList::SLList* list = new LinkedList::SLList();
         for (int i = 0; i < size + 1; i++)
         {
             if (arr[i].GetLength() > 0)
             {
-                std::cout << "----Table " << i << " with length " << arr[i].GetLength() << "----" << std::endl;
                 auto content = arr[i].ToArray();
                 for (int j = 0; j < arr[i].GetLength(); j++)
                 {
-                    std::cout << content[j] << std::endl;
+                    list->Push(content[j]);
                 }
             }
         }
+        return list;
     }
 };
