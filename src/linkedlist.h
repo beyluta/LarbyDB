@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 
 namespace LinkedList
 {
@@ -7,7 +6,7 @@ namespace LinkedList
     {
         struct Node
         {
-            std::string* data;
+            const char** data;
             Node* next;
         };
 
@@ -15,7 +14,6 @@ namespace LinkedList
         Node* last;
 
         int length;
-        void OnDestruct();
 
     public:
 
@@ -27,15 +25,14 @@ namespace LinkedList
 
         int GetLength();
 
-        void AddToEnd(std::string d);
-        void Insert(std::string d, unsigned int pos);
-        void Push(std::string d);
-        std::string Pop();
-        std::string Peek();
+        void AddToEnd(const char* d);
+        void Insert(const char* d, unsigned int pos);
+        void Push(const char* d);
+        const char* Pop();
+        const char* Peek();
 
         void PrintList();
-        std::string ToString();
-        std::string* ToArray();
+        const char** ToArray();
         const char** ToCharArray();
         bool Contains(std::string input);
     };
