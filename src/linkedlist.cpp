@@ -1,31 +1,21 @@
 #include "linkedlist.h"
-#include <string>
 #include <iostream>
 
 namespace LinkedList
 {
-
     SLList::SLList()
     {
         first = nullptr;
         last = nullptr;
         length = 0;
     }
-
-    void SLList::OnDestruct()
-    {
-        if (first != nullptr)
-        {
-            this->Pop();
-            this->OnDestruct();
-            return;
-        }
-        //std::cout << "linked list deleted\n";
-    }
-
+    
     SLList::~SLList()
     {
-        this->OnDestruct();
+        while (first != nullptr)
+        {
+            this->Pop();
+        }
     }
 
     SLList::Node *SLList::First()
@@ -43,11 +33,12 @@ namespace LinkedList
         return length;
     }
 
-    void SLList::AddToEnd(std::string d)
+    void SLList::AddToEnd(const char* d)
     {
         length++;
-        Node *temp = new Node;
-        temp->data = new std::string(d);
+        Node* temp = new Node;
+        const char** str = new const char*(d);
+        temp->data = str;
         temp->next = nullptr;
 
         if (first == nullptr)
@@ -61,7 +52,7 @@ namespace LinkedList
         last = temp;
     }
 
-    void SLList::Insert(std::string d, unsigned int pos)
+    void SLList::Insert(const char* d, unsigned int pos)
     {
         //std::cout << "[inserting(data: " << d << ", pos: " << pos << ")]: ";
         if (first == nullptr)
@@ -81,8 +72,9 @@ namespace LinkedList
         }
 
         length++;
-        Node *newNode = new Node;
-        newNode->data = new std::string(d);
+        Node* newNode = new Node;
+        const char** str = new const char*(d);
+        newNode->data = str;
         newNode->next = nullptr;
 
         if ((*ptr)->next == nullptr)
@@ -98,11 +90,12 @@ namespace LinkedList
         (*ptr)->next = newNode;
     }
 
-    void SLList::Push(std::string d)
+    void SLList::Push(const char* d)
     {
         length++;
-        Node *temp = new Node;
-        temp->data = new std::string(d);
+        Node* temp = new Node;
+        const char** str = new const char*(d);
+        temp->data = str;
         temp->next = first;
 
         if (first == nullptr)
@@ -113,7 +106,7 @@ namespace LinkedList
         first = temp;
     }
 
-    std::string SLList::Peek()
+    const char* SLList::Peek()
     {
         if (first == nullptr)
         {
@@ -122,15 +115,15 @@ namespace LinkedList
         return *(first->data);
     }
 
-    std::string SLList::Pop()
+    const char* SLList::Pop()
     {
         if (first == nullptr)
         {
             return "";
         }
         length--;
-        Node *temp = first;
-        std::string deletedValue = *first->data;
+        Node* temp = first;
+        const char* deletedValue = *first->data;
         temp = first->next;
         delete first->data;
         delete first;
@@ -155,26 +148,11 @@ namespace LinkedList
         }
         std::cout << *temp->data << " ]\n";
     }
-
-    std::string SLList::ToString()
+    //Make sure to delete[] the array after you are done working with it.
+    //Also, do not change strings in the array, it will only change array's contents and not the list itself
+    const char** SLList::ToArray()
     {
-        std::string result;
-        if (first != nullptr)
-        {
-            Node *temp = first;
-            while (temp != nullptr)
-            {
-                result.append(*temp->data);
-                temp = temp->next;
-            }
-        }
-        return result;
-    }
-
-    //make sure to delete[] it after use!
-    std::string *SLList::ToArray()
-    {
-        std::string *result = new std::string[GetLength()];
+        const char** result = new const char*[GetLength()];
         if (first != nullptr)
         {
             Node *temp = first;
@@ -188,7 +166,8 @@ namespace LinkedList
         }
         return result;
     }
-    bool SLList::Contains(std::string input)
+
+    bool SLList::Contains(const char* input)
     {
         bool result = false;
         Node *temp = first;
@@ -200,23 +179,6 @@ namespace LinkedList
                 break;
             }
             temp = temp->next;
-        }
-        return result;
-    }
-    const char **SLList::ToCharArray()
-    {
-        const char **result = new const char *[GetLength()];
-        if (first != nullptr)
-        {
-            Node *temp = first;
-            int count = 0;
-            while (temp != nullptr)
-            {
-                std::string d = *temp->data;
-                result[count] = d.c_str();
-                temp = temp->next;
-                count++;
-            }
         }
         return result;
     }
