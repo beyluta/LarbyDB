@@ -148,8 +148,8 @@ namespace LinkedList
         }
         std::cout << *temp->data << " ]\n";
     }
-
-    //make sure to delete[] it after use!
+    //Make sure to delete[] the array after you are done working with it.
+    //Also, do not change strings in the array, it will only change array's contents and not the list itself
     const char** SLList::ToArray()
     {
         const char** result = new const char*[GetLength()];
@@ -167,7 +167,7 @@ namespace LinkedList
         return result;
     }
 
-    bool SLList::Contains(std::string input)
+    bool SLList::Contains(const char* input)
     {
         bool result = false;
         Node* temp = first;
@@ -179,22 +179,6 @@ namespace LinkedList
                 break;
             }
             temp = temp->next;
-        }
-        return result;
-    }
-
-    //make sure to delete[] it after use!
-    const char** SLList::ToCharArray() {
-        const char** result = new const char*[GetLength()];
-        if (first != nullptr) {
-            Node* temp = first;
-            int count = 0;
-            while (temp != nullptr) {
-                std::string d = *temp->data;
-                result[count] = d.c_str();
-                temp = temp->next;
-                count++;
-            }
         }
         return result;
     }

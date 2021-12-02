@@ -33,7 +33,6 @@ namespace LinkedList
 
         void PrintList();
         const char** ToArray();
-        const char** ToCharArray();
-        bool Contains(std::string input);
+        bool Contains(const char* input);
     };
 }
