@@ -12,6 +12,10 @@ public:
         arr = new SLList[0];
     }
 
+    ~Hashtable() {
+        delete[] arr;
+    }
+
     int Hash(const char *value)
     {
         int sum = 0;
