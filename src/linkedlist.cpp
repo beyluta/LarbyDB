@@ -18,12 +18,12 @@ namespace LinkedList
         }
     }
 
-    SLList::Node* SLList::First()
+    SLList::Node *SLList::First()
     {
         return first;
     }
 
-    SLList::Node* SLList::Last()
+    SLList::Node *SLList::Last()
     {
         return last;
     }
@@ -47,7 +47,7 @@ namespace LinkedList
             last = temp;
             return;
         }
-        
+
         last->next = temp;
         last = temp;
     }
@@ -63,7 +63,7 @@ namespace LinkedList
         }
 
         int currentPos = 0;
-        Node** ptr = &first;
+        Node **ptr = &first;
 
         while (currentPos != pos && (*ptr)->next != nullptr)
         {
@@ -139,7 +139,7 @@ namespace LinkedList
             std::cout << "[ empty list ]\n\n";
             return;
         }
-        Node* temp = first;
+        Node *temp = first;
         std::cout << "[ ";
         while (temp->next != nullptr)
         {
@@ -155,7 +155,7 @@ namespace LinkedList
         const char** result = new const char*[GetLength()];
         if (first != nullptr)
         {
-            Node* temp = first;
+            Node *temp = first;
             int count = 0;
             while (temp != nullptr)
             {
@@ -170,7 +170,7 @@ namespace LinkedList
     bool SLList::Contains(const char* input)
     {
         bool result = false;
-        Node* temp = first;
+        Node *temp = first;
         while (temp != nullptr)
         {
             if (input == *temp->data)
