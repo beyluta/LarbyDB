@@ -1,4 +1,7 @@
 #include "main.h"
+#include "hashtable.cpp"
+#include <thread>
+#include <chrono>
 
 int main()
 {
