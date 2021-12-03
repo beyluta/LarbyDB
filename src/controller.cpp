@@ -1,5 +1,7 @@
 #include "controller.h"
 
+int Hash(const char *value);
+
 class Controller
 {
 private:
@@ -43,7 +45,9 @@ public:
         {
             if (!db[id]->Contains(value))
             {
-                db[id]->Push(value);
+                int hash = Hash(key);
+                std::cout << hash << std::endl;
+                // db[id]->Push(value);
             }
         }
     }
