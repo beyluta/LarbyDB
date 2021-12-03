@@ -1,5 +1,7 @@
 #include "hashtable.h"
 
+int Hash(const char *value);
+
 class Hashtable
 {
 private:
@@ -12,18 +14,9 @@ public:
         arr = new SLList[0];
     }
 
-    ~Hashtable() {
-        delete[] arr;
-    }
-
-    int Hash(const char *value)
+    ~Hashtable()
     {
-        int sum = 0;
-        for (int i = 0; i < strlen(value); i++)
-        {
-            sum += (int)value[i];
-        }
-        return sum;
+        delete[] arr;
     }
 
     void Push(const char *value)
@@ -48,18 +41,20 @@ public:
         arr[hash].Push(value);
     }
 
-    bool Contains(const char* value) {
+    bool Contains(const char *value)
+    {
         int hash = Hash(value);
-        if (hash < size + 1) {
+        if (hash < size + 1)
+        {
             bool result = arr[hash].Contains(value);
             return result;
         }
         return false;
     }
 
-    LinkedList::SLList* GetAllValues()
+    LinkedList::SLList *GetAllValues()
     {
-        LinkedList::SLList* list = new LinkedList::SLList();
+        LinkedList::SLList *list = new LinkedList::SLList();
         for (int i = 0; i < size + 1; i++)
         {
             if (arr[i].GetLength() > 0)
