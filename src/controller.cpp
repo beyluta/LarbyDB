@@ -32,9 +32,28 @@ public:
         {
             if (!db[id]->Contains(value))
             {
-                std::cout << "Pushed " << value << " to table " << id << std::endl;
                 db[id]->Push(value);
             }
         }
+    }
+
+    void AddKeyValueToTableById(int id, const char *key, const char *value)
+    {
+        if (id < size)
+        {
+            if (!db[id]->Contains(value))
+            {
+                db[id]->Push(value);
+            }
+        }
+    }
+
+    bool ContainsInTableById(int id, const char *value)
+    {
+        if (id < size)
+        {
+            return db[id]->Contains(value);
+        }
+        return false;
     }
 };
