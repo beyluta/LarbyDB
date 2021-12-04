@@ -41,6 +41,39 @@ public:
         arr[hash].Push(value);
     }
 
+    void PushByKey(const char *key, const char *value)
+    {
+        int hash = Hash(key);
+
+        if (hash > size)
+        {
+            SLList *newArr = new SLList[hash + 1];
+            for (int i = 0; i < size; i++)
+            {
+                auto content = arr[i].ToArray();
+                for (int j = 0; j < arr[i].GetLength(); j++)
+                {
+                    newArr[i].Push(content[j]);
+                }
+            }
+            arr = newArr;
+            size = hash;
+        }
+
+        arr[hash].Push(value);
+    }
+
+    const char *GetValueByKey(const char *key)
+    {
+        int hash = Hash(key);
+
+        if (hash < size + 1)
+        {
+            return arr[hash].Peek();
+        }
+        return nullptr;
+    }
+
     bool Contains(const char *value)
     {
         int hash = Hash(value);
