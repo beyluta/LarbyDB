@@ -46,10 +46,18 @@ public:
             if (!db[id]->Contains(value))
             {
                 int hash = Hash(key);
-                std::cout << hash << std::endl;
-                // db[id]->Push(value);
+                db[id]->PushByKey(key, value);
             }
         }
+    }
+
+    const char *GetValueInTableByKey(int id, const char *key)
+    {
+        if (id < size)
+        {
+            return db[id]->GetValueByKey(key);
+        }
+        return nullptr;
     }
 
     bool ContainsInTableById(int id, const char *value)
