@@ -27,6 +27,7 @@ namespace LinkedList
 
         void AddToEnd(const char* d);
         void Insert(const char* d, unsigned int pos);
+        void Delete(const char* string);
         void Push(const char* d);
         const char* Pop();
         const char* Peek();

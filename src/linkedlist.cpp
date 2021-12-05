@@ -90,6 +90,31 @@ namespace LinkedList
         (*ptr)->next = newNode;
     }
 
+    void SLList::Delete(const char* string)
+    {
+        if (first != nullptr)
+        {
+            Node* temp = first;
+            while (temp->next != nullptr)
+            {
+                if (string == *temp->data)
+                {
+                    Pop();
+                }
+                else if (string == *temp->next->data)
+                {
+                    delete temp->next->data;
+                    temp->next->data = nullptr;
+                    Node* temp2 = temp->next->next;
+                    temp->next->next = nullptr;
+                    temp->next = temp2;
+                    return;
+                }
+                temp = temp->next;
+            }
+        }
+    }
+
     void SLList::Push(const char* d)
     {
         length++;
