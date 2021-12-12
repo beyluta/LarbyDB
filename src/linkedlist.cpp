@@ -38,10 +38,8 @@ namespace LinkedList
 
     void SLList::Insert(const char* d, unsigned int pos)
     {
-        //std::cout << "[inserting(data: " << d << ", pos: " << pos << ")]: ";
         if (first == nullptr)
         {
-            //std::cout << "list was empty, adding as first element\n";
             Push(d);
             return;
         }
@@ -62,13 +60,11 @@ namespace LinkedList
 
         if ((*ptr)->next == nullptr)
         {
-            //std::cout << "end of the list reached, adding as last element\n"; //debug
             (*ptr)->next = newNode;
             last = newNode;
             return;
         }
-        //std::cout << "after " << *(*ptr)->data << " before " << *(*ptr)->next->data << '\n'; //debug
-
+        
         newNode->next = (*ptr)->next;
         (*ptr)->next = newNode;
     }
