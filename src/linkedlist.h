@@ -20,10 +20,9 @@ namespace LinkedList
         SLList();
         ~SLList();
 
-        Node* First();
-        Node* Last();
-
-        int GetLength();
+        Node* First() const;
+        Node* Last() const;
+        int GetLength() const;
 
         void AddToEnd(const char* d);
         void Insert(const char* d, unsigned int pos);

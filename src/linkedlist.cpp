@@ -4,11 +4,7 @@
 namespace LinkedList
 {
     SLList::SLList()
-    {
-        first = nullptr;
-        last = nullptr;
-        length = 0;
-    }
+    : first(nullptr), last(nullptr), length(0) {}
     
     SLList::~SLList()
     {
@@ -18,27 +14,15 @@ namespace LinkedList
         }
     }
 
-    SLList::Node *SLList::First()
-    {
-        return first;
-    }
-
-    SLList::Node *SLList::Last()
-    {
-        return last;
-    }
-
-    int SLList::GetLength()
-    {
-        return length;
-    }
+    SLList::Node *SLList::First() const { return first; }
+    SLList::Node *SLList::Last() const { return last; }
+    int SLList::GetLength() const { return length; }
 
     void SLList::AddToEnd(const char* d)
     {
         length++;
         Node* temp = new Node;
-        const char** str = new const char*(d);
-        temp->data = str;
+        temp->data = new const char*(d);
         temp->next = nullptr;
 
         if (first == nullptr)
@@ -73,8 +57,7 @@ namespace LinkedList
 
         length++;
         Node* newNode = new Node;
-        const char** str = new const char*(d);
-        newNode->data = str;
+        newNode->data = new const char*(d);
         newNode->next = nullptr;
 
         if ((*ptr)->next == nullptr)
@@ -95,13 +78,14 @@ namespace LinkedList
         if (first != nullptr)
         {
             Node* temp = first;
+            if (*temp->data == string)
+            {
+                Pop();
+                return;
+            }
             while (temp->next != nullptr)
             {
-                if (string == *temp->data)
-                {
-                    Pop();
-                }
-                else if (string == *temp->next->data)
+                if (*temp->next->data == string)
                 {
                     delete temp->next->data;
                     temp->next->data = nullptr;
@@ -119,8 +103,7 @@ namespace LinkedList
     {
         length++;
         Node* temp = new Node;
-        const char** str = new const char*(d);
-        temp->data = str;
+        temp->data = new const char*(d);
         temp->next = first;
 
         if (first == nullptr)
@@ -173,6 +156,7 @@ namespace LinkedList
         }
         std::cout << *temp->data << " ]\n";
     }
+
     //Make sure to delete[] the array after you are done working with it.
     //Also, do not change strings in the array, it will only change array's contents and not the list itself
     const char** SLList::ToArray()
