@@ -23,7 +23,11 @@ public:
         {
             table.resize(hash + 1);
         }
-        table.at(hash) = key;
+
+        if (table.at(hash) == "")
+        {
+            table.at(hash) = key;
+        }
     }
 
     void PrintTable()
