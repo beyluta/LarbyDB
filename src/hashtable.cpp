@@ -60,13 +60,10 @@ public:
         int hash = Hash(value);
         if (table.size() <= hash)
         {
-            table.resize(hash + 1);
+            return;
         }
 
-        if (table.at(hash) == value)
-        {
-            table.at(hash) = "";
-        }
+        table.at(hash) = "";
     }
 
     bool Contains(string value)
@@ -90,7 +87,7 @@ public:
         {
             if (table.at(i) != "")
             {
-                cout << "  " << table.at(i) << "\n";
+                cout << "  [" << i << "]: " << table.at(i) << "\n";
             }
         }
         cout << "}" << endl;
