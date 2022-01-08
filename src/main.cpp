@@ -11,11 +11,7 @@ int main()
     // ht.PrintTable();
 
     Controller c(2);
-    c.ResolveStringCommand("INSERT /Hello/ INTO /0/");
-    c.ResolveStringCommand("INSERT /my heart <3/ INTO /0/ WHEREKEY / Beyluta/");
-    c.ResolveStringCommand("INSERT /Hello2 /INTO /   1   /");
-    c.ResolveStringCommand("DELETE /Hello/ FROM /0/");
-    c.hashtables[0].PrintTable(0);
-    c.hashtables[1].PrintTable(1);
+    c.ResolveStringCommand("INSERT /<3 Larry/ INTO /0/ WHEREKEY /larry/");
+    std::cout << c.ResolveStringCommand("FETCH /larry/ FROM /0/") << std::endl;
     return 0;
 }

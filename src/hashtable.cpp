@@ -17,7 +17,7 @@ private:
     }
 
 public:
-    void Add(string& value)
+    void Add(string &value)
     {
         int hash = Hash(value);
         if (table.size() <= hash)
@@ -36,7 +36,7 @@ public:
         }
     }
 
-    void Add(string key, string& value)
+    void Add(string key, string &value)
     {
         int hash = Hash(key);
         if (table.size() <= hash)
@@ -48,10 +48,29 @@ public:
         {
             table.at(hash) = std::move(value);
         }
-        
+
         else
         {
             std::cout << "Internal Server Error (507): Hash Collision Detected\n";
+        }
+    }
+
+    std::string Get(string key)
+    {
+        int hash = Hash(key);
+        if (table.size() <= hash)
+        {
+            return "";
+        }
+
+        if (table.at(hash) == "")
+        {
+            return "";
+        }
+
+        else
+        {
+            return table.at(hash);
         }
     }
 
@@ -82,7 +101,7 @@ public:
 
     void PrintTable(int id = 0)
     {
-        cout << "Hashtable["<< id << "]:\n{\n";
+        cout << "Hashtable[" << id << "]:\n{\n";
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")

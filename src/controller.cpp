@@ -83,7 +83,7 @@ public:
         hashtables.resize(numTables);
     }
 
-    void ResolveStringCommand(std::string command)
+    std::string ResolveStringCommand(std::string command)
     {
         std::vector<std::string> words = GetStringValues(command, '/');
         std::vector<std::string> commands = GetStringCommands(command, '/');
@@ -103,6 +103,7 @@ public:
                     if (index < hashtables.size())
                     {
                         hashtables[index].Add(words[0]);
+                        return "200";
                     }
                 }
             }
@@ -117,9 +118,26 @@ public:
                     if (index < hashtables.size())
                     {
                         hashtables[index].Remove(words[0]);
+                        return "200";
                     }
                 }
             }
         }
+
+        else if (VectorContains(commands, "FETCH"))
+        {
+            if (VectorContains(commands, "FROM") && words[1] != "")
+            {
+                int index = atoi(words[1].c_str());
+                {
+                    if (index < hashtables.size())
+                    {
+                        return hashtables[index].Get(words[0]);
+                    }
+                }
+            }
+        }
+
+        return "";
     }
 };
