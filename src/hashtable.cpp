@@ -5,18 +5,32 @@ class Hashtable
 private:
     vector<string> table;
 
-public:
-    int Hash(string key)
+    int Hash(string value)
     {
         int hash = 0;
-        for (int i = 0; i < key.length(); i++)
+        for (int i = 0; i < value.length(); i++)
         {
-            hash += key[i];
+            hash += value[i];
         }
         return hash;
     }
 
-    void Add(string key)
+public:
+    void Add(string value)
+    {
+        int hash = Hash(value);
+        if (table.size() <= hash)
+        {
+            table.resize(hash + 1);
+        }
+
+        if (table.at(hash) == "")
+        {
+            table.at(hash) = value;
+        }
+    }
+
+    void Add(string key, string value)
     {
         int hash = Hash(key);
         if (table.size() <= hash)
@@ -26,8 +40,22 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = key;
+            table.at(hash) = value;
         }
+    }
+
+    bool Contains(string value)
+    {
+        int hash = Hash(value);
+        if (table.size() <= hash)
+        {
+            return false;
+        }
+        if (table.at(hash) == value)
+        {
+            return true;
+        }
+        return false;
     }
 
     void PrintTable()
