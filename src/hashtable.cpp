@@ -28,6 +28,11 @@ public:
         {
             table.at(hash) = value;
         }
+        
+        else
+        {
+            std::cout << "Internal Server Error (507): Hash Collision Detected\n";
+        }
     }
 
     void Add(string key, string value)
@@ -41,6 +46,11 @@ public:
         if (table.at(hash) == "")
         {
             table.at(hash) = value;
+        }
+        
+        else
+        {
+            std::cout << "Internal Server Error (507): Hash Collision Detected\n";
         }
     }
 
