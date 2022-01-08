@@ -72,6 +72,18 @@ private:
     }
 
 public:
+
+    std::vector<Hashtable> hashtables; //set it to public to use it's methods for debug, make this private later...
+
+    Controller(int numTables = 1)
+    {
+        if (numTables < 1)
+        {
+            numTables = 1;
+        }
+        hashtables.resize(numTables);
+    }
+
     void ResolveStringCommand(std::string command)
     {
         std::vector<std::string> words = GetStringValues(command, '/');
@@ -79,7 +91,17 @@ public:
 
         if (VectorContains(commands, "INSERT"))
         {
-            std::cout << "True" << std::endl;
+            if (VectorContains(commands, "INTO") && words[1] != "")
+            {
+                //int index = std::stoi(words[1]);
+                int index = atoi(words[1].c_str());
+                {
+                    if (index < hashtables.size())
+                    {
+                        hashtables[index].Add(words[0]);
+                    }
+                }
+            }
         }
     }
 };
