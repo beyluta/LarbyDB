@@ -72,7 +72,6 @@ private:
     }
 
 public:
-
     std::vector<Hashtable> hashtables; //set it to public to use it's methods for debug, make this private later...
 
     Controller(int numTables = 1)
@@ -119,7 +118,5 @@ public:
                 }
             }
         }
-
-
     }
 };

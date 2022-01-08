@@ -1,6 +1,6 @@
 #include "main.h"
 #include "hashtable.cpp"
-#include "Controller.cpp"
+#include "controller.cpp"
 
 int main()
 {
