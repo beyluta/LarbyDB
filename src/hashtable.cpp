@@ -17,7 +17,7 @@ private:
     }
 
 public:
-    void Add(string value)
+    void Add(string& value)
     {
         int hash = Hash(value);
         if (table.size() <= hash)
@@ -27,7 +27,7 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = value;
+            table.at(hash) = std::move(value);
         }
 
         else
@@ -36,7 +36,7 @@ public:
         }
     }
 
-    void Add(string key, string value)
+    void Add(string key, string& value)
     {
         int hash = Hash(key);
         if (table.size() <= hash)
@@ -46,7 +46,7 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = value;
+            table.at(hash) = std::move(value);
         }
         
         else
@@ -83,14 +83,16 @@ public:
         return false;
     }
 
-    void PrintTable()
+    void PrintTable(int id = 0)
     {
+        cout << "Hashtable["<< id << "]:\n{\n";
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")
             {
-                cout << table.at(i) << endl;
+                cout << "  " << table.at(i) << "\n";
             }
         }
+        cout << "}" << endl;
     }
 };
