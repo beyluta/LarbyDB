@@ -103,5 +103,23 @@ public:
                 }
             }
         }
+
+        else if (VectorContains(commands, "DELETE"))
+        {
+            if (VectorContains(commands, "FROM") && words[1] != "")
+            {
+                int index = atoi(words[1].c_str());
+                {
+                    if (index < hashtables.size())
+                    {
+                        {
+                            hashtables[index].Remove(words[0]);
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
 };
