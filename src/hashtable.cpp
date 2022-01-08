@@ -44,6 +44,20 @@ public:
         }
     }
 
+    void Remove(string value)
+    {
+        int hash = Hash(value);
+        if (table.size() <= hash)
+        {
+            table.resize(hash + 1);
+        }
+
+        if (table.at(hash) == value)
+        {
+            table.at(hash) = "";
+        }
+    }
+
     bool Contains(string value)
     {
         int hash = Hash(value);
