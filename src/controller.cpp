@@ -95,6 +95,11 @@ public:
             {
                 //int index = std::stoi(words[1]);
                 int index = atoi(words[1].c_str());
+                if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
+                {
+                    hashtables[index].Add(words[2], words[0]);
+                }
+                else if (!VectorContains(commands, "WHEREKEY"))
                 {
                     if (index < hashtables.size())
                     {
@@ -112,9 +117,7 @@ public:
                 {
                     if (index < hashtables.size())
                     {
-                        {
-                            hashtables[index].Remove(words[0]);
-                        }
+                        hashtables[index].Remove(words[0]);
                     }
                 }
             }

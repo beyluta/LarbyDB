@@ -12,6 +12,7 @@ int main()
 
     Controller c(2);
     c.ResolveStringCommand("INSERT /Hello/ INTO /0/");
+    c.ResolveStringCommand("INSERT /my heart <3/ INTO /0/ WHEREKEY / Beyluta/");
     c.ResolveStringCommand("INSERT /Hello2 /INTO /   1   /");
     c.ResolveStringCommand("DELETE /Hello/ FROM /0/");
     c.hashtables[0].PrintTable(0);
