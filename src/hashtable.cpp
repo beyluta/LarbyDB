@@ -1,5 +1,6 @@
 #include "hashtable.h"
 
+using namespace std;
 class Hashtable
 {
 private:
@@ -28,7 +29,7 @@ public:
         {
             table.at(hash) = value;
         }
-        
+
         else
         {
             std::cout << "Internal Server Error (507): Hash Collision Detected\n";
