@@ -5,7 +5,9 @@ class BackupHandler
 public:
     void BeginBackup(Controller &c)
     {
-        std::cout << "Backup started" << std::endl;
-        c.ResolveStringCommand("Test");
+        for (int i = 0; i < c.GetSize(); i++)
+        {
+            c.ResolveStringCommand("FETCH /*/ FROM /" + std::to_string(i) + "/");
+        }
     }
 };

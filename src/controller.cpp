@@ -83,6 +83,11 @@ public:
         hashtables.resize(numTables);
     }
 
+    int GetSize()
+    {
+        return hashtables.size();
+    }
+
     std::string ResolveStringCommand(std::string command)
     {
         std::vector<std::string> words = GetStringValues(command, '/');
