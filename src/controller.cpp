@@ -130,7 +130,11 @@ public:
             {
                 int index = atoi(words[1].c_str());
                 {
-                    if (index < hashtables.size())
+                    if (words[0].length() == 1 && words[0] == "*")
+                    {
+                        return hashtables[index].GetAll();
+                    }
+                    else if (index < hashtables.size())
                     {
                         return hashtables[index].Get(words[0]);
                     }

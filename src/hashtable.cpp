@@ -74,6 +74,20 @@ public:
         }
     }
 
+    // method to get all strings inside the hashtable into a single string separated by ; and showing their id
+    std::string GetAll()
+    {
+        std::string result = "";
+        for (int i = 0; i < table.size(); i++)
+        {
+            if (table.at(i) != "")
+            {
+                result += to_string(i) + ":" + table.at(i) + ";";
+            }
+        }
+        return result;
+    }
+
     void Remove(string value)
     {
         int hash = Hash(value);
