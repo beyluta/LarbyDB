@@ -1,4 +1,5 @@
 #include "main.h"
+#include "backuphandler.cpp"
 
 Controller *controller;
 
@@ -7,18 +8,19 @@ const char *MessageReceived(const char *msg)
     return controller->ResolveStringCommand(msg).c_str();
 }
 
-int BackupHandler(int var)
+int BackupHandlerMessage(int var)
 {
-    std::cout << "Peforming Backup..." << std::endl;
+    BackupHandler handler;
+    handler.BeginBackup(*controller);
     return 0;
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     bool backups_flag_set = false;
     bool allowBackup = false;
     bool port_set = false;
-    char* portPtr;
+    char *portPtr;
     bool tables_set = false;
     int nTables;
     if (argc > 1)
@@ -45,7 +47,7 @@ int main(int argc, char** argv)
                     portPtr = argv[i + 1];
                 }
             }
-            
+
             if (!tables_set && strcmp(argv[i], "--tables") == 0)
             {
                 if (argv[i + 1] != nullptr)
@@ -58,12 +60,11 @@ int main(int argc, char** argv)
                     }
                 }
             }
-            
         }
     }
 
     Timer *backupTimer = new Timer();
-    backupTimer->Subscribe(BackupHandler, 0);
+    backupTimer->Subscribe(BackupHandlerMessage, 0);
 
     char *port;
     std::cout << "Port number: ";
@@ -90,7 +91,7 @@ int main(int argc, char** argv)
     char allowBackupChar;
     if (backups_flag_set)
     {
-        if(allowBackup)
+        if (allowBackup)
         {
             std::cout << "Running with automatic backups.\n";
         }
@@ -100,7 +101,7 @@ int main(int argc, char** argv)
             std::cout << "WARNING: Automatic backups will not be performed.\n";
         }
     }
-    
+
     else
     {
         std::cout << "Allow automatic backups? (y/n): ";
