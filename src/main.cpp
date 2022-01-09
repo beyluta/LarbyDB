@@ -26,6 +26,28 @@ int main()
     std::cout << "Number of tables in the database: ";
     std::cin >> nTables;
 
+    bool allowBackup = false;
+    char allowBackupChar;
+    std::cout << "Allow automatic backups? (y/n): ";
+    std::cin >> allowBackupChar;
+
+    if (allowBackupChar == 'y' || allowBackupChar == 'Y')
+    {
+        allowBackup = true;
+    }
+    else if (allowBackupChar == 'n' || allowBackupChar == 'N')
+    {
+        std::cout << "WARNING: Backups will not be performed." << std::endl;
+    }
+    else
+    {
+        while (allowBackupChar != 'y' && allowBackupChar != 'n' || allowBackupChar != 'Y' && allowBackupChar != 'N')
+        {
+            std::cout << "Invalid input. Please enter 'y' or 'n': ";
+            std::cin >> allowBackupChar;
+        }
+    }
+
     while (std::cin.fail())
     {
         std::cin.clear();
@@ -42,7 +64,11 @@ int main()
 
     std::cout << "Database Tables Initialized(" << nTables << "), port: " << port << "\n";
 
-    backupTimer->Start(1);
+    if (allowBackup)
+    {
+        backupTimer->Start(1);
+    }
+
     socket->Listen();
     delete socket;
     delete controller;
