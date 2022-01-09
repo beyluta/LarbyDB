@@ -9,20 +9,33 @@ const char *MessageReceived(const char *msg)
 
 int main()
 {
-    /* Creating the controller and all the tables of the database
-    *  This should later be replaced with a function to ask for: 
-    *  Number of tables, which port to run the service on.*/
-    c = new Controller(2);
+    char* port;
+    std::cout << "Port number: ";
+    std::cin >> port;
+
+    int nTables;
+    std::cout << "Number of hashtables in the database: ";
+    std::cin >> nTables;
+
+    while (std::cin.fail())
+    {
+        std::cin.clear();
+        std::string emptyStr;
+        std::getline(std::cin, emptyStr);
+        std::cout << "Number of hashtables in the database: ";
+        std::cin >> nTables;
+    }
+    c = new Controller(nTables);
 
     /* Creating the socket and listening for connections */
     OnMessageReceived = &MessageReceived;
-    Socket *socket = new Socket("8000");
+    Socket *socket = new Socket(port);
+
+    std::cout << "Database(" << nTables << "), port: " << port << "\n";
+    
     socket->Listen();
     delete socket;
     delete c;
 
-    // Controller c(2);
-    // c.ResolveStringCommand("INSERT /<3 Larry/ INTO /0/ WHEREKEY /larry/");
-    // std::cout << c.ResolveStringCommand("FETCH /larry/ FROM /0/") << std::endl;
     return 0;
 }
