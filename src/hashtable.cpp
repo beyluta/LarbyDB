@@ -74,7 +74,6 @@ public:
         }
     }
 
-    // method to get all strings inside the hashtable into a single string separated by ; and showing their id
     std::string GetAll()
     {
         std::string result = "";
