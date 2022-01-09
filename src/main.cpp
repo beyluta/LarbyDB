@@ -1,20 +1,29 @@
 #include "main.h"
 
-Controller *c;
+Controller *controller;
 
 const char *MessageReceived(const char *msg)
 {
-    return c->ResolveStringCommand(msg).c_str();
+    return controller->ResolveStringCommand(msg).c_str();
+}
+
+int BackupHandler(int var)
+{
+    std::cout << "Peforming Backup..." << std::endl;
+    return 0;
 }
 
 int main()
 {
-    char* port;
+    Timer *backupTimer = new Timer();
+    backupTimer->Subscribe(BackupHandler, 0);
+
+    char *port;
     std::cout << "Port number: ";
     std::cin >> port;
 
     int nTables;
-    std::cout << "Number of hashtables in the database: ";
+    std::cout << "Number of tables in the database: ";
     std::cin >> nTables;
 
     while (std::cin.fail())
@@ -22,20 +31,22 @@ int main()
         std::cin.clear();
         std::string emptyStr;
         std::getline(std::cin, emptyStr);
-        std::cout << "Number of hashtables in the database: ";
+        std::cout << "Number of tables in the database: ";
         std::cin >> nTables;
     }
-    c = new Controller(nTables);
+    controller = new Controller(nTables);
 
     /* Creating the socket and listening for connections */
     OnMessageReceived = &MessageReceived;
     Socket *socket = new Socket(port);
 
-    std::cout << "Database(" << nTables << "), port: " << port << "\n";
-    
+    std::cout << "Database Tables Initialized(" << nTables << "), port: " << port << "\n";
+
+    backupTimer->Start(1);
     socket->Listen();
     delete socket;
-    delete c;
+    delete controller;
+    delete backupTimer;
 
     return 0;
 }

@@ -4,4 +4,5 @@
 #include "socket.cpp"
 #include "hashtable.cpp"
 #include "controller.cpp"
+#include "timer.cpp"
 using namespace std;
