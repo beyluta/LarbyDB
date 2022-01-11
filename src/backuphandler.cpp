@@ -28,6 +28,28 @@ public:
         remove(filename.c_str());
     }
 
+    void DeleteDirectory(std::string dirname, bool empty)
+    {
+        if (empty)
+        {
+            DIR *dir;
+            struct dirent *ent;
+            if ((dir = opendir(dirname.c_str())) != NULL)
+            {
+                while ((ent = readdir(dir)) != NULL)
+                {
+                    if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
+                    {
+                        std::string filepath = dirname + "/" + ent->d_name;
+                        DeleteFile(filepath);
+                    }
+                }
+                closedir(dir);
+            }
+        }
+        rmdir(dirname.c_str());
+    }
+
     bool FileExists(std::string filename)
     {
         std::ifstream file(filename);
@@ -45,30 +67,63 @@ public:
         }
         return false;
     }
+
+    std::vector<std::string> GetFilesInDirectory(std::string directory)
+    {
+        std::vector<std::string> files;
+        DIR *dir;
+        struct dirent *ent;
+        if ((dir = opendir(directory.c_str())) != NULL)
+        {
+            while ((ent = readdir(dir)) != NULL)
+            {
+                if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
+                {
+                    files.push_back(ent->d_name);
+                }
+            }
+            closedir(dir);
+        }
+        return files;
+    }
 };
 
 class BackupHandler
 {
 private:
     File file;
+    std::string config_path;
+    bool clear_backups = false;
+    Controller controller;
 
 public:
-    void BeginBackup(Controller &c)
+    BackupHandler(Controller &controller, bool clear_backups)
     {
-        std::string configPath = std::string(homedir) + "/LarbyDB/Backups/";
-        std::time_t date = std::time(0);
-        std::string configFile = configPath + ctime(&date) + ".txt";
+        this->clear_backups = clear_backups;
+        this->config_path = std::string(homedir) + "/LarbyDB/Backups/";
+        this->controller = controller;
+    }
 
-        std::string larbydb_path = std::string(homedir) + "/LarbyDB/";
-        if (!file.DirectoryExists(larbydb_path))
+    void BeginBackup()
+    {
+        std::time_t date = std::time(0);
+        std::string configFile = config_path + ctime(&date) + ".txt";
+
+        if (clear_backups)
         {
-            file.CreateDirectory(larbydb_path);
+            file.DeleteDirectory(config_path, true);
         }
 
-        std::string backup_path = larbydb_path + "Backups/";
-        if (!file.DirectoryExists(backup_path))
+        std::string dbPath = std::string(homedir) + "/LarbyDB/";
+        if (!file.DirectoryExists(dbPath))
         {
-            file.CreateDirectory(backup_path);
+            file.CreateDirectory(dbPath);
+        }
+
+        std::string backupPath = dbPath + "Backups/";
+        if (!file.DirectoryExists(backupPath))
+        {
+            file.CreateDirectory(backupPath);
         }
 
         std::string configStringNoSpaces = "";
@@ -79,14 +134,41 @@ public:
                 configStringNoSpaces += configFile[i];
             }
         }
-        //file.CreateFile(configStringNoSpaces);
+        file.CreateFile(configStringNoSpaces);
 
         std::string content = "";
-        for (int i = 0; i < c.GetSize(); i++)
+        for (int i = 0; i < controller.GetSize(); i++)
         {
             content += "ID: " + to_string(i) + "\n";
-            content += c.ResolveStringCommand("FETCH /*/ FROM /" + std::to_string(i) + "/") + "\n";
+            content += controller.ResolveStringCommand("FETCH /*/ FROM /" + std::to_string(i) + "/") + "\n";
         }
-        std::cout << content << std::endl;
+        file.OverwriteFile(configStringNoSpaces, content);
+    }
+
+    void LoadBackup()
+    {
+        std::vector<std::string> files = file.GetFilesInDirectory(config_path);
+        std::string filepath = config_path + files[0];
+        std::ifstream file(filepath);
+        std::string line;
+        while (std::getline(file, line))
+        {
+            int string_before_id = 0;
+            std::string::size_type pos = line.find("ID: ");
+            if (pos != std::string::npos)
+            {
+                string_before_id = line.substr(0, pos).size();
+            }
+
+            if (line.find("ID: ") != std::string::npos && std::all_of(line.begin() + 4, line.end(), ::isdigit) && string_before_id <= 0)
+            {
+                std::string id = line.substr(line.find("ID: ") + 4);
+            }
+            else
+            {
+                std::cout << line << std::endl;
+            }
+            sleep(1);
+        }
     }
 };

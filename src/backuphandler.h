@@ -6,6 +6,9 @@
 #include <fstream>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <fstream>
+#include <algorithm>
+#include <sstream>
 
 struct passwd *pw = getpwuid(getuid());
 const char *homedir = pw->pw_dir;

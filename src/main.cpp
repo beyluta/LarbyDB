@@ -10,8 +10,9 @@ const char *MessageReceived(const char *msg)
 
 int BackupHandlerMessage(int var)
 {
-    BackupHandler handler;
-    handler.BeginBackup(*controller);
+    BackupHandler handler(*controller, true);
+    // handler.BeginBackup();
+    handler.LoadBackup();
     return 0;
 }
 
