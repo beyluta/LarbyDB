@@ -166,9 +166,25 @@ public:
             }
             else
             {
-                std::cout << line << std::endl;
+                if (line.size() > 0)
+                {
+                    std::vector<std::string> elems;
+                    std::stringstream ss(line);
+                    std::string item;
+                    while (std::getline(ss, item, ';'))
+                    {
+                        elems.push_back(item);
+                    }
+
+                    for (int i = 0; i < elems.size(); i++)
+                    {
+                        // Get the ID
+                        // Get the value
+                        // Put it into the database using the controller reference
+                    }
+                }
             }
-            sleep(1);
+            //sleep(1);
         }
     }
 };
