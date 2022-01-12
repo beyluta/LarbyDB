@@ -149,4 +149,43 @@ public:
 
         return "";
     }
+
+    std::string GenerateKey(int length = 16)
+    {
+        srand(time(nullptr));
+        std::string key;
+        for (int i = 0; i < length; i++)
+        {
+            switch (rand() % 3)
+            {
+                case(0): key += std::to_string(rand() % 10); break;
+                case(1): key += ('A' + rand() % 26); break;
+                case(2): key += ('a' + rand() % 26); break;
+            }
+        }
+
+        File file;
+
+        std::string dbPath = std::string(homedir) + "/LarbyDB/";
+        if (!file.DirectoryExists(dbPath))
+        {
+            file.CreateDirectory(dbPath);
+        }
+
+        std::string keyPath = dbPath + "Auth/";
+        std::cout << keyPath << "\n";
+        if (!file.DirectoryExists(keyPath))
+        {
+            file.CreateDirectory(keyPath);
+        }
+
+
+        return key;
+    }
+
+    void SaveKey(std::string key)
+    {
+        
+    }
+
 };
