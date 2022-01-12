@@ -5,4 +5,5 @@
 #include "hashtable.cpp"
 #include "controller.cpp"
 #include "timer.cpp"
+#include "backuphandler.cpp"
 using namespace std;

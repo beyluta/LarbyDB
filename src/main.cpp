@@ -1,5 +1,4 @@
 #include "main.h"
-#include "backuphandler.cpp"
 
 Controller *controller;
 
@@ -11,8 +10,8 @@ const char *MessageReceived(const char *msg)
 int BackupHandlerMessage(int var)
 {
     BackupHandler handler(*controller, true);
-    // handler.BeginBackup();
-    handler.LoadBackup();
+    handler.BeginBackup();
+    //handler.LoadBackup();
     return 0;
 }
 
@@ -146,6 +145,12 @@ int main(int argc, char **argv)
     {
         backupTimer->Start(1);
     }
+
+    //remove this later
+    std::cout << time(nullptr) << "\n";
+    //
+
+    std::cout << "Key: " << controller->GenerateKey() << "\n";
 
     socket->Listen();
     delete socket;
