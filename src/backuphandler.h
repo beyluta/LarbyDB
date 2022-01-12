@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <algorithm>
-#include <sstream>
+#include "file.h"
 
 struct passwd *pw = getpwuid(getuid());
 const char *homedir = pw->pw_dir;
