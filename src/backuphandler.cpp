@@ -65,6 +65,7 @@ public:
         std::string line;
         while (std::getline(file, line))
         {
+            std::string id = "";
             int string_before_id = 0;
             std::string::size_type pos = line.find("ID: ");
             if (pos != std::string::npos)
@@ -74,7 +75,7 @@ public:
 
             if (line.find("ID: ") != std::string::npos && std::all_of(line.begin() + 4, line.end(), ::isdigit) && string_before_id <= 0)
             {
-                std::string id = line.substr(line.find("ID: ") + 4);
+                id = line.substr(line.find("ID: ") + 4);
             }
             else
             {
@@ -90,13 +91,17 @@ public:
 
                     for (int i = 0; i < elems.size(); i++)
                     {
-                        // Get the ID
-                        // Get the value
-                        // Put it into the database using the controller reference
+                        std::string value_id = elems[i];
+                        std::string::size_type pos = value_id.find(":");
+                        if (pos != std::string::npos)
+                        {
+                            value_id = value_id.substr(0, pos);
+                        }
+                        std::string value = elems[i].substr(elems[i].find(":") + 1);
+                        controller.ResolveStringCommand("INSERT /" + value + "/ INTO /" + id + "/ WHEREKEY /" + value_id + "/");
                     }
                 }
             }
-            //sleep(1);
         }
     }
 };
