@@ -1,4 +1,16 @@
+#pragma once
 #include <sstream>
+#include <fstream>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include "main.h"
+#include <dirent.h>
+#include <sys/stat.h>
+#include <algorithm>
+
+struct passwd *pw = getpwuid(getuid());
+const char *homedir = pw->pw_dir;
 
 class File
 {
