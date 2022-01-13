@@ -74,13 +74,13 @@ private:
 public:
     std::vector<Hashtable> hashtables; //set it to public to use it's methods for debug, make this private later...
 
-    Controller(int numTables = 1)
+    Controller(int numTables = 2)
     {
-        if (numTables < 1)
+        if (numTables < 2)
         {
-            numTables = 1;
+            numTables = 2;
         }
-        hashtables.resize(numTables);
+        hashtables.resize(numTables); //always 1 more because 0 is for internal use
     }
 
     int GetSize()
@@ -101,7 +101,11 @@ public:
                 int index = atoi(words[1].c_str());
                 if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
                 {
-                    hashtables[index].Add(words[2], words[0]);
+                    if (index < hashtables.size())
+                    {
+                        hashtables[index].Add(words[2], words[0]);
+                        return "200";
+                    }
                 }
                 else if (!VectorContains(commands, "WHEREKEY"))
                 {
@@ -187,6 +191,11 @@ public:
         file.OverwriteFile(keyFile, key);
 
         return key;
+    }
+
+    void Authenticate()
+    {
+        
     }
 
 };

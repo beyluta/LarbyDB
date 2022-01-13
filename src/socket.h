@@ -5,8 +5,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <iostream>
 #include <functional>
 
-std::function<const char *(const char *)> OnMessageReceived;
+std::function<const char *(const char *, const char*)> OnMessageReceived;

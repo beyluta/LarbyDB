@@ -56,7 +56,9 @@ public:
                 std::cout << "Couldn't read from socket" << std::endl;
                 return;
             }
-            const char *response = OnMessageReceived(buffer);
+            
+            char *ipAddr = inet_ntoa(cli_addr.sin_addr);
+            const char *response = OnMessageReceived(buffer, ipAddr);
             int length = strlen(response);
 
             n = write(newSocketfd, response, length);

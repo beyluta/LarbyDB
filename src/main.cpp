@@ -2,8 +2,10 @@
 
 Controller *controller;
 
-const char *MessageReceived(const char *msg)
+const char *MessageReceived(const char *msg, const char* ip)
 {
+    std::cout << msg;
+    std::cout << "ip address: " << ip << "\n";
     return controller->ResolveStringCommand(msg).c_str();
 }
 
@@ -98,7 +100,7 @@ int main(int argc, char **argv)
         std::cin >> nTablesStr;
     }
     int nTables = atoi(nTablesStr.c_str());
-    while ( nTables < 1)
+    while ( nTables < 2)
     {
         std::cout << "Number of tables in the database: ";
         std::cin >> nTablesStr;
