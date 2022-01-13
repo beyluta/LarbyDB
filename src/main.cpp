@@ -134,10 +134,56 @@ int main(int argc, char **argv)
         }
         else
         {
+            //fails the check for some reason??
             while (allowBackupChar != 'y' && allowBackupChar != 'n' || allowBackupChar != 'Y' && allowBackupChar != 'N')
             {
                 std::cout << "Invalid input. Please enter 'y' or 'n': ";
                 std::cin >> allowBackupChar;
+            }
+        }
+    }
+
+    if (db_key_flag)
+    {
+        /*
+        if (db_safe)
+        {
+            std::cout << "Generating a key.\n";
+        }
+
+        else
+        */
+        if (!db_safe)
+        {
+            std::cout << "WARNING: All commands will be accessible without a key!\n";
+        }
+    }
+
+    else
+    {
+        char dbSafeChar;
+        std::cout << "Generate a key for accessing the database? (y/n): ";
+        std::cin >> dbSafeChar;
+
+        if (dbSafeChar == 'y' || dbSafeChar == 'Y')
+        {
+            db_safe = true;
+            db_key_flag = true;
+        }
+        else if (dbSafeChar == 'n' || dbSafeChar == 'N')
+        {
+            std::cout << "WARNING: All commands will be accessible without a key!" << std::endl;
+            db_safe = false;
+            db_key_flag = true;
+        }
+
+        else
+        {
+            //same here. I have no idea...
+            while (dbSafeChar != 'y' && dbSafeChar != 'n' || dbSafeChar != 'Y' && dbSafeChar != 'N')
+            {
+                std::cout << "Invalid input. Please enter 'y' or 'n': ";
+                std::cin >> dbSafeChar;
             }
         }
     }
@@ -149,13 +195,16 @@ int main(int argc, char **argv)
     Socket *socket = new Socket(port);
 
     std::cout << "Database Tables Initialized(" << nTables << "), port: " << port << "." << std::endl;
+    if (db_safe)
+    {
+        std::cout << "Key: " << controller->GenerateKey() << "\n";
+    }
 
     if (allowBackup)
     {
         backupTimer->Start(1);
     }
 
-    std::cout << "Key: " << controller->GenerateKey() << "\n";
 
     socket->Listen();
     delete socket;
