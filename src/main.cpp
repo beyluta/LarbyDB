@@ -6,7 +6,9 @@ const char *MessageReceived(const char *msg, const char* ip)
 {
     std::cout << msg;
     std::cout << "ip address: " << ip << "\n";
+    controller->tempIP = ip;
     return controller->ResolveStringCommand(msg).c_str();
+    controller->tempIP = "";
 }
 
 int BackupHandlerMessage(int var)

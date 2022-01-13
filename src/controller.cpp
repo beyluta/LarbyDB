@@ -87,71 +87,91 @@ public:
     {
         return hashtables.size();
     }
+    std::string tempIP;
 
     std::string ResolveStringCommand(std::string command)
     {
         std::vector<std::string> words = GetStringValues(command, '/');
         std::vector<std::string> commands = GetStringCommands(command, '/');
 
-        if (VectorContains(commands, "INSERT"))
+        if (VectorContains(commands, "AUTH"))
         {
-            if (VectorContains(commands, "INTO") && words[1] != "")
+            if (words.size() == 1)
             {
-                //int index = std::stoi(words[1]);
-                int index = atoi(words[1].c_str());
-                if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
+                std::cout << words[0] << "\n";
+                if (hashtables[0].Contains(words[0]))
                 {
-                    if (index < hashtables.size())
+                    if (!hashtables[0].Contains(tempIP))
                     {
-                        hashtables[index].Add(words[2], words[0]);
-                        return "201 OK";
+                        hashtables[0].Add(tempIP);
                     }
                 }
-                else if (!VectorContains(commands, "WHEREKEY"))
-                {
-                    if (index < hashtables.size())
-                    {
-                        hashtables[index].Add(words[0]);
-                        return "201 OK";
-                    }
-                }
+                return "200 OK";
             }
         }
 
-        else if (VectorContains(commands, "DELETE"))
+        else if (hashtables[0].Contains(tempIP))
         {
-            if (VectorContains(commands, "FROM") && words[1] != "")
+            if (VectorContains(commands, "INSERT"))
             {
-                int index = atoi(words[1].c_str());
+                if (VectorContains(commands, "INTO") && words[1] != "")
                 {
-                    if (index < hashtables.size())
+                    //int index = std::stoi(words[1]);
+                    int index = atoi(words[1].c_str());
+                    if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
                     {
-                        hashtables[index].Remove(words[0]);
-                        return "204 OK";
+                        if (index < hashtables.size())
+                        {
+                            hashtables[index].Add(words[2], words[0]);
+                            return "201 OK";
+                        }
+                    }
+                    else if (!VectorContains(commands, "WHEREKEY"))
+                    {
+                        if (index < hashtables.size())
+                        {
+                            hashtables[index].Add(words[0]);
+                            return "201 OK";
+                        }
                     }
                 }
             }
-        }
 
-        else if (VectorContains(commands, "FETCH"))
-        {
-            if (VectorContains(commands, "FROM") && words[1] != "")
+            else if (VectorContains(commands, "DELETE"))
             {
-                int index = atoi(words[1].c_str());
+                if (VectorContains(commands, "FROM") && words[1] != "")
                 {
-                    if (words[0].length() == 1 && words[0] == "*")
+                    int index = atoi(words[1].c_str());
                     {
-                        return hashtables[index].GetAll();
-                    }
-                    else if (index < hashtables.size())
-                    {
-                        return hashtables[index].Get(words[0]);
+                        if (index < hashtables.size())
+                        {
+                            hashtables[index].Remove(words[0]);
+                            return "204 OK";
+                        }
                     }
                 }
             }
-        }
 
-        return "404 Command not found.";
+            else if (VectorContains(commands, "FETCH"))
+            {
+                if (VectorContains(commands, "FROM") && words[1] != "")
+                {
+                    int index = atoi(words[1].c_str());
+                    {
+                        if (words[0].length() == 1 && words[0] == "*")
+                        {
+                            return hashtables[index].GetAll();
+                        }
+                        else if (index < hashtables.size())
+                        {
+                            return hashtables[index].Get(words[0]);
+                        }
+                    }
+                }
+            }
+            return "404 Command not found.";
+        }
+        return "401 Unauthorized.";
     }
 
     std::string GenerateKey(int length = 16)
@@ -167,7 +187,10 @@ public:
                 case(2): key += ('a' + rand() % 26); break;
             }
         }
-
+        std::string output = key;
+        hashtables[0].Add(key);
+        return output;
+        /*
         File file;
 
         std::string dbPath = std::string(homedir) + "/LarbyDB/";
@@ -189,13 +212,7 @@ public:
         }
         
         file.OverwriteFile(keyFile, key);
-
-        return key;
-    }
-
-    void Authenticate()
-    {
-        
+        */
     }
 
 };
