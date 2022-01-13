@@ -112,9 +112,8 @@ public:
         return false;
     }
 
-    void PrintTable(int id = 0)
+    void PrintTable()
     {
-        cout << "Hashtable[" << id << "]:\n{\n";
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")
@@ -122,6 +121,5 @@ public:
                 cout << "  [" << i << "]: " << table.at(i) << "\n";
             }
         }
-        cout << "}" << endl;
     }
 };

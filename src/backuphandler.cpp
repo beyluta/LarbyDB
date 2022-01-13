@@ -16,6 +16,21 @@ public:
         this->controller = controller;
     }
 
+    void CheckBackup()
+    {
+        if (file.GetFilesInDirectory(config_path).size() > 0)
+        {
+            char a;
+            std::cout << "Load last known backup? (y/n): ";
+            std::cin >> a;
+
+            if (a == 'y' || a == 'Y')
+            {
+                LoadBackup();
+            }
+        }
+    }
+
     void BeginBackup()
     {
         std::time_t date = std::time(0);
@@ -64,9 +79,9 @@ public:
         std::string filepath = config_path + files[0];
         std::ifstream file(filepath);
         std::string line;
+        std::string id = "";
         while (std::getline(file, line))
         {
-            std::string id = "";
             int string_before_id = 0;
             std::string::size_type pos = line.find("ID: ");
             if (pos != std::string::npos)
@@ -99,7 +114,7 @@ public:
                             value_id = value_id.substr(0, pos);
                         }
                         std::string value = elems[i].substr(elems[i].find(":") + 1);
-                        controller.ResolveStringCommand("INSERT /" + value + "/ INTO /" + id + "/ WHEREKEY /" + value_id + "/");
+                        controller.hashtables[atoi(id.c_str())].Add(value_id, value);
                     }
                 }
             }
