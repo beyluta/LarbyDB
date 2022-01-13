@@ -10,4 +10,4 @@
 #include <iostream>
 #include <functional>
 
-std::function<const char *(const char *, const char*)> OnMessageReceived;
+std::function<std::string(const char *, const char*)> OnMessageReceived;

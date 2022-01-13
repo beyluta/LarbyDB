@@ -2,12 +2,10 @@
 
 Controller *controller;
 
-const char *MessageReceived(const char *msg, const char* ip)
+std::string MessageReceived(const char *msg, const char *ip)
 {
-    //std::cout << msg;
-    //std::cout << "ip address: " << ip << "\n";
     controller->tempIP = ip;
-    return controller->ResolveStringCommand(msg).c_str();
+    return controller->ResolveStringCommand(msg);
 }
 
 int BackupHandlerMessage(int var)
@@ -101,7 +99,7 @@ int main(int argc, char **argv)
         std::cin >> nTablesStr;
     }
     int nTables = atoi(nTablesStr.c_str());
-    while ( nTables < 2)
+    while (nTables < 2)
     {
         std::cout << "Number of tables in the database: ";
         std::cin >> nTablesStr;
@@ -148,17 +146,9 @@ int main(int argc, char **argv)
 
     if (db_key_flag)
     {
-        /*
-        if (db_safe)
-        {
-            std::cout << "Generating a key.\n";
-        }
-
-        else
-        */
         if (!db_safe)
         {
-            std::cout << "WARNING: All commands will be accessible without a key!\n";
+            std::cout << "WARNING: All commands will be inaccessible without a key!\n";
         }
     }
 
@@ -193,7 +183,6 @@ int main(int argc, char **argv)
 
     controller = new Controller(nTables);
 
-    /* Creating the socket and listening for connections */
     OnMessageReceived = &MessageReceived;
     Socket *socket = new Socket(port);
 
@@ -207,7 +196,6 @@ int main(int argc, char **argv)
     {
         backupTimer->Start(1);
     }
-
 
     socket->Listen();
     delete socket;

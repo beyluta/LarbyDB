@@ -169,9 +169,9 @@ public:
                     }
                 }
             }
-            return "404 Command not found.";
+            return "404 Command not found";
         }
-        return "401 Unauthorized.";
+        return "401 Unauthorized";
     }
 
     std::string GenerateKey(int length = 16)
@@ -182,9 +182,15 @@ public:
         {
             switch (rand() % 3)
             {
-                case(0): key += std::to_string(rand() % 10); break;
-                case(1): key += ('A' + rand() % 26); break;
-                case(2): key += ('a' + rand() % 26); break;
+            case (0):
+                key += std::to_string(rand() % 10);
+                break;
+            case (1):
+                key += ('A' + rand() % 26);
+                break;
+            case (2):
+                key += ('a' + rand() % 26);
+                break;
             }
         }
         std::string output = key;
@@ -214,5 +220,4 @@ public:
         file.OverwriteFile(keyFile, key);
         */
     }
-
 };
