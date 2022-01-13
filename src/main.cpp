@@ -17,16 +17,30 @@ int BackupHandlerMessage(int var)
 
 int main(int argc, char **argv)
 {
+    bool db_key_flag = false;
+    bool db_safe = false;
     bool backups_flag_set = false;
     bool allowBackup = false;
     bool port_set = false;
     char *portPtr;
     bool tables_set = false;
-    int nTables;
+    std::string nTablesStr;
     if (argc > 1)
     {
         for (int i = 1; i < argc; i++)
         {
+            if (!db_key_flag && strcmp(argv[i], "--safe") == 0)
+            {
+                db_safe = true;
+                db_key_flag = true;
+            }
+
+            if (!db_key_flag && strcmp(argv[i], "--unsafe") == 0)
+            {
+                db_safe = false;
+                db_key_flag = true;
+            }
+
             if (!backups_flag_set && strcmp(argv[i], "--backup") == 0)
             {
                 allowBackup = true;
@@ -52,12 +66,8 @@ int main(int argc, char **argv)
             {
                 if (argv[i + 1] != nullptr)
                 {
-                    int n = atoi(argv[i + 1]);
-                    if (n > 0)
-                    {
-                        nTables = n;
-                        tables_set = true;
-                    }
+                    nTablesStr = argv[i + 1];
+                    tables_set = true;
                 }
             }
         }
@@ -81,11 +91,18 @@ int main(int argc, char **argv)
     std::cout << "Number of tables in the database: ";
     if (tables_set)
     {
-        std::cout << nTables << '\n';
+        std::cout << nTablesStr << '\n';
     }
-    else
+    else if (!tables_set)
     {
-        std::cin >> nTables;
+        std::cin >> nTablesStr;
+    }
+    int nTables = atoi(nTablesStr.c_str());
+    while ( nTables < 1)
+    {
+        std::cout << "Number of tables in the database: ";
+        std::cin >> nTablesStr;
+        nTables = atoi(nTablesStr.c_str());
     }
 
     char allowBackupChar;
@@ -125,14 +142,6 @@ int main(int argc, char **argv)
         }
     }
 
-    while (std::cin.fail())
-    {
-        std::cin.clear();
-        std::string emptyStr;
-        std::getline(std::cin, emptyStr);
-        std::cout << "Number of tables in the database: ";
-        std::cin >> nTables;
-    }
     controller = new Controller(nTables);
 
     /* Creating the socket and listening for connections */
