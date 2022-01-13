@@ -53,7 +53,7 @@ public:
         for (int i = 0; i < controller.GetSize(); i++)
         {
             content += "ID: " + to_string(i) + "\n";
-            content += controller.ResolveStringCommand("FETCH /*/ FROM /" + std::to_string(i) + "/") + "\n";
+            content += controller.hashtables[i].GetAll() + "\n";
         }
         file.OverwriteFile(configStringNoSpaces, content);
     }
