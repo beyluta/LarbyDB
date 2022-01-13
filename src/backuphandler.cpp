@@ -19,7 +19,8 @@ public:
     void BeginBackup()
     {
         std::time_t date = std::time(0);
-        std::string configFile = config_path + ctime(&date) + ".txt";
+        std::string date_str = std::to_string(date);
+        std::string configFile = config_path + date_str + ".txt";
 
         if (clear_backups)
         {
