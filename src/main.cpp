@@ -146,10 +146,6 @@ int main(int argc, char **argv)
         backupTimer->Start(1);
     }
 
-    //remove this later
-    std::cout << time(nullptr) << "\n";
-    //
-
     std::cout << "Key: " << controller->GenerateKey() << "\n";
 
     socket->Listen();

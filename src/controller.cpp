@@ -173,19 +173,20 @@ public:
         }
 
         std::string keyPath = dbPath + "Auth/";
-        std::cout << keyPath << "\n";
         if (!file.DirectoryExists(keyPath))
         {
             file.CreateDirectory(keyPath);
         }
 
+        std::string keyFile = keyPath + "key.txt";
+        if (!file.FileExists(keyFile))
+        {
+            file.CreateFile(keyFile);
+        }
+        
+        file.OverwriteFile(keyFile, key);
 
         return key;
-    }
-
-    void SaveKey(std::string key)
-    {
-        
     }
 
 };
