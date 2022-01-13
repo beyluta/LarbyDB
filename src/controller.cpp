@@ -104,7 +104,7 @@ public:
                     if (index < hashtables.size())
                     {
                         hashtables[index].Add(words[2], words[0]);
-                        return "200";
+                        return "201 OK";
                     }
                 }
                 else if (!VectorContains(commands, "WHEREKEY"))
@@ -112,7 +112,7 @@ public:
                     if (index < hashtables.size())
                     {
                         hashtables[index].Add(words[0]);
-                        return "200";
+                        return "201 OK";
                     }
                 }
             }
@@ -127,7 +127,7 @@ public:
                     if (index < hashtables.size())
                     {
                         hashtables[index].Remove(words[0]);
-                        return "200";
+                        return "204 OK";
                     }
                 }
             }
@@ -151,7 +151,7 @@ public:
             }
         }
 
-        return "";
+        return "404 Command not found.";
     }
 
     std::string GenerateKey(int length = 16)
