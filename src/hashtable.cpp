@@ -27,7 +27,7 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = value;//std::move(value);
+            table.at(hash) = std::move(value);
         }
     }
 

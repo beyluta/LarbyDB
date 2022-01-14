@@ -3,12 +3,12 @@
 class BackupHandler
 {
 private:
+    Controller *controller;
     File file;
     std::string config_path;
     bool clear_backups = false;
 
 public:
-    Controller *controller;// move to private later...
     BackupHandler(Controller *c, bool clear_backups)
     {
         clear_backups = clear_backups;
@@ -114,12 +114,7 @@ public:
                             value_id = value_id.substr(0, pos);
                         }
                         std::string value = elems[i].substr(elems[i].find(":") + 1);
-                        // controller.hashtables[atoi(id.c_str())].Add(value_id, value);
-                        std::cout << value << " before\n";
                         controller->hashtables[atoi(id.c_str())].AddTo(atoi(value_id.c_str()), value);
-                        std::cout << value << " after\n";
-                        //std::cout << controller.hashtables[atoi(id.c_str())].contents;
-                        //controller.hashtables[atoi(id.c_str())].PrintTable();
                     }
                 }
             }

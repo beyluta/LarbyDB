@@ -95,8 +95,6 @@ public:
         std::vector<std::string> words = GetStringValues(command, '/');
         std::vector<std::string> commands = GetStringCommands(command, '/');
 
-        hashtables[2].PrintTable();
-
         if (VectorContains(commands, "AUTH"))
         {
             if (protectedByKey)
