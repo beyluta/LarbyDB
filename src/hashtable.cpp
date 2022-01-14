@@ -17,7 +17,6 @@ private:
     }
 
 public:
-
     void AddTo(int hash, string &value)
     {
         if (table.size() <= hash)
@@ -46,7 +45,7 @@ public:
 
         else
         {
-            std::cout << "Internal Server Error (507): Hash Collision Detected\n";
+            std::cout << GetHttpStatusCode(507) << std::endl;
         }
     }
 
@@ -65,7 +64,7 @@ public:
 
         else
         {
-            std::cout << "Internal Server Error (507): Hash Collision Detected\n";
+            std::cout << GetHttpStatusCode(507) << std::endl;
         }
     }
 

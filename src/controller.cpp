@@ -108,12 +108,12 @@ public:
                         {
                             hashtables[0].Add(tempIP);
                         }
-                        return "200 OK";
+                        return GetHttpStatusCode(200);
                     }
                 }
-                return "403 Access denied";
+                return GetHttpStatusCode(403);
             }
-            return "403 Forbidden";
+            return GetHttpStatusCode(403);
         }
 
         else if (protectedByKey == false || hashtables[0].Contains(tempIP))
@@ -126,11 +126,11 @@ public:
                     if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
                     {
                         if (index < 1)
-                            return "403 Forbidden";
+                            return GetHttpStatusCode(403);
                         if (index < hashtables.size())
                         {
                             hashtables[index].Add(words[2], words[0]);
-                            return "201 OK";
+                            return GetHttpStatusCode(201);
                         }
                     }
                     else if (!VectorContains(commands, "WHEREKEY"))
@@ -138,7 +138,7 @@ public:
                         if (index < hashtables.size())
                         {
                             hashtables[index].Add(words[0]);
-                            return "201 OK";
+                            return GetHttpStatusCode(201);
                         }
                     }
                 }
@@ -150,12 +150,12 @@ public:
                 {
                     int index = atoi(words[1].c_str());
                     if (index < 1)
-                        return "403 Forbidden";
+                        return GetHttpStatusCode(403);
 
                     if (index < hashtables.size())
                     {
                         hashtables[index].Remove(words[0]);
-                        return "204 OK";
+                        return GetHttpStatusCode(204);
                     }
                 }
             }
@@ -166,7 +166,7 @@ public:
                 {
                     int index = atoi(words[1].c_str());
                     if (index < 1)
-                        return "403 Forbidden";
+                        return GetHttpStatusCode(403);
 
                     std::string result;
                     if (words[0].length() == 1 && words[0] == "*")
@@ -179,14 +179,14 @@ public:
                     }
                     if (result == "")
                     {
-                        return "404 Not found";
+                        return GetHttpStatusCode(404);
                     }
                     return result;
                 }
             }
-            return "404 Command not found";
+            return GetHttpStatusCode(404);
         }
-        return "401 Unauthorized";
+        return GetHttpStatusCode(401);
     }
 
     std::string GenerateKey(int length = 16)
