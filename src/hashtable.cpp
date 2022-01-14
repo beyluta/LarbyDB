@@ -17,6 +17,20 @@ private:
     }
 
 public:
+
+    void AddTo(int hash, string &value)
+    {
+        if (table.size() <= hash)
+        {
+            table.resize(hash + 1);
+        }
+
+        if (table.at(hash) == "")
+        {
+            table.at(hash) = value;//std::move(value);
+        }
+    }
+
     void Add(string &value)
     {
         int hash = Hash(value);

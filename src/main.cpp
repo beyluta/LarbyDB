@@ -10,9 +10,10 @@ std::string MessageReceived(const char *msg, const char *ip)
 
 int BackupHandlerMessage(int var)
 {
-    BackupHandler handler(*controller, true);
-    handler.BeginBackup();
-    //handler.LoadBackup();
+    BackupHandler handler(controller, true);
+    //handler.BeginBackup();
+    handler.LoadBackup();
+    //handler.controller.hashtables[2].PrintTable();
     return 0;
 }
 
@@ -195,8 +196,16 @@ int main(int argc, char **argv)
 
     if (allowBackup)
     {
+        //std::cout << "DEBUG:\n";
+        /*
+
+        controller->tempIP = "127.0.0.0";
+        controller->ResolveStringCommand("INSERT /<3/ INTO /2/ WHEREKEY /key/");
+        controller->ResolveStringCommand("FETCH /key/ FROM /2/");
+        */
         backupTimer->Start(1);
     }
+
 
     socket->Listen();
     delete socket;

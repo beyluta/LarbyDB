@@ -6,14 +6,14 @@ private:
     File file;
     std::string config_path;
     bool clear_backups = false;
-    Controller controller;
 
 public:
-    BackupHandler(Controller &controller, bool clear_backups)
+    Controller *controller;// move to private later...
+    BackupHandler(Controller *c, bool clear_backups)
     {
-        this->clear_backups = clear_backups;
-        this->config_path = std::string(homedir) + "/LarbyDB/Backups/";
-        this->controller = controller;
+        clear_backups = clear_backups;
+        config_path = std::string(homedir) + "/LarbyDB/Backups/";
+        controller = c;
     }
 
     void CheckBackup()
@@ -65,10 +65,10 @@ public:
         file.CreateFile(configStringNoSpaces);
 
         std::string content = "";
-        for (int i = 0; i < controller.GetSize(); i++)
+        for (int i = 0; i < controller->GetSize(); i++)
         {
             content += "ID: " + to_string(i) + "\n";
-            content += controller.hashtables[i].GetAll() + "\n";
+            content += controller->hashtables[i].GetAll() + "\n";
         }
         file.OverwriteFile(configStringNoSpaces, content);
     }
@@ -114,7 +114,12 @@ public:
                             value_id = value_id.substr(0, pos);
                         }
                         std::string value = elems[i].substr(elems[i].find(":") + 1);
-                        controller.hashtables[atoi(id.c_str())].Add(value_id, value);
+                        // controller.hashtables[atoi(id.c_str())].Add(value_id, value);
+                        std::cout << value << " before\n";
+                        controller->hashtables[atoi(id.c_str())].AddTo(atoi(value_id.c_str()), value);
+                        std::cout << value << " after\n";
+                        //std::cout << controller.hashtables[atoi(id.c_str())].contents;
+                        //controller.hashtables[atoi(id.c_str())].PrintTable();
                     }
                 }
             }
