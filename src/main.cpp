@@ -11,9 +11,21 @@ std::string MessageReceived(const char *msg, const char *ip)
 int BackupHandlerMessage(int var)
 {
     BackupHandler handler(controller, true);
-    handler.LoadBackup();
+    handler.BeginBackup();
+//    handler.LoadBackup();
     return 0;
 }
+
+/*
+bool CheckYN(char& c)
+{
+    if (c == 'Y' || c == 'N' || c == 'y' || c == 'n')
+    {
+        return true;
+    }
+    return false;
+}
+*/
 
 int main(int argc, char **argv)
 {
@@ -135,7 +147,7 @@ int main(int argc, char **argv)
         else
         {
             //fails the check for some reason??
-            while (allowBackupChar != 'y' && allowBackupChar != 'n' || allowBackupChar != 'Y' && allowBackupChar != 'N')
+            while (allowBackupChar != 'y' && allowBackupChar != 'n' && allowBackupChar != 'Y' && allowBackupChar != 'N')
             {
                 std::cout << "Invalid input. Please enter 'y' or 'n': ";
                 std::cin >> allowBackupChar;
@@ -171,8 +183,7 @@ int main(int argc, char **argv)
 
         else
         {
-            //same here. I have no idea...
-            while (dbSafeChar != 'y' && dbSafeChar != 'n' || dbSafeChar != 'Y' && dbSafeChar != 'N')
+            while (dbSafeChar != 'y' && dbSafeChar != 'n' && dbSafeChar != 'Y' && dbSafeChar != 'N')
             {
                 std::cout << "Invalid input. Please enter 'y' or 'n': ";
                 std::cin >> dbSafeChar;
@@ -180,7 +191,36 @@ int main(int argc, char **argv)
         }
     }
 
+
+
+
+
     controller = new Controller(nTables);
+
+
+    BackupHandler handler2(controller, true); // this is kinda silly
+    if (handler2.CheckBackup() == true)
+    {
+        std::cin.clear();
+        char loadFromBackupChar;
+        std::cout << "Backup file found. Load from backup? : ";
+        std::cin >> loadFromBackupChar;
+        while (loadFromBackupChar != 'Y' && loadFromBackupChar != 'N' && loadFromBackupChar != 'y' && loadFromBackupChar != 'n')
+        {
+            std::cout << "Invalid input. Please enter 'y' or 'n': ";
+            std::cin >> loadFromBackupChar;
+        }
+        if (loadFromBackupChar == 'Y' || loadFromBackupChar == 'y')
+        {
+            handler2.LoadBackup();
+            std::cout << "Loaded from backup\n";
+        }
+        else
+        {
+            std::cout << "Backup will not be loaded\n";
+        }
+    }
+
 
     OnMessageReceived = &MessageReceived;
     Socket *socket = new Socket(port);
