@@ -9,11 +9,11 @@ private:
     bool clear_backups = false;
 
 public:
-    BackupHandler(Controller *c, bool clear_backups)
+    BackupHandler(Controller *controller_, bool clear_backups_)
     {
-        clear_backups = clear_backups;
+        clear_backups = clear_backups_;
         config_path = std::string(homedir) + "/LarbyDB/Backups/";
-        controller = c;
+        controller = controller_;
     }
 
     void CheckBackup()
