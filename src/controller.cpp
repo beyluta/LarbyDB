@@ -126,6 +126,7 @@ public:
                     int index = atoi(words[1].c_str());
                     if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
                     {
+                        if (index < 1) return "403 Forbidden";
                         if (index < hashtables.size())
                         {
                             hashtables[index].Add(words[2], words[0]);
