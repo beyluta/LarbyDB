@@ -16,19 +16,13 @@ public:
         controller = controller_;
     }
 
-    void CheckBackup()
+    bool CheckBackup()
     {
         if (file.GetFilesInDirectory(config_path).size() > 0)
         {
-            char a;
-            std::cout << "Load last known backup? (y/n): ";
-            std::cin >> a;
-
-            if (a == 'y' || a == 'Y')
-            {
-                LoadBackup();
-            }
+            return true;
         }
+        return false;
     }
 
     void BeginBackup()
