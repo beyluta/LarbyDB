@@ -73,6 +73,8 @@ private:
 
 public:
     std::vector<Hashtable> hashtables; //set it to public to use it's methods for debug, make this private later...
+    std::string tempIP;
+    bool protectedByKey = false;
 
     Controller(int numTables = 2)
     {
@@ -87,7 +89,6 @@ public:
     {
         return hashtables.size();
     }
-    std::string tempIP;
 
     std::string ResolveStringCommand(std::string command)
     {
@@ -96,21 +97,26 @@ public:
 
         if (VectorContains(commands, "AUTH"))
         {
-            if (words.size() == 1)
+            if (protectedByKey)
             {
-                std::cout << words[0] << "\n";
-                if (hashtables[0].Contains(words[0]))
+                if (words.size() > 0 && words[0] != "")
                 {
-                    if (!hashtables[0].Contains(tempIP))
+                    std::cout << words[0] << "\n";
+                    if (hashtables[0].Contains(words[0]))
                     {
-                        hashtables[0].Add(tempIP);
+                        if (!hashtables[0].Contains(tempIP))
+                        {
+                            hashtables[0].Add(tempIP);
+                        }
+                        return "200 OK";
                     }
                 }
-                return "200 OK";
+                return "403 Access denied";
             }
+            return "403 Forbidden";
         }
 
-        else if (hashtables[0].Contains(tempIP))
+        else if ( protectedByKey == false || hashtables[0].Contains(tempIP))
         {
             if (VectorContains(commands, "INSERT"))
             {
@@ -158,14 +164,20 @@ public:
                 {
                     int index = atoi(words[1].c_str());
                     {
+                        std::string result;
                         if (words[0].length() == 1 && words[0] == "*")
                         {
-                            return hashtables[index].GetAll();
+                            result = hashtables[index].GetAll();
                         }
                         else if (index < hashtables.size())
                         {
-                            return hashtables[index].Get(words[0]);
+                            result = hashtables[index].Get(words[0]);
                         }
+                        if (result == "")
+                        {
+                            return "404 Not found";
+                        }
+                        return result;
                     }
                 }
             }

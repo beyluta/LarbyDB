@@ -148,7 +148,7 @@ int main(int argc, char **argv)
     {
         if (!db_safe)
         {
-            std::cout << "WARNING: All commands will be inaccessible without a key!\n";
+            std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
         }
     }
 
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
         }
         else if (dbSafeChar == 'n' || dbSafeChar == 'N')
         {
-            std::cout << "WARNING: All commands will be accessible without a key!" << std::endl;
+            std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!" << std::endl;
             db_safe = false;
             db_key_flag = true;
         }
@@ -189,6 +189,7 @@ int main(int argc, char **argv)
     std::cout << "Database Tables Initialized(" << nTables << "), port: " << port << "." << std::endl;
     if (db_safe)
     {
+        controller->protectedByKey = true;
         std::cout << "Key: " << controller->GenerateKey() << "\n";
     }
 
