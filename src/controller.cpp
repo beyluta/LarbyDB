@@ -116,7 +116,7 @@ public:
             return "403 Forbidden";
         }
 
-        else if ( protectedByKey == false || hashtables[0].Contains(tempIP))
+        else if (protectedByKey == false || hashtables[0].Contains(tempIP))
         {
             if (VectorContains(commands, "INSERT"))
             {
@@ -126,7 +126,8 @@ public:
                     int index = atoi(words[1].c_str());
                     if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
                     {
-                        if (index < 1) return "403 Forbidden";
+                        if (index < 1)
+                            return "403 Forbidden";
                         if (index < hashtables.size())
                         {
                             hashtables[index].Add(words[2], words[0]);
@@ -149,12 +150,11 @@ public:
                 if (VectorContains(commands, "FROM") && words[1] != "")
                 {
                     int index = atoi(words[1].c_str());
+
+                    if (index < hashtables.size())
                     {
-                        if (index < hashtables.size())
-                        {
-                            hashtables[index].Remove(words[0]);
-                            return "204 OK";
-                        }
+                        hashtables[index].Remove(words[0]);
+                        return "204 OK";
                     }
                 }
             }
@@ -164,22 +164,21 @@ public:
                 if (VectorContains(commands, "FROM") && words[1] != "")
                 {
                     int index = atoi(words[1].c_str());
+
+                    std::string result;
+                    if (words[0].length() == 1 && words[0] == "*")
                     {
-                        std::string result;
-                        if (words[0].length() == 1 && words[0] == "*")
-                        {
-                            result = hashtables[index].GetAll();
-                        }
-                        else if (index < hashtables.size())
-                        {
-                            result = hashtables[index].Get(words[0]);
-                        }
-                        if (result == "")
-                        {
-                            return "404 Not found";
-                        }
-                        return result;
+                        result = hashtables[index].GetAll();
                     }
+                    else if (index < hashtables.size())
+                    {
+                        result = hashtables[index].Get(words[0]);
+                    }
+                    if (result == "")
+                    {
+                        return "404 Not found";
+                    }
+                    return result;
                 }
             }
             return "404 Command not found";
