@@ -72,7 +72,7 @@ private:
     }
 
 public:
-    std::vector<Hashtable> hashtables; //set it to public to use it's methods for debug, make this private later...
+    std::vector<Hashtable> hashtables;
     std::string tempIP;
     bool protectedByKey = false;
 
@@ -82,7 +82,7 @@ public:
         {
             numTables = 2;
         }
-        hashtables.resize(numTables); //always 1 more because 0 is for internal use
+        hashtables.resize(numTables);
     }
 
     int GetSize()
@@ -122,7 +122,6 @@ public:
             {
                 if (VectorContains(commands, "INTO") && words[1] != "")
                 {
-                    //int index = std::stoi(words[1]);
                     int index = atoi(words[1].c_str());
                     if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
                     {
