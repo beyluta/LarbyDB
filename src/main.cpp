@@ -12,20 +12,8 @@ int BackupHandlerMessage(int var)
 {
     BackupHandler handler(controller, true);
     handler.BeginBackup();
-//    handler.LoadBackup();
     return 0;
 }
-
-/*
-bool CheckYN(char& c)
-{
-    if (c == 'Y' || c == 'N' || c == 'y' || c == 'n')
-    {
-        return true;
-    }
-    return false;
-}
-*/
 
 int main(int argc, char **argv)
 {
@@ -146,7 +134,6 @@ int main(int argc, char **argv)
         }
         else
         {
-            //fails the check for some reason??
             while (allowBackupChar != 'y' && allowBackupChar != 'n' && allowBackupChar != 'Y' && allowBackupChar != 'N')
             {
                 std::cout << "Invalid input. Please enter 'y' or 'n': ";
@@ -191,19 +178,14 @@ int main(int argc, char **argv)
         }
     }
 
-
-
-
-
     controller = new Controller(nTables);
 
-
-    BackupHandler handler2(controller, true); // this is kinda silly
+    BackupHandler handler2(controller, true);
     if (handler2.CheckBackup() == true)
     {
         std::cin.clear();
         char loadFromBackupChar;
-        std::cout << "Backup file found. Load from backup? : ";
+        std::cout << "Backup file found. Load from backup? (y/n): ";
         std::cin >> loadFromBackupChar;
         while (loadFromBackupChar != 'Y' && loadFromBackupChar != 'N' && loadFromBackupChar != 'y' && loadFromBackupChar != 'n')
         {
@@ -221,7 +203,6 @@ int main(int argc, char **argv)
         }
     }
 
-
     OnMessageReceived = &MessageReceived;
     Socket *socket = new Socket(port);
 
@@ -236,7 +217,6 @@ int main(int argc, char **argv)
     {
         backupTimer->Start(1);
     }
-
 
     socket->Listen();
     delete socket;
