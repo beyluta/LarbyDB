@@ -150,6 +150,8 @@ public:
                 if (VectorContains(commands, "FROM") && words[1] != "")
                 {
                     int index = atoi(words[1].c_str());
+                    if (index < 1)
+                        return "403 Forbidden";
 
                     if (index < hashtables.size())
                     {
@@ -164,6 +166,8 @@ public:
                 if (VectorContains(commands, "FROM") && words[1] != "")
                 {
                     int index = atoi(words[1].c_str());
+                    if (index < 1)
+                        return "403 Forbidden";
 
                     std::string result;
                     if (words[0].length() == 1 && words[0] == "*")
@@ -208,28 +212,5 @@ public:
         std::string output = key;
         hashtables[0].Add(key);
         return output;
-        /*
-        File file;
-
-        std::string dbPath = std::string(homedir) + "/LarbyDB/";
-        if (!file.DirectoryExists(dbPath))
-        {
-            file.CreateDirectory(dbPath);
-        }
-
-        std::string keyPath = dbPath + "Auth/";
-        if (!file.DirectoryExists(keyPath))
-        {
-            file.CreateDirectory(keyPath);
-        }
-
-        std::string keyFile = keyPath + "key.txt";
-        if (!file.FileExists(keyFile))
-        {
-            file.CreateFile(keyFile);
-        }
-        
-        file.OverwriteFile(keyFile, key);
-        */
     }
 };
