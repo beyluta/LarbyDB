@@ -2,12 +2,16 @@
 
 Controller *controller;
 
+/* Event handler which triggers when a socket message is received
+   through an available TCP port. The message and IP address of the client
+   will be exposed during the transaction. */
 std::string MessageReceived(const char *msg, const char *ip)
 {
     controller->tempIP = ip;
     return controller->ResolveStringCommand(msg);
 }
 
+/* Thread timer which triggers every couple of seconds to peform a backup */
 int BackupHandlerMessage(int var)
 {
     BackupHandler handler(controller, true);
@@ -15,6 +19,9 @@ int BackupHandlerMessage(int var)
     return 0;
 }
 
+/* Thread timer which triggers every second and is responsible for counting
+   down the time_to_live variable of every TTL-Enabled piece of data. When the
+   TTL reaches 0, it effectively expires and is removed from the database.*/
 int TTLTimer(int arg)
 {
     for (int i = 0; i < controller->packets.size(); i++)
