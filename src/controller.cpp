@@ -137,10 +137,14 @@ public:
                             ttl = atoi(words[3].c_str());
                         }
 
+                        if (index > hashtables.size())
+                        {
+                            hashtables.resize(index + 1);
+                        }
+
                         if (index < hashtables.size())
                         {
                             int hash = hashtables[index].Add(words[2], words[0]);
-                            std::cout << "hash is:" << hash << std::endl;
                             if (ttl > 0)
                             {
                                 std::cout << packets.size() << std::endl;
