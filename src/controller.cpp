@@ -105,7 +105,6 @@ public:
             {
                 if (words.size() > 0 && words[0] != "")
                 {
-                    std::cout << words[0] << "\n";
                     if (hashtables[0].Contains(words[0]))
                     {
                         if (!hashtables[0].Contains(tempIP))
@@ -147,7 +146,6 @@ public:
                             int hash = hashtables[index].Add(words[2], words[0]);
                             if (ttl > 0)
                             {
-                                std::cout << packets.size() << std::endl;
                                 Packet p;
                                 p.hash = hash;
                                 p.time_to_live = ttl;

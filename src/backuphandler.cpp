@@ -112,7 +112,6 @@ public:
                         if (controller->GetSize() <= index)
                         {
                             controller->hashtables.resize(index + 1);
-                            std::cout << "Hashtable["<< index <<"] contains data. Database has been resized to " << controller->GetSize() << ".\n";
                         }
                         controller->hashtables[index].AddTo(atoi(value_id.c_str()), value);
                     }
