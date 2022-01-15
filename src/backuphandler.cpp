@@ -108,7 +108,13 @@ public:
                             value_id = value_id.substr(0, pos);
                         }
                         std::string value = elems[i].substr(elems[i].find(":") + 1);
-                        controller->hashtables[atoi(id.c_str())].AddTo(atoi(value_id.c_str()), value);
+                        int index = atoi(id.c_str());
+                        if (controller->GetSize() <= index)
+                        {
+                            controller->hashtables.resize(index + 1);
+                            std::cout << "Hashtable["<< index <<"] contains data. Database has been resized to " << controller->GetSize() << ".\n";
+                        }
+                        controller->hashtables[index].AddTo(atoi(value_id.c_str()), value);
                     }
                 }
             }
