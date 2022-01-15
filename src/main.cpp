@@ -44,7 +44,7 @@ int TTLTimer(int arg)
 int main(int argc, char **argv)
 {
     /*this part processes command line arguments.*/
-
+    bool autoload = false;
     bool db_key_flag = false;
     bool db_safe = false;
     bool backups_flag_set = false;
@@ -53,10 +53,16 @@ int main(int argc, char **argv)
     char *portPtr;
     bool tables_set = false;
     std::string nTablesStr;
-    if (argc > 1)
+    if (argc > 1) //TODO: This needs to be improved
     {
         for (int i = 1; i < argc; i++)
         {
+
+            if (strcmp(argv[i], "--autoload") == 0)
+            {
+                autoload = true;
+            }
+
             if (!db_key_flag && strcmp(argv[i], "--safe") == 0)
             {
                 db_safe = true;
@@ -217,10 +223,18 @@ int main(int argc, char **argv)
     BackupHandler handler2(controller, true);
     if (handler2.CheckBackup() == true)
     {
-        std::cin.clear();
+        //std::cin.clear();
         char loadFromBackupChar;
-        std::cout << "Backup file found. Load from backup? (y/n): ";
-        std::cin >> loadFromBackupChar;
+        if (autoload == true)
+        {
+            loadFromBackupChar = {'y'};
+        }
+        else
+        {
+            std::cout << "Backup file found. Load from backup? (y/n): ";
+            std::cin >> loadFromBackupChar;
+        }
+
         while (loadFromBackupChar != 'Y' && loadFromBackupChar != 'N' && loadFromBackupChar != 'y' && loadFromBackupChar != 'n')
         {
             std::cout << "Invalid input. Please enter 'y' or 'n': ";
