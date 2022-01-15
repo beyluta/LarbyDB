@@ -26,7 +26,7 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = std::move(value);
+            table.at(hash) = move(value);
         }
     }
 
@@ -40,12 +40,12 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = std::move(value);
+            table.at(hash) = move(value);
         }
 
         else
         {
-            std::cout << GetHttpStatusCode(507) << std::endl;
+            cout << GetHttpStatusCode(507) << endl;
         }
     }
 
@@ -59,19 +59,19 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = std::move(value);
+            table.at(hash) = move(value);
             return hash;
         }
 
         else
         {
-            std::cout << GetHttpStatusCode(507) << std::endl;
+            cout << GetHttpStatusCode(507) << endl;
         }
 
-        return hash;
+        return hash;    //TODO: something weird is going on with the returns, check out with the debugger later...
     }
 
-    std::string Get(string key)
+    string Get(string key)
     {
         int hash = Hash(key);
         if (table.size() <= hash)
@@ -90,9 +90,9 @@ public:
         }
     }
 
-    std::string GetAll()
+    string GetAll()
     {
-        std::string result = "";
+        string result = "";
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")

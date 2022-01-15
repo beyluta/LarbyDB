@@ -43,6 +43,8 @@ int TTLTimer(int arg)
 
 int main(int argc, char **argv)
 {
+    /*this part processes command line arguments.*/
+
     bool db_key_flag = false;
     bool db_safe = false;
     bool backups_flag_set = false;
@@ -99,10 +101,13 @@ int main(int argc, char **argv)
         }
     }
 
+    //TODO: there probably is a way to make the timers stack allocated. Look into that.
     Timer *backupTimer = new Timer();
     Timer *ttlTimer = new Timer();
     backupTimer->Subscribe(BackupHandlerMessage, 0);
     ttlTimer->Subscribe(TTLTimer, 0);
+
+    /*This part is for configuring the database on launch.*/
 
     char *port;
     std::cout << "Port number: ";
@@ -206,6 +211,7 @@ int main(int argc, char **argv)
         }
     }
 
+    //TODO: the controller needs to be global, same goes for the backuphandler.
     controller = new Controller(nTables);
 
     BackupHandler handler2(controller, true);
@@ -223,11 +229,11 @@ int main(int argc, char **argv)
         if (loadFromBackupChar == 'Y' || loadFromBackupChar == 'y')
         {
             handler2.LoadBackup();
-            std::cout << "Loaded from backup\n";
+            std::cout << "Loaded from backup.\n";
         }
         else
         {
-            std::cout << "Backup will not be loaded\n";
+            std::cout << "Backup will not be loaded.\n";
         }
     }
 

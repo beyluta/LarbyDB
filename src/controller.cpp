@@ -91,11 +91,14 @@ public:
         return hashtables.size();
     }
 
+    /*Function to interpret the input string. Spilts the string into commands and words,
+    then checks which commands to execute.*/
     std::string ResolveStringCommand(std::string command)
     {
         std::vector<std::string> words = GetStringValues(command, '/');
         std::vector<std::string> commands = GetStringCommands(command, '/');
 
+        //TODO: Check for vulnerabilities. Maybe clean the code up a bit...
         if (VectorContains(commands, "AUTH"))
         {
             if (protectedByKey)
