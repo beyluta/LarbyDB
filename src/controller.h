@@ -6,3 +6,4 @@
 #include "file.h"
 #include "socket.h"
 #include "httpcodes.h"
+#include "packet.h"

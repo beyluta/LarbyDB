@@ -73,6 +73,7 @@ private:
 
 public:
     std::vector<Hashtable> hashtables;
+    std::vector<Packet> packets;
     std::string tempIP;
     bool protectedByKey = false;
 
@@ -123,13 +124,29 @@ public:
                 if (VectorContains(commands, "INTO") && words[1] != "")
                 {
                     int index = atoi(words[1].c_str());
-                    if (VectorContains(commands, "WHEREKEY") && words.size() == 3)
+                    if (index < 1)
+                        return GetHttpStatusCode(403);
+                    if (VectorContains(commands, "WHEREKEY") && words.size() >= 3)
                     {
-                        if (index < 1)
-                            return GetHttpStatusCode(403);
+                        int ttl = 0;
+                        if (VectorContains(commands, "TTL"))
+                        {
+                            ttl = atoi(words[3].c_str());
+                        }
+
                         if (index < hashtables.size())
                         {
-                            hashtables[index].Add(words[2], words[0]);
+                            int hash = hashtables[index].Add(words[2], words[0]);
+                            std::cout << "hash is:" << hash << std::endl;
+                            if (ttl > 0)
+                            {
+                                std::cout << packets.size() << std::endl;
+                                Packet p;
+                                p.hash = hash;
+                                p.time_to_live = ttl;
+                                p.table = index;
+                                packets.push_back(p);
+                            }
                             return GetHttpStatusCode(201);
                         }
                     }

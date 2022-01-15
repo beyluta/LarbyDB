@@ -15,6 +15,25 @@ int BackupHandlerMessage(int var)
     return 0;
 }
 
+int TTLTimer(int arg)
+{
+    for (int i = 0; i < controller->packets.size(); i++)
+    {
+        if (controller->packets.at(i).time_to_live > 0)
+        {
+            controller->packets.at(i).time_to_live--;
+        }
+        else
+        {
+            int table = controller->packets.at(i).table;
+            int hash = controller->packets.at(i).hash;
+            controller->packets.erase(controller->packets.begin() + i);
+            controller->hashtables[table].Remove(hash);
+        }
+    }
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     bool db_key_flag = false;
@@ -74,7 +93,9 @@ int main(int argc, char **argv)
     }
 
     Timer *backupTimer = new Timer();
+    Timer *ttlTimer = new Timer();
     backupTimer->Subscribe(BackupHandlerMessage, 0);
+    ttlTimer->Subscribe(TTLTimer, 0);
 
     char *port;
     std::cout << "Port number: ";
@@ -217,11 +238,13 @@ int main(int argc, char **argv)
     {
         backupTimer->Start(1);
     }
+    ttlTimer->Start(1);
 
     socket->Listen();
     delete socket;
     delete controller;
     delete backupTimer;
+    delete ttlTimer;
 
     return 0;
 }

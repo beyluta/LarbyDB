@@ -49,7 +49,7 @@ public:
         }
     }
 
-    void Add(string key, string &value)
+    int Add(string key, string &value)
     {
         int hash = Hash(key);
         if (table.size() <= hash)
@@ -60,12 +60,15 @@ public:
         if (table.at(hash) == "")
         {
             table.at(hash) = std::move(value);
+            return hash;
         }
 
         else
         {
             std::cout << GetHttpStatusCode(507) << std::endl;
         }
+
+        return hash;
     }
 
     std::string Get(string key)
@@ -103,6 +106,16 @@ public:
     void Remove(string value)
     {
         int hash = Hash(value);
+        if (table.size() <= hash)
+        {
+            return;
+        }
+
+        table.at(hash) = "";
+    }
+
+    void Remove(int hash)
+    {
         if (table.size() <= hash)
         {
             return;
