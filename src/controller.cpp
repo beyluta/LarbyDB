@@ -176,8 +176,16 @@ public:
 
                     if (index < hashtables.size())
                     {
-                        hashtables[index].Remove(words[0]);
-                        return GetHttpStatusCode(204);
+                        if (VectorContains(commands, "ASINT"))
+                        {
+                            hashtables[index].Remove(atoi(words[0].c_str()));
+                            return GetHttpStatusCode(200);
+                        }
+                        else if (!VectorContains(commands, "ASINT"))
+                        {
+                            hashtables[index].Remove(words[0]);
+                            return GetHttpStatusCode(200);
+                        }
                     }
                 }
             }
