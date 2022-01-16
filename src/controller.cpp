@@ -182,6 +182,8 @@ public:
                 }
             }
 
+            /* TODO: Currently if the db is of {x} size and you try to fetch
+               from the {x} table, it will throw a segmentation fault.*/
             else if (VectorContains(commands, "FETCH"))
             {
                 if (VectorContains(commands, "FROM") && words[1] != "")
