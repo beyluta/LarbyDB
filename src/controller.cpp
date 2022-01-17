@@ -136,7 +136,7 @@ public:
                             ttl = atoi(words[3].c_str());
                         }
 
-                        if (index > hashtables.size())
+                        if (index >= hashtables.size())
                         {
                             hashtables.resize(index + 1);
                         }
