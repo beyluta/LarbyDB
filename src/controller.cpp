@@ -168,7 +168,7 @@ public:
 
             else if (VectorContains(commands, "DELETE"))
             {
-                if (VectorContains(commands, "FROM") && words[1] != "")
+                if (VectorContains(commands, "FROM") && words.size() >= 2 && words[1] != "")
                 {
                     int index = atoi(words[1].c_str());
                     if (index < 1)
@@ -194,26 +194,29 @@ public:
                from the {x} table, it will throw a segmentation fault.*/
             else if (VectorContains(commands, "FETCH"))
             {
-                if (VectorContains(commands, "FROM") && words[1] != "")
+                if (VectorContains(commands, "FROM") && words.size() >= 2 && words[1] != "")
                 {
                     int index = atoi(words[1].c_str());
                     if (index < 1)
                         return GetHttpStatusCode(403);
 
                     std::string result;
-                    if (words[0].length() == 1 && words[0] == "*")
+                    if (index < hashtables.size())
                     {
-                        result = hashtables[index].GetAll();
+                        if (words[0].length() == 1 && words[0] == "*")
+                        {
+                            result = hashtables[index].GetAll();
+                        }
+                        else
+                        {
+                            result = hashtables[index].Get(words[0]);
+                        }
+                        if (result == "")
+                        {
+                            return GetHttpStatusCode(404);
+                        }
+                        return result;
                     }
-                    else if (index < hashtables.size())
-                    {
-                        result = hashtables[index].Get(words[0]);
-                    }
-                    if (result == "")
-                    {
-                        return GetHttpStatusCode(404);
-                    }
-                    return result;
                 }
             }
             return GetHttpStatusCode(404);
