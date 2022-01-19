@@ -224,6 +224,52 @@ public:
         return GetHttpStatusCode(401);
     }
 
+    string GetResolvedResponse(string request)
+    {
+        request += " "; // required for the check below
+        vector<string> words;
+        string word;
+        for (int i = 0; i < request.size(); i++)
+        {
+            word += request[i];
+            if (request[i] == ' ')
+            {
+                words.push_back(word);
+                word = "";
+            }
+        }
+
+        if (words[0].find("AUTH") != string::npos)
+        {
+            string key = words[1];
+        }
+
+        if (words[0].find("SET") != string::npos)
+        {
+            string key = words[1];
+            string table = words[2];
+            string ttl = words[3];
+            string value = "";
+            for (int i = 4; i < words.size(); i++)
+            {
+                value += words[i];
+            }
+        }
+
+        if (words[0].find("GET") != string::npos)
+        {
+            string key = words[1];
+            string table = words[2];
+        }
+
+        if (words[0].find("DEL") != string::npos)
+        {
+            string key = words[1];
+            string table = words[2];
+        }
+        return GetHttpStatusCode(401);
+    }
+
     std::string GenerateKey(int length = 16)
     {
         srand(time(nullptr));
