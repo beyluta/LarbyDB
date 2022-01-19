@@ -247,25 +247,57 @@ public:
         if (words[0].find("SET") != string::npos)
         {
             string key = words[1];
-            string table = words[2];
-            string ttl = words[3];
+            int table = atoi(words[2].c_str());
+            int ttl = atoi(words[3].c_str());
             string value = "";
             for (int i = 4; i < words.size(); i++)
             {
                 value += words[i];
+            }
+
+            if (table >= hashtables.size())
+            {
+                hashtables.resize(table + 1);
+            }
+
+            if (table < hashtables.size())
+            {
+                int hash = hashtables[table].Add(key, value);
+                if (ttl > 0)
+                {
+                    Packet p;
+                    p.hash = hash;
+                    p.time_to_live = ttl;
+                    p.table = table;
+                    packets.push_back(p);
+                }
+                return GetHttpStatusCode(201);
             }
         }
 
         if (words[0].find("GET") != string::npos)
         {
             string key = words[1];
-            string table = words[2];
+            int table = atoi(words[2].c_str());
+
+            if (key.find("*") != string::npos)
+            {
+                return hashtables[table].GetAll();
+            }
+            else
+            {
+                return hashtables[table].Get(key);
+            }
         }
 
         if (words[0].find("DEL") != string::npos)
         {
             string key = words[1];
-            string table = words[2];
+            int table = atoi(words[3].c_str());
+            string mode = words[2];
+
+            hashtables[table].Remove(key);
+            return GetHttpStatusCode(200);
         }
         return GetHttpStatusCode(401);
     }
