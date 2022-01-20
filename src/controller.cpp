@@ -224,6 +224,12 @@ public:
         return GetHttpStatusCode(401);
     }
 
+
+    bool IsStringANumber(string& str)
+    {
+        return std::all_of(str.begin(), str.end(), ::isdigit); //fancy c++11 code
+    }
+
     string GetResolvedResponse(string request)
     {
         request += " "; // required for the check below
@@ -234,20 +240,34 @@ public:
             word += request[i];
             if (request[i] == ' ')
             {
-                words.push_back(word);
-                word = "";
+                words.push_back(std::move(word));
+            }
+        }
+        words.back().pop_back();
+        words.back().pop_back();
+        /*Adding empty strings to the vector to prevent segmentation faults.
+        This is in case the user didn't provide enough parameters for the command.*/
+        //words.resize(words.size() + 8);
+
+        if (words[0].find("AUTH") != string::npos && words.size() > 1)
+        {
+            string& key = words[1];
+            
+            if (hashtables[0].Contains(key))
+            {
+                hashtables[0].Add(tempIP);
+                return GetHttpStatusCode(200);
             }
         }
 
-        if (words[0].find("AUTH") != string::npos)
+        if (words[0].find("SET") != string::npos && words.size() > 3)
         {
-            string key = words[1];
-        }
+            string& key = words[1];
+            key.pop_back();
 
-        if (words[0].find("SET") != string::npos)
-        {
-            string key = words[1];
             int table = atoi(words[2].c_str());
+            if (table <= 0) return GetHttpStatusCode(403); //0 shouldn't be accessible
+
             int ttl = atoi(words[3].c_str());
             string value = "";
             for (int i = 4; i < words.size(); i++)
@@ -275,12 +295,13 @@ public:
             }
         }
 
-        if (words[0].find("GET") != string::npos)
+        if (words[0].find("GET") != string::npos && words.size() > 2) 
         {
-            string key = words[1];
+            string& key = words[1];
             int table = atoi(words[2].c_str());
+            if (table <= 0) return GetHttpStatusCode(403);
 
-            if (key.find("*") != string::npos)
+            if (key.find("ALL") != string::npos) //change ALL to * later...
             {
                 return hashtables[table].GetAll();
             }
@@ -290,12 +311,18 @@ public:
             }
         }
 
-        if (words[0].find("DEL") != string::npos)
+        if (words[0].find("DEL") != string::npos && words.size() > 2)
         {
-            string key = words[1];
-            int table = atoi(words[3].c_str());
-            string mode = words[2];
+            string& key = words[1];
+            words[1].pop_back();
 
+            int table = atoi(words[2].c_str());
+            if (table <= 0) return GetHttpStatusCode(403);
+            if (IsStringANumber(key))
+            {
+                hashtables[table].Remove(atoi(key.c_str()));
+                return GetHttpStatusCode(200);
+            }
             hashtables[table].Remove(key);
             return GetHttpStatusCode(200);
         }
