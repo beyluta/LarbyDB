@@ -57,10 +57,7 @@ public:
             }
         }
 
-        if (!hashtables[0].Contains(tempIP) && protectedByKey)
-            return GetHttpStatusCode(403);
-
-        if (words[0].find("SET") != string::npos && words.size() > 3)
+        if (words[0].find("SET") != string::npos && words.size() > 3 && IsAuthorized())
         {
             string &key = words[1];
             key.pop_back();
@@ -96,7 +93,7 @@ public:
             }
         }
 
-        if (words[0].find("GET") != string::npos && words.size() > 2)
+        if (words[0].find("GET") != string::npos && words.size() > 2 && IsAuthorized())
         {
             string &key = words[1];
             int table = atoi(words[2].c_str());
@@ -113,7 +110,7 @@ public:
             }
         }
 
-        if (words[0].find("DEL") != string::npos && words.size() > 2)
+        if (words[0].find("DEL") != string::npos && words.size() > 2 && IsAuthorized())
         {
             string &key = words[1];
             words[1].pop_back();
@@ -155,5 +152,13 @@ public:
         std::string output = key;
         hashtables[0].Add(key);
         return output;
+    }
+
+    bool IsAuthorized()
+    {
+        if (hashtables[0].Contains(tempIP) || !protectedByKey)
+            return true;
+        else
+            return false;
     }
 };
