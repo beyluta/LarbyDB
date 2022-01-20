@@ -3,8 +3,7 @@
 class Controller
 {
 private:
-
-    bool IsStringANumber(string& str)
+    bool IsStringANumber(string &str)
     {
         return std::all_of(str.begin(), str.end(), ::isdigit); //fancy c++11 code
     }
@@ -49,8 +48,8 @@ public:
 
         if (words[0].find("AUTH") != string::npos && words.size() > 1)
         {
-            string& key = words[1];
-            
+            string &key = words[1];
+
             if (hashtables[0].Contains(key))
             {
                 hashtables[0].Add(tempIP);
@@ -58,13 +57,17 @@ public:
             }
         }
 
+        if (!hashtables[0].Contains(tempIP) && protectedByKey)
+            return GetHttpStatusCode(403);
+
         if (words[0].find("SET") != string::npos && words.size() > 3)
         {
-            string& key = words[1];
+            string &key = words[1];
             key.pop_back();
 
             int table = atoi(words[2].c_str());
-            if (table <= 0) return GetHttpStatusCode(403); //0 shouldn't be accessible
+            if (table <= 0)
+                return GetHttpStatusCode(403); //0 shouldn't be accessible
 
             int ttl = atoi(words[3].c_str());
             string value = "";
@@ -93,11 +96,12 @@ public:
             }
         }
 
-        if (words[0].find("GET") != string::npos && words.size() > 2) 
+        if (words[0].find("GET") != string::npos && words.size() > 2)
         {
-            string& key = words[1];
+            string &key = words[1];
             int table = atoi(words[2].c_str());
-            if (table <= 0) return GetHttpStatusCode(403);
+            if (table <= 0)
+                return GetHttpStatusCode(403);
 
             if (key.find("ALL") != string::npos) //change ALL to * later...
             {
@@ -111,10 +115,11 @@ public:
 
         if (words[0].find("DEL") != string::npos && words.size() > 2)
         {
-            string& key = words[1];
+            string &key = words[1];
             words[1].pop_back();
             int table = atoi(words[2].c_str());
-            if (table <= 0) return GetHttpStatusCode(403);
+            if (table <= 0)
+                return GetHttpStatusCode(403);
 
             if (IsStringANumber(key))
             {
