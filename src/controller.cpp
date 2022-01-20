@@ -115,7 +115,7 @@ public:
         if (words[0].find("DEL") != string::npos && words.size() > 2)
         {
             string &key = words[1];
-            words[1].pop_back();
+            remove_if(key.begin(), key.end(), ::isspace);
             int table = atoi(words[2].c_str());
             if (table <= 0)
                 return GetHttpStatusCode(403);
