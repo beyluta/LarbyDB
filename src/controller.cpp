@@ -57,7 +57,10 @@ public:
             }
         }
 
-        if (words[0].find("SET") != string::npos && words.size() > 3 && IsAuthorized())
+        if (!IsAuthorized())
+            return GetHttpStatusCode(401);
+
+        if (words[0].find("SET") != string::npos && words.size() > 3)
         {
             string &key = words[1];
             key.pop_back();
@@ -93,7 +96,7 @@ public:
             }
         }
 
-        if (words[0].find("GET") != string::npos && words.size() > 2 && IsAuthorized())
+        if (words[0].find("GET") != string::npos && words.size() > 2)
         {
             string &key = words[1];
             int table = atoi(words[2].c_str());
@@ -110,7 +113,7 @@ public:
             }
         }
 
-        if (words[0].find("DEL") != string::npos && words.size() > 2 && IsAuthorized())
+        if (words[0].find("DEL") != string::npos && words.size() > 2)
         {
             string &key = words[1];
             words[1].pop_back();
