@@ -131,7 +131,7 @@ public:
         {
             return false;
         }
-        if (table.at(hash) == value)
+        if (table.at(hash) != "" && table.at(hash) == value)
         {
             return true;
         }
