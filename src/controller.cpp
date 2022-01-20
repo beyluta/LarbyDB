@@ -32,18 +32,16 @@ public:
     then checks which commands to execute.*/
     string GetResolvedResponse(string request)
     {
-        request += " "; // required for the check below
         vector<string> words;
         string word;
         for (int i = 0; i < request.size(); i++)
         {
             word += request[i];
-            if (request[i] == ' ')
+            if (request[i] == ' ' || request.size() - 1 == i)
             {
                 words.push_back(std::move(word));
             }
         }
-        words.back().pop_back();
         words.back().pop_back();
 
         if (words[0].find("AUTH") != string::npos && words.size() > 1)
@@ -99,6 +97,7 @@ public:
         if (words[0].find("GET") != string::npos && words.size() > 2)
         {
             string &key = words[1];
+            key.pop_back();
             int table = atoi(words[2].c_str());
             if (table <= 0)
                 return GetHttpStatusCode(403);
