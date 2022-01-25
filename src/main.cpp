@@ -41,23 +41,6 @@ int TTLTimer(int arg)
     return 0;
 }
 
-int CommandLineInterfaceHandler(int args)
-{
-    std::cout << "> ";
-    std::string cmd = "";
-    cin >> cmd;
-
-    if (cmd == "help")
-    {
-        std::cout << "To authorize a device to read/write to the db, type 'AUTH <key>'\n";
-        std::cout << "To add a record to the database, type 'SET <key> <table> <ttl> <value>'\n";
-        std::cout << "To remove a record from the database, type 'DEL <key> <table>'\n";
-        std::cout << "To retrieve a record from the database, type 'GET <key> <table>'\n";
-        std::cout << "To list all records in the database, type 'LIST <table>'\n";
-    }
-    return 0;
-}
-
 int main(int argc, char **argv)
 {
     /*this part processes command line arguments.*/
@@ -127,13 +110,10 @@ int main(int argc, char **argv)
     //TODO: there probably is a way to make the timers stack allocated. Look into that.
     Timer *backupTimer = new Timer();
     Timer *ttlTimer = new Timer();
-    Timer *cliTimer = new Timer();
     backupTimer->Subscribe(BackupHandlerMessage, 0);
     ttlTimer->Subscribe(TTLTimer, 0);
-    cliTimer->Subscribe(CommandLineInterfaceHandler, 0);
 
     /*This part is for configuring the database on launch.*/
-
     char *port;
     std::cout << "Port number: ";
     if (port_set)
@@ -285,14 +265,12 @@ int main(int argc, char **argv)
         backupTimer->Start(1);
     }
     ttlTimer->Start(1);
-    cliTimer->Start(0);
-
     socket->Listen();
+
     delete socket;
     delete controller;
     delete backupTimer;
     delete ttlTimer;
-    delete cliTimer;
 
     return 0;
 }
