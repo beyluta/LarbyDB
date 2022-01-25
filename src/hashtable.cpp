@@ -68,7 +68,7 @@ public:
             cout << GetHttpStatusCode(507) << endl;
         }
 
-        return hash;    //TODO: something weird is going on with the returns, check out with the debugger later...
+        return hash; //TODO: something weird is going on with the returns, check out with the debugger later...
     }
 
     string Get(string key)
@@ -97,7 +97,10 @@ public:
         {
             if (table.at(i) != "")
             {
-                result += to_string(i) + ":" + table.at(i) + ";";
+                //result += to_string(i) + ":" + table.at(i) + ";";
+                result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"}";
+                if (i + 1 != table.size())
+                    result += ",";
             }
         }
         return result;
@@ -131,7 +134,7 @@ public:
         {
             return false;
         }
-        if (table.at(hash) == value)
+        if (table.at(hash) != "" && table.at(hash) == value)
         {
             return true;
         }

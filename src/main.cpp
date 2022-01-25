@@ -8,7 +8,7 @@ Controller *controller;
 std::string MessageReceived(const char *msg, const char *ip)
 {
     controller->tempIP = ip;
-    return controller->ResolveStringCommand(msg);
+    return controller->GetResolvedResponse(msg);
 }
 
 /* Thread timer which triggers every couple of seconds to peform a backup */
@@ -114,7 +114,6 @@ int main(int argc, char **argv)
     ttlTimer->Subscribe(TTLTimer, 0);
 
     /*This part is for configuring the database on launch.*/
-
     char *port;
     std::cout << "Port number: ";
     if (port_set)
@@ -266,8 +265,8 @@ int main(int argc, char **argv)
         backupTimer->Start(1);
     }
     ttlTimer->Start(1);
-
     socket->Listen();
+
     delete socket;
     delete controller;
     delete backupTimer;
