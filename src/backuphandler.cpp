@@ -61,7 +61,7 @@ public:
         string content = "";
         for (int i = 0; i < controller->GetSize(); i++)
         {
-            content += "{\"id\":\"" + to_string(i) + "\",\"data\":[" + controller->hashtables[i].GetAll() + "]}\n";
+            content += "{\"id\":\"" + to_string(i) + "\",\"data\":" + controller->hashtables[i].GetAll() + "}\n";
         }
         file.OverwriteFile(configStringNoSpaces, content);
     }

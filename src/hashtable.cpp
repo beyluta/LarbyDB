@@ -92,7 +92,7 @@ public:
 
     string GetAll()
     {
-        string result = "";
+        string result = "[";
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")
@@ -103,7 +103,7 @@ public:
                     result += ",";
             }
         }
-        return result;
+        return result + "]";
     }
 
     void Remove(string value)
