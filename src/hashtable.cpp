@@ -97,10 +97,12 @@ public:
         {
             if (table.at(i) != "")
             {
-                result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"}";
-                if (i + 1 < table.size())
-                    result += ",";
+                result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},";
             }
+        }
+        if (result[result.size() - 1] == ',')
+        {
+            result.pop_back();
         }
         return result + "]";
     }
