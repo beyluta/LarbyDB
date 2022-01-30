@@ -97,7 +97,6 @@ public:
         {
             if (table.at(i) != "")
             {
-                //result += to_string(i) + ":" + table.at(i) + ";";
                 result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"}";
                 if (i + 1 != table.size())
                     result += ",";
