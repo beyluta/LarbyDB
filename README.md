@@ -1,6 +1,6 @@
 # Welcome to LarbyDB's repository
 Make sure you are under a unix system when using the Software.<br>
-Developer under g++ version 10.3.0
+Developer under ```g++ version 10.3.0```
 
 ## Compiling and running the software
 Compile it by typing ```g++ -o main -pthread -lpthread main.cpp``` inside the source folder.
