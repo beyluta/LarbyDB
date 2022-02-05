@@ -92,18 +92,19 @@ public:
 
     string GetAll()
     {
-        string result = "";
+        string result = "[";
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")
             {
-                //result += to_string(i) + ":" + table.at(i) + ";";
-                result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"}";
-                if (i + 1 != table.size())
-                    result += ",";
+                result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},";
             }
         }
-        return result;
+        if (result[result.size() - 1] == ',')
+        {
+            result.pop_back();
+        }
+        return result + "]";
     }
 
     void Remove(string value)

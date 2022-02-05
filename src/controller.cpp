@@ -99,7 +99,7 @@ public:
             string &key = words[1];
             key.pop_back();
             int table = atoi(words[2].c_str());
-            if (table <= 0)
+            if (table <= 0 || table >= hashtables.size())
                 return GetHttpStatusCode(403);
 
             if (key.find("ALL") != string::npos) //change ALL to * later...
