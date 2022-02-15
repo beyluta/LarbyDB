@@ -2,15 +2,17 @@
 Make sure you are under a unix system when using the Software.<br>
 Developed under `g++ version 10.3.0`
 
-## Compiling manually
-Compile it by typing `g++ -o main -pthread -lpthread main.cpp` inside the source folder then to run the software type `./main`<br>
-## Compiling with ```make```
-In the `/src` folder type `make` in the terminal then `./main` to run the software.
+## Installation
 
-## Arguments and Parameters
-`./main --port <PORT>` to start the software with a preset port<br>
-`./main --tables <TABLES>` to start the software with a preset number of tables<br>
-`./main --safe` to start the software with a randomly generated authorization key<br>
-`./main --unsafe` to force the software to not require an authorization key on start<br>
-`./main --backup` to start the software with automatic backups<br>
-`./main --nobackup` to start the software without automatic backups<br>
+1. Clone the repo: `git clone https://github.com/beyluta/LarbyDB.git`
+2. Compile by typing `make` while inside the project's folder.<br>
+Alternatively, you can compile it with g++: `g++ -o LarbyDB -pthread -lpthread src/main.cpp`
+3. To run the software, type `./LarbyDB`.
+
+## Launch Arguments
+`--port <PORT>` - set the port<br>
+`--tables <TABLES>` - set the number of tables<br>
+`--safe` - start with a randomly generated authorization key<br>
+`--unsafe` - force to not require an authorization key on start<br>
+`--backup` - start with automatic backups<br>
+`--nobackup` - start without automatic backups<br>
