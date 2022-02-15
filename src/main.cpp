@@ -7,8 +7,12 @@ Controller *controller;
    will be exposed during the transaction. */
 std::string MessageReceived(const char *msg, const char *ip)
 {
-    controller->tempIP = ip;
-    return controller->GetResolvedResponse(msg);
+    if (strlen(msg) > 0)
+    {
+        controller->tempIP = ip;
+        return controller->GetResolvedResponse(msg);
+    }
+    return GetHttpStatusCode(404);
 }
 
 /* Thread timer which triggers every couple of seconds to peform a backup */
@@ -43,6 +47,7 @@ int TTLTimer(int arg)
 
 int main(int argc, char **argv)
 {
+    signal(SIGPIPE, SIG_IGN);
     /*this part processes command line arguments.*/
     bool autoload = false;
     bool db_key_flag = false;

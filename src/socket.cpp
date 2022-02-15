@@ -65,7 +65,6 @@ public:
             if (n < 0)
             {
                 std::cout << "Couldn't write to socket";
-                return;
             }
         }
     }

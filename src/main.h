@@ -6,3 +6,4 @@
 #include "controller.cpp"
 #include "timer.cpp"
 #include "backuphandler.cpp"
+#include "signal.h"
