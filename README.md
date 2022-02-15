@@ -7,7 +7,7 @@ Developed under `g++ version 10.3.0`
 1. Clone the repo: `git clone https://github.com/beyluta/LarbyDB.git`
 2. Compile by typing `make` while inside the project's folder.<br>
 Alternatively, you can compile it with g++: `g++ -o LarbyDB -pthread -lpthread src/main.cpp`
-3. To run the software, type `./LarbyDB`.
+3. To run the software, type `./LarbyDB`
 
 ## Launch Arguments
 `--port <PORT>` - set the port<br>
