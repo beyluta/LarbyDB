@@ -16,3 +16,4 @@ Alternatively, you can compile it with g++: `g++ -o LarbyDB -pthread -lpthread s
 `--unsafe` - force to not require an authorization key on start<br>
 `--backup` - start with automatic backups<br>
 `--nobackup` - start without automatic backups<br>
+`--autoload` - make it load the backup automatically<br>
