@@ -106,8 +106,6 @@ public:
             {
                 if (words.size() > 3)
                 {
-                    // amount per request
-                    // amount * steps
                     int amount = atoi(words[3].c_str());
                     int skip = 1;
                     if (words.size() > 4) { skip = atoi(words[4].c_str()); }
