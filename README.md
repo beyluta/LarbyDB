@@ -22,5 +22,7 @@ Alternatively, you can compile it with g++: `g++ -o LarbyDB -pthread -lpthread s
 `SET <KEY> <TABLE> <EXPIRATION IN SECONDS> <CONTENT>` - set a value<br>
 `GET <KEY> <TABLE>` - get a value<br>
 `GET ALL <TABLE>` - get all values<br>
+`GET ALL <TABLE> <AMOUNT> <SKIP>` - get a specific amount of values<br>
+`GET ALL <TABLE> <START-END>` - get values within a specified range<br>
 `DEL <KEY> <TABLE>` - delete a value<br>
 `DEL <INDEX> <TABLE>` - delete a value by index<br>
