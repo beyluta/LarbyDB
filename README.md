@@ -23,6 +23,6 @@ Alternatively, you can compile it with g++: `g++ -o LarbyDB -pthread -lpthread s
 `GET <KEY> <TABLE>` - get a value<br>
 `GET ALL <TABLE>` - get all values<br>
 `GET ALL <TABLE> <AMOUNT> <SKIP>` - get a specific amount of values<br>
-`GET ALL <TABLE> <START-END>` - get values within a specified range<br>
+`GET ALL <TABLE> <START-END>` - get values within the specified range<br>
 `DEL <KEY> <TABLE>` - delete a value<br>
 `DEL <INDEX> <TABLE>` - delete a value by index<br>
