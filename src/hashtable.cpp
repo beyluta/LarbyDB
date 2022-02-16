@@ -116,10 +116,9 @@ public:
         {
             if (table.at(i) != "")
             {
-                if (a >= start && a < end)
+                if (a >= start && a <= end)
                 {
                     result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},\n";
-                    std::cout << a << '\n';
                 }
                 a++;
             }
