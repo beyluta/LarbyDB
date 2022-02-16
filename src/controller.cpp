@@ -5,7 +5,7 @@ class Controller
 private:
     bool IsStringANumber(string &str)
     {
-        return std::all_of(str.begin(), str.end(), ::isdigit); //fancy c++11 code
+        return std::all_of(str.begin(), str.end(), ::isdigit);
     }
 
 public:
