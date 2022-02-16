@@ -17,3 +17,10 @@ Alternatively, you can compile it with g++: `g++ -o LarbyDB -pthread -lpthread s
 `--backup` - start with automatic backups<br>
 `--nobackup` - start without automatic backups<br>
 `--autoload` - make it load the backup automatically<br>
+
+## Database commands
+`SET <KEY> <TABLE> <EXPIRATION IN SECONDS> <CONTENT>` - set a value<br>
+`GET <KEY> <TABLE>` - get a value<br>
+`GET ALL <TABLE>` - get all values<br>
+`DEL <KEY> <TABLE>` - delete a value<br>
+`DEL <INDEX> <TABLE>` - delete a value by index<br>
