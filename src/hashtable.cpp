@@ -107,6 +107,29 @@ public:
         return result + "]";
     }
 
+    string GetInRange(int amount, int skip)
+    {
+        string result = "[";
+        int a = 0;
+        for (int i = 0; i < table.size(); i++)
+        {
+            if (table.at(i) != "")
+            {
+                if (a >= (skip * amount) - amount)
+                {
+                    result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},\n";
+                }
+                a++;
+            }
+            if (a >= amount * skip) { break; }
+        }
+        if (result[result.size() - 1] == ',')
+        {
+            result.pop_back();
+        }
+        return result + "]";
+    }
+
     void Remove(string value)
     {
         int hash = Hash(value);

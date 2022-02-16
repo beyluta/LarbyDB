@@ -104,7 +104,22 @@ public:
 
             if (key.find("ALL") != string::npos) //change ALL to * later...
             {
-                return hashtables[table].GetAll();
+                if (words.size() > 3)
+                {
+                    // amount per request
+                    // amount * steps
+                    int amount = atoi(words[3].c_str());
+                    int skip = 1;
+                    if (words.size() > 4) { skip = atoi(words[4].c_str()); }
+                    if (amount > 0 && skip > 0)
+                    {
+                        return hashtables[table].GetInRange(amount, skip);
+                    }
+                }
+                else
+                {
+                    return hashtables[table].GetAll();
+                }
             }
             else
             {
