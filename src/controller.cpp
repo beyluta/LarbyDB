@@ -106,12 +106,22 @@ public:
             {
                 if (words.size() > 3)
                 {
-                    int amount = atoi(words[3].c_str());
-                    int skip = 1;
-                    if (words.size() > 4) { skip = atoi(words[4].c_str()); }
-                    if (amount > 0 && skip > 0)
+                    int dash = words[3].find("-");
+                    if (dash != string::npos)
                     {
-                        return hashtables[table].GetInRange(amount, skip);
+                        int start = atoi((words[3].substr(0, dash)).c_str());
+                        int end = atoi(words[3].substr(dash + 1).c_str());
+                        return hashtables[table].GetInRange(start, end);
+                    }
+                    else
+                    {
+                        int amount = atoi(words[3].c_str());
+                        int skip = 1;
+                        if (words.size() > 4) { skip = atoi(words[4].c_str()); }
+                        if (amount > 0 && skip > 0)
+                        {
+                            return hashtables[table].GetAmount(amount, skip);
+                        }
                     }
                 }
                 else
