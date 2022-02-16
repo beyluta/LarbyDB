@@ -47,8 +47,29 @@ int TTLTimer(int arg)
 
 int main(int argc, char **argv)
 {
+    string arguments;
+    int i = 1;
+    while(argv[i] != nullptr)
+    {
+        arguments += argv[i];
+        i++;
+    }
+    std::cout << arguments << "\n";
+    File configFile;
+    if (configFile.FileExists("config.conf"))
+    {
+        ifstream file("config.conf");
+        string line;
+        getline(file, line);
+        std::cout << line << "\n";
+    }
+    else
+    {
+        configFile.CreateFile("config.conf");
+    }
     signal(SIGPIPE, SIG_IGN);
     /*this part processes command line arguments.*/
+    /*
     bool autoload = false;
     bool db_key_flag = false;
     bool db_safe = false;
@@ -111,7 +132,7 @@ int main(int argc, char **argv)
             }
         }
     }
-
+    */
     //TODO: there probably is a way to make the timers stack allocated. Look into that.
     Timer *backupTimer = new Timer();
     Timer *ttlTimer = new Timer();
@@ -119,155 +140,156 @@ int main(int argc, char **argv)
     ttlTimer->Subscribe(TTLTimer, 0);
 
     /*This part is for configuring the database on launch.*/
-    char *port;
-    std::cout << "Port number: ";
-    if (port_set)
-    {
-        strcpy(port, portPtr);
-        std::cout << port << '\n';
-    }
-    else
-    {
-        std::cin >> port;
-    }
+    // char *port;
+    // std::cout << "Port number: ";
+    // if (port_set)
+    // {
+    //     strcpy(port, portPtr);
+    //     std::cout << port << '\n';
+    // }
+    // else
+    // {
+    //     std::cin >> port;
+    // }
 
-    std::cout << "Number of tables in the database: ";
-    if (tables_set)
-    {
-        std::cout << nTablesStr << '\n';
-    }
-    else if (!tables_set)
-    {
-        std::cin >> nTablesStr;
-    }
-    int nTables = atoi(nTablesStr.c_str());
-    while (nTables < 2)
-    {
-        std::cout << "Number of tables in the database: ";
-        std::cin >> nTablesStr;
-        nTables = atoi(nTablesStr.c_str());
-    }
+    // std::cout << "Number of tables in the database: ";
+    // if (tables_set)
+    // {
+    //     std::cout << nTablesStr << '\n';
+    // }
+    // else if (!tables_set)
+    // {
+    //     std::cin >> nTablesStr;
+    // }
+    // int nTables = atoi(nTablesStr.c_str());
+    // while (nTables < 2)
+    // {
+    //     std::cout << "Number of tables in the database: ";
+    //     std::cin >> nTablesStr;
+    //     nTables = atoi(nTablesStr.c_str());
+    // }
 
-    char allowBackupChar;
-    if (backups_flag_set)
-    {
-        if (allowBackup)
-        {
-            std::cout << "Running with automatic backups.\n";
-        }
+    // char allowBackupChar;
+    // if (backups_flag_set)
+    // {
+    //     if (allowBackup)
+    //     {
+    //         std::cout << "Running with automatic backups.\n";
+    //     }
 
-        else
-        {
-            std::cout << "WARNING: Automatic backups will not be performed.\n";
-        }
-    }
+    //     else
+    //     {
+    //         std::cout << "WARNING: Automatic backups will not be performed.\n";
+    //     }
+    // }
 
-    else
-    {
-        std::cout << "Allow automatic backups? (y/n): ";
-        std::cin >> allowBackupChar;
+    // else
+    // {
+    //     std::cout << "Allow automatic backups? (y/n): ";
+    //     std::cin >> allowBackupChar;
 
-        if (allowBackupChar == 'y' || allowBackupChar == 'Y')
-        {
-            allowBackup = true;
-        }
-        else if (allowBackupChar == 'n' || allowBackupChar == 'N')
-        {
-            std::cout << "WARNING: Backups will not be performed." << std::endl;
-        }
-        else
-        {
-            while (allowBackupChar != 'y' && allowBackupChar != 'n' && allowBackupChar != 'Y' && allowBackupChar != 'N')
-            {
-                std::cout << "Invalid input. Please enter 'y' or 'n': ";
-                std::cin >> allowBackupChar;
-            }
-        }
-    }
+    //     if (allowBackupChar == 'y' || allowBackupChar == 'Y')
+    //     {
+    //         allowBackup = true;
+    //     }
+    //     else if (allowBackupChar == 'n' || allowBackupChar == 'N')
+    //     {
+    //         std::cout << "WARNING: Backups will not be performed." << std::endl;
+    //     }
+    //     else
+    //     {
+    //         while (allowBackupChar != 'y' && allowBackupChar != 'n' && allowBackupChar != 'Y' && allowBackupChar != 'N')
+    //         {
+    //             std::cout << "Invalid input. Please enter 'y' or 'n': ";
+    //             std::cin >> allowBackupChar;
+    //         }
+    //     }
+    // }
 
-    if (db_key_flag)
-    {
-        if (!db_safe)
-        {
-            std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
-        }
-    }
+    // if (db_key_flag)
+    // {
+    //     if (!db_safe)
+    //     {
+    //         std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
+    //     }
+    // }
 
-    else
-    {
-        char dbSafeChar;
-        std::cout << "Generate a key for accessing the database? (y/n): ";
-        std::cin >> dbSafeChar;
+    // else
+    // {
+    //     char dbSafeChar;
+    //     std::cout << "Generate a key for accessing the database? (y/n): ";
+    //     std::cin >> dbSafeChar;
 
-        if (dbSafeChar == 'y' || dbSafeChar == 'Y')
-        {
-            db_safe = true;
-            db_key_flag = true;
-        }
-        else if (dbSafeChar == 'n' || dbSafeChar == 'N')
-        {
-            std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!" << std::endl;
-            db_safe = false;
-            db_key_flag = true;
-        }
+    //     if (dbSafeChar == 'y' || dbSafeChar == 'Y')
+    //     {
+    //         db_safe = true;
+    //         db_key_flag = true;
+    //     }
+    //     else if (dbSafeChar == 'n' || dbSafeChar == 'N')
+    //     {
+    //         std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!" << std::endl;
+    //         db_safe = false;
+    //         db_key_flag = true;
+    //     }
 
-        else
-        {
-            while (dbSafeChar != 'y' && dbSafeChar != 'n' && dbSafeChar != 'Y' && dbSafeChar != 'N')
-            {
-                std::cout << "Invalid input. Please enter 'y' or 'n': ";
-                std::cin >> dbSafeChar;
-            }
-        }
-    }
+    //     else
+    //     {
+    //         while (dbSafeChar != 'y' && dbSafeChar != 'n' && dbSafeChar != 'Y' && dbSafeChar != 'N')
+    //         {
+    //             std::cout << "Invalid input. Please enter 'y' or 'n': ";
+    //             std::cin >> dbSafeChar;
+    //         }
+    //     }
+    // }
 
     //TODO: the controller needs to be global, same goes for the backuphandler.
+    int nTables = 12;
     controller = new Controller(nTables);
 
     BackupHandler handler2(controller, true);
-    if (handler2.CheckBackup() == true)
-    {
-        //std::cin.clear();
-        char loadFromBackupChar;
-        if (autoload == true)
-        {
-            loadFromBackupChar = {'y'};
-        }
-        else
-        {
-            std::cout << "Backup file found. Load from backup? (y/n): ";
-            std::cin >> loadFromBackupChar;
-        }
+    // if (handler2.CheckBackup() == true)
+    // {
+    //     //std::cin.clear();
+    //     char loadFromBackupChar;
+    //     if (autoload == true)
+    //     {
+    //         loadFromBackupChar = {'y'};
+    //     }
+    //     else
+    //     {
+    //         std::cout << "Backup file found. Load from backup? (y/n): ";
+    //         std::cin >> loadFromBackupChar;
+    //     }
 
-        while (loadFromBackupChar != 'Y' && loadFromBackupChar != 'N' && loadFromBackupChar != 'y' && loadFromBackupChar != 'n')
-        {
-            std::cout << "Invalid input. Please enter 'y' or 'n': ";
-            std::cin >> loadFromBackupChar;
-        }
-        if (loadFromBackupChar == 'Y' || loadFromBackupChar == 'y')
-        {
+    //     while (loadFromBackupChar != 'Y' && loadFromBackupChar != 'N' && loadFromBackupChar != 'y' && loadFromBackupChar != 'n')
+    //     {
+    //         std::cout << "Invalid input. Please enter 'y' or 'n': ";
+    //         std::cin >> loadFromBackupChar;
+    //     }
+    //     if (loadFromBackupChar == 'Y' || loadFromBackupChar == 'y')
+    //     {
             handler2.LoadBackup();
-            std::cout << "Loaded from backup.\n";
-        }
-        else
-        {
-            std::cout << "Backup will not be loaded.\n";
-        }
-    }
-
+    //         std::cout << "Loaded from backup.\n";
+    //     }
+    //     else
+    //     {
+    //         std::cout << "Backup will not be loaded.\n";
+    //     }
+    // }
+    const char* port = "8000";
     OnMessageReceived = &MessageReceived;
     Socket *socket = new Socket(port);
 
     std::cout << "Database Tables Initialized(" << nTables << "), port: " << port << "." << std::endl;
-    if (db_safe)
+    // if (db_safe)
     {
         controller->protectedByKey = true;
         std::cout << "Key: " << controller->GenerateKey() << "\n";
     }
 
-    if (allowBackup)
+    // if (allowBackup)
     {
-        backupTimer->Start(1);
+        backupTimer->Start(10);
     }
     ttlTimer->Start(1);
     socket->Listen();
