@@ -5,7 +5,7 @@ class Controller
 private:
     bool IsStringANumber(string &str)
     {
-        return std::all_of(str.begin(), str.end(), ::isdigit); //fancy c++11 code
+        return std::all_of(str.begin(), str.end(), ::isdigit);
     }
 
 public:
@@ -104,7 +104,30 @@ public:
 
             if (key.find("ALL") != string::npos) //change ALL to * later...
             {
-                return hashtables[table].GetAll();
+                if (words.size() > 3)
+                {
+                    int dash = words[3].find("-");
+                    if (dash != string::npos)
+                    {
+                        int start = atoi((words[3].substr(0, dash)).c_str());
+                        int end = atoi(words[3].substr(dash + 1).c_str());
+                        return hashtables[table].GetInRange(start, end);
+                    }
+                    else
+                    {
+                        int amount = atoi(words[3].c_str());
+                        int skip = 1;
+                        if (words.size() > 4) { skip = atoi(words[4].c_str()); }
+                        if (amount > 0 && skip > 0)
+                        {
+                            return hashtables[table].GetAmount(amount, skip);
+                        }
+                    }
+                }
+                else
+                {
+                    return hashtables[table].GetAll();
+                }
             }
             else
             {
