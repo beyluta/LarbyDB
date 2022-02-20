@@ -1,10 +1,13 @@
 #include "main.h"
-#define DEFAULT_NUM_TABLES 2
+// careful with changing these: things might break.
 #define DEFAULT_PORT "8080"
-#define DEFAULT_MANUAL_CONFIG false
+#define DEFAULT_MANUAL_CONFIG true
 #define DEFAULT_GENERATE_KEY true
 #define DEFAULT_ALLOW_BACKUP true
+#define DEFAULT_NUM_TABLES 2
 #define DEFAULT_BACKUP_INTERVAL "30m"
+
+using namespace std;
 
 Controller *controller;
 
@@ -83,6 +86,8 @@ vector<string> ProcessConfig()
     {
         while (getline(file, line))
         {
+            if (line == "")
+                continue;
             int comment = line.find("#");
             if (comment == 0)
                 continue;
@@ -119,287 +124,222 @@ vector<string> ProcessConfig()
     return args;
 }
 
-void SetParameters(Parameters& params, vector<string>& str)
+int ParseBackupInterval(Parameters& params, string& intervalStr)
 {
+    int result = 0;
+    int interval = atoi(intervalStr.c_str());
+    if (interval < 1)
+    {
+        string dflt = DEFAULT_BACKUP_INTERVAL;
+        ParseBackupInterval(params, dflt);
+    }
+    else
+    {
+        result = 1;
+        if (intervalStr.find("h") == intervalStr.size() - 1)
+            params.backup_interval = interval * 3600;
+        else if (intervalStr.find("m") == intervalStr.size() - 1)
+            params.backup_interval = interval * 60;
+        else
+            params.backup_interval = interval;
+    }
+    return result;
+}
+
+//how many settings there are in total
+#define NUM_SETTINGS 6
+int SetParameters(Parameters& params, vector<string>& str)
+{
+    bool settings_set[NUM_SETTINGS] { false };
+    enum {manual_config, port, num_tables, allow_backup, backup_interval, generate_key };
+    int settingsNum = 0;
     for (int i = 0; i < str.size() - 1; i++)
     {
-        // std::cout << "[" << i << "]#" << str[i] << "#\n";
-        // std::cout << "[" << i + 1 << "]##" << str[i + 1] << "##\n";
-        if (str[i].find("--port") != string::npos)
+        if (!settings_set[manual_config] && str[i].find("--manual_config") != string::npos)
         {
-            params.port = str[i + 1];
-        }
-        else if (str[i].find("--num_tables") != string::npos)
-        {
-            int num = atoi(str[i + 1].c_str());
-            if (num > 1)
-                params.num_tables = num;
-            else
-                params.num_tables = DEFAULT_NUM_TABLES;
-        }
-        else if (str[i].find("--backup_interval") != string::npos)
-        {
-            int interval = atoi(str[i + 1].c_str());
-            if (interval < 1)
-            {
-                params.backup_interval = atoi(DEFAULT_BACKUP_INTERVAL);
-            }
-            else
-            {
-                if (str[i + 1].find("h") == str[i + 1].size() - 1)
-                    params.backup_interval = interval * 3600;
-                else if (str[i + 1].find("m") == str[i + 1].size() - 1)
-                    params.backup_interval = interval * 60;
-                else
-                    params.backup_interval = interval;
-            }
-        }
-
-        if (str[i].find("--generate_key") != string::npos)
-        {
-            if (str[i + 1] == "true")
-                params.generate_key = true;
-            else if (str[i + 1] == "false")
-                params.generate_key = false;
-            else
-                params.generate_key = DEFAULT_GENERATE_KEY;
-        }
-        if (str[i].find("--allow_backup") != string::npos)
-        {
-            if (str[i + 1] == "true")
-                params.allow_backup = true;
-            else if (str[i + 1] == "false")
-                params.allow_backup = false;
-            else
-                params.allow_backup = DEFAULT_ALLOW_BACKUP;
-        }
-        if (str[i].find("--manual_config") != string::npos)
-        {
+            settings_set[manual_config] = true;
+            settingsNum++;
             if (str[i + 1] == "true")
                 params.manual_config = true;
             else if (str[i + 1] == "false")
                 params.manual_config = false;
             else
+            {
+                settingsNum--;   
                 params.manual_config = DEFAULT_MANUAL_CONFIG;
+                cout << boolalpha << "manual_config: unset, using default (" << params.manual_config << ")\n";
+            }
+            continue;
         }
-
+        
+        if (!settings_set[port] && str[i].find("--port") != string::npos)
+        {
+            settings_set[port] = true;
+            if (atoi(str[i + 1].c_str()) > 0)
+            {
+                settingsNum++;
+                params.port = str[i + 1];
+            }
+            else
+            {
+                params.port = std::move(string(DEFAULT_PORT));
+                cout << "port: unset, using default (" << params.port << ")\n";
+            }
+            continue;
+        }
+        if (!settings_set[num_tables] && str[i].find("--num_tables") != string::npos)
+        {
+            settings_set[num_tables] = true;
+            int num = atoi(str[i + 1].c_str());
+            if (num > 1)
+            {
+                settingsNum++;
+                params.num_tables = num;
+            }
+            else
+            {
+                params.num_tables = DEFAULT_NUM_TABLES;
+                cout << "num_tables: unset, using default (" << params.num_tables << ")\n";
+            }
+            continue;
+        }
+        if (!settings_set[backup_interval] && str[i].find("--backup_interval") != string::npos)
+        {
+            settings_set[backup_interval] = true;
+            int result = ParseBackupInterval(params, str[i + 1]);
+            if (result < 1)
+                cout << "backup_interval: unset, using default (" << params.backup_interval << ")\n";
+            settingsNum+= result;
+            continue;
+        }
+        
+        //TODO: improve these in the future
+        if (!settings_set[generate_key] && str[i].find("--generate_key") != string::npos)
+        {
+            settings_set[generate_key] = true;
+            settingsNum++;
+            if (str[i + 1] == "true")
+                params.generate_key = true;
+            else if (str[i + 1] == "false")
+                params.generate_key = false;
+            else
+            {
+                settingsNum--;
+                params.generate_key = DEFAULT_GENERATE_KEY;
+                cout << boolalpha << "generate_key: unset, using default (" << params.generate_key << ")\n";
+            }
+            continue;
+        }
+        if (!settings_set[allow_backup] && str[i].find("--allow_backup") != string::npos)
+        {
+            settings_set[allow_backup] = true;
+            settingsNum++;
+            if (str[i + 1] == "true")
+                params.allow_backup = true;
+            else if (str[i + 1] == "false")
+                params.allow_backup = false;
+            else
+            {
+                settingsNum--;
+                params.allow_backup = DEFAULT_ALLOW_BACKUP;
+                cout << boolalpha << "allow_backup: unset, using default (" << params.allow_backup << ")\n";
+            }
+            continue;
+        }
     }
+    return settingsNum;
+}
+
+int PromptYN(const char* msg)
+{
+    string input;
+    cout << msg;
+    cin >> input;
+    if (input == "N" || input == "n")
+        return 0;
+    else if (input == "Y" || input == "y")
+        return 1;
+    else
+        return -1; //for invalid input
 }
 
 int main(int argc, char **argv)
 {
-    vector<string> configArguments = ProcessConfig();
-    Parameters dbParameters;
-    SetParameters(dbParameters, configArguments);
-    if (argc > 1)
-    {
-        vector<string> launchArguments(argv + 1, argv + argc);
-        SetParameters(dbParameters, launchArguments);
-    }
-
-    // epic-looking ascii art
-    cout
-    << " ###################################################\n"
-    << "##...._..............._.............____..____.....##\n"
-    << "##...|.|....__._._.__|.|__.._..._..|.._.\\|.__.)....##\n"
-    << "##...|.|.../._`.|.'__|.'_.\\|.|.|.|.|.|.|.|.._.\\....##\n"
-    << "##...|.|__|.(_|.|.|..|.|_).|.|_|.|.|.|_|.|.|_).|...##\n"
-    << "##...|_____\\__,_|_|..|_.__/.\\__,.|.|____/|____/....##\n"
-    << "##..........................|___/..................##\n"
-    << " ###################################################\n"
-    << "\n";
-
-    // prompt the user if manual_config is set to true:
-    if (dbParameters.manual_config)
-    {
-        std::cout << "TODO: MANUAL CONFIG\n";
-    }
-    else
-    {
-    cout
-    << "port: " << dbParameters.port << '\n'
-    << "tables: " << dbParameters.num_tables << '\n'
-    << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
-    << "backup_interval: "
-    << (dbParameters.allow_backup ? to_string(dbParameters.backup_interval)+" seconds" : "unset")
-    << '\n'
-    << "generate_key: " << BoolToStr(dbParameters.generate_key) << '\n';
-    }
-
     signal(SIGPIPE, SIG_IGN);
-    /*this part processes command line arguments.*/
-    /*
-    bool autoload = false;
-    bool db_key_flag = false;
-    bool db_safe = false;
-    bool backups_flag_set = false;
-    bool allowBackup = false;
-    bool port_set = false;
-    char *portPtr;
-    bool tables_set = false;
-    std::string nTablesStr;
-    if (argc > 1) //TODO: This needs to be improved
+    Parameters dbParameters;
     {
-        for (int i = 1; i < argc; i++)
+        vector<string> configArguments = ProcessConfig();
+        int configSettings = SetParameters(dbParameters, configArguments);
+        if (NUM_SETTINGS - configSettings > 0)
+            cout << "WARNING: config settings unset ("<< NUM_SETTINGS - configSettings << " out of "<< NUM_SETTINGS <<"), using fallback values.\n";
+        
+        if (argc > 1)
         {
-
-            if (strcmp(argv[i], "--autoload") == 0)
-            {
-                autoload = true;
-            }
-
-            if (!db_key_flag && strcmp(argv[i], "--safe") == 0)
-            {
-                db_safe = true;
-                db_key_flag = true;
-            }
-
-            if (!db_key_flag && strcmp(argv[i], "--unsafe") == 0)
-            {
-                db_safe = false;
-                db_key_flag = true;
-            }
-
-            if (!backups_flag_set && strcmp(argv[i], "--backup") == 0)
-            {
-                allowBackup = true;
-                backups_flag_set = true;
-            }
-
-            if (!backups_flag_set && strcmp(argv[i], "--nobackup") == 0)
-            {
-                allowBackup = false;
-                backups_flag_set = true;
-            }
-
-            if (!port_set && strcmp(argv[i], "--port") == 0)
-            {
-                if (argv[i + 1] != nullptr)
-                {
-                    port_set = true;
-                    portPtr = argv[i + 1];
-                }
-            }
-
-            if (!tables_set && strcmp(argv[i], "--tables") == 0)
-            {
-                if (argv[i + 1] != nullptr)
-                {
-                    nTablesStr = argv[i + 1];
-                    tables_set = true;
-                }
-            }
+            vector<string> launchArguments(argv + 1, argv + argc);
+            SetParameters(dbParameters, launchArguments);
         }
     }
-    */
+
+    if (dbParameters.manual_config)
+    {
+        // for boolean type settings
+        auto PromptBool = [&] (const char* msg, bool& setting, bool defaultVal)
+        {
+            int result = PromptYN(msg);
+            if (result >= 0 && result <= 1)
+            {
+                setting = result;
+            }
+            else
+            {
+                setting = DEFAULT_ALLOW_BACKUP;
+                cout << boolalpha << "Invalid input, using the default value (" << setting << ").\n";
+            }
+        };
+
+        cout << "LarbyDB manual configuration mode.\n"
+        << "To Disable manual configuration, run with '--manual_config false'\n"
+        << "or set 'manual_config' to 'false' in config.conf\n\n";
+        
+        cout << "enter port: ";
+        cin >> dbParameters.port;
+
+        cout << "enter the number of tables for the database (minimum is 2): ";
+        string numTablesInput;
+        cin >> numTablesInput;
+        int numTables = atoi(numTablesInput.c_str());
+        if (numTables > 1)
+        {
+            dbParameters.num_tables = numTables;
+        }
+        else
+        {
+            dbParameters.num_tables = DEFAULT_NUM_TABLES;
+            cout << "Invalid input, using the default value (" << dbParameters.num_tables << ").\n";
+        }
+
+        PromptBool("allow automatic backup? (y/n): ", dbParameters.allow_backup, DEFAULT_ALLOW_BACKUP);
+        // backup interval
+        if (dbParameters.allow_backup)
+        {
+            cout << "set the backup interval: ";
+            string inputBackupStr;
+            cin >> inputBackupStr;
+            ParseBackupInterval(dbParameters, inputBackupStr);
+        }
+        else
+        {
+            string dflt = DEFAULT_BACKUP_INTERVAL;
+            ParseBackupInterval(dbParameters, dflt);
+        }
+        PromptBool("generate authentication key? (y/n): ", dbParameters.generate_key, DEFAULT_GENERATE_KEY);
+    }
+    
     //TODO: there probably is a way to make the timers stack allocated. Look into that.
     Timer *backupTimer = new Timer();
     Timer *ttlTimer = new Timer();
     backupTimer->Subscribe(BackupHandlerMessage, 0);
     ttlTimer->Subscribe(TTLTimer, 0);
-
-    /*This part is for configuring the database on launch.*/
-    // char *port;
-    // std::cout << "Port number: ";
-    // if (port_set)
-    // {
-    //     strcpy(port, portPtr);
-    //     std::cout << port << '\n';
-    // }
-    // else
-    // {
-    //     std::cin >> port;
-    // }
-
-    // std::cout << "Number of tables in the database: ";
-    // if (tables_set)
-    // {
-    //     std::cout << nTablesStr << '\n';
-    // }
-    // else if (!tables_set)
-    // {
-    //     std::cin >> nTablesStr;
-    // }
-    // int nTables = atoi(nTablesStr.c_str());
-    // while (nTables < 2)
-    // {
-    //     std::cout << "Number of tables in the database: ";
-    //     std::cin >> nTablesStr;
-    //     nTables = atoi(nTablesStr.c_str());
-    // }
-
-    // char allowBackupChar;
-    // if (backups_flag_set)
-    // {
-    //     if (allowBackup)
-    //     {
-    //         std::cout << "Running with automatic backups.\n";
-    //     }
-
-    //     else
-    //     {
-    //         std::cout << "WARNING: Automatic backups will not be performed.\n";
-    //     }
-    // }
-
-    // else
-    // {
-    //     std::cout << "Allow automatic backups? (y/n): ";
-    //     std::cin >> allowBackupChar;
-
-    //     if (allowBackupChar == 'y' || allowBackupChar == 'Y')
-    //     {
-    //         allowBackup = true;
-    //     }
-    //     else if (allowBackupChar == 'n' || allowBackupChar == 'N')
-    //     {
-    //         std::cout << "WARNING: Backups will not be performed." << std::endl;
-    //     }
-    //     else
-    //     {
-    //         while (allowBackupChar != 'y' && allowBackupChar != 'n' && allowBackupChar != 'Y' && allowBackupChar != 'N')
-    //         {
-    //             std::cout << "Invalid input. Please enter 'y' or 'n': ";
-    //             std::cin >> allowBackupChar;
-    //         }
-    //     }
-    // }
-
-    // if (db_key_flag)
-    // {
-    //     if (!db_safe)
-    //     {
-    //         std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
-    //     }
-    // }
-
-    // else
-    // {
-    //     char dbSafeChar;
-    //     std::cout << "Generate a key for accessing the database? (y/n): ";
-    //     std::cin >> dbSafeChar;
-
-    //     if (dbSafeChar == 'y' || dbSafeChar == 'Y')
-    //     {
-    //         db_safe = true;
-    //         db_key_flag = true;
-    //     }
-    //     else if (dbSafeChar == 'n' || dbSafeChar == 'N')
-    //     {
-    //         std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!" << std::endl;
-    //         db_safe = false;
-    //         db_key_flag = true;
-    //     }
-
-    //     else
-    //     {
-    //         while (dbSafeChar != 'y' && dbSafeChar != 'n' && dbSafeChar != 'Y' && dbSafeChar != 'N')
-    //         {
-    //             std::cout << "Invalid input. Please enter 'y' or 'n': ";
-    //             std::cin >> dbSafeChar;
-    //         }
-    //     }
-    // }
 
     //TODO: the controller needs to be global, same goes for the backuphandler.
     controller = new Controller(dbParameters.num_tables);
@@ -426,6 +366,7 @@ int main(int argc, char **argv)
     //     }
     //     if (loadFromBackupChar == 'Y' || loadFromBackupChar == 'y')
     //     {
+        //TODO: autoload flag to ask if it should load the backup or not
             handler2.LoadBackup();
     //         std::cout << "Loaded from backup.\n";
     //     }
@@ -438,6 +379,34 @@ int main(int argc, char **argv)
     OnMessageReceived = &MessageReceived;
     Socket *socket = new Socket(port);
 
+    if (dbParameters.allow_backup)
+    {
+        backupTimer->Start(dbParameters.backup_interval);
+    }
+    ttlTimer->Start(1);
+
+    // fancy ascii art
+    cout
+    << "\n\n"
+    << " ###################################################\n"
+    << "##...._..............._.............____..____.....##\n"
+    << "##...|.|....__._._.__|.|__.._..._..|.._.\\|.__.)....##\n"
+    << "##...|.|.../._`.|.'__|.'_.\\|.|.|.|.|.|.|.|.._.\\....##\n"
+    << "##...|.|__|.(_|.|.|..|.|_).|.|_|.|.|.|_|.|.|_).|...##\n"
+    << "##...|_____\\__,_|_|..|_.__/.\\__,.|.|____/|____/....##\n"
+    << "##..........................|___/..................##\n"
+    << " ###################################################\n"
+    << "\n\n";
+
+    cout
+    << "port: " << dbParameters.port << '\n'
+    << "tables: " << dbParameters.num_tables << '\n'
+    << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
+    << "backup_interval: "
+    << (dbParameters.allow_backup ? to_string(dbParameters.backup_interval)+" seconds" : "unset")
+    << '\n'
+    << "generate_key: " << BoolToStr(dbParameters.generate_key) << '\n';
+
     if (dbParameters.generate_key)
     {
         controller->protectedByKey = true;
@@ -447,9 +416,11 @@ int main(int argc, char **argv)
     {
         std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
     }
-    ttlTimer->Start(1);
-    std::cout << "Database Initialized. " << std::endl;
+    cout << "Database Initialized. " << std::endl;
+
     socket->Listen();
+
+    cout << "Stopped.\n";
 
     delete socket;
     delete controller;
