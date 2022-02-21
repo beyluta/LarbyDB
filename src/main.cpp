@@ -6,6 +6,7 @@
 #define DEFAULT_ALLOW_BACKUP true
 #define DEFAULT_NUM_TABLES 2
 #define DEFAULT_BACKUP_INTERVAL "30m"
+#define DEFAULT_LOAD_BACKUP "ask"
 
 using namespace std;
 
@@ -62,6 +63,7 @@ struct Parameters
     bool allow_backup;
     bool manual_config;
     int backup_interval;
+    string load_backup;
 };
 
 string BoolToStr(bool b)
@@ -112,12 +114,21 @@ vector<string> ProcessConfig()
         if (args.size() < 1) //if empty, fill in with default values.
         {
             configFile.OverwriteFile("config.conf",
-            "#LarbyDB config\nmanual_config "+BoolToStr(DEFAULT_MANUAL_CONFIG)+
+            "#LarbyDB config\n# If set to true, will ask the user to input parameters on launch:\nmanual_config "+
+            BoolToStr(DEFAULT_MANUAL_CONFIG)+
+            "\n\n# sets the port:"+
             "\nport "+string(DEFAULT_PORT)+
+            "\n\n# How many hashtables the db has (minimum 2):"+
             "\nnum_tables "+to_string(DEFAULT_NUM_TABLES)+
-            "\nallow_backup "+BoolToStr(DEFAULT_ALLOW_BACKUP)+
-            "\nbackup_interval "+string(DEFAULT_BACKUP_INTERVAL)+
-            "\ngenerate_key "+BoolToStr(DEFAULT_GENERATE_KEY));
+            "\n\n# Should the db perform automatic backups:\n# true | false\nallow_backup "+
+            BoolToStr(DEFAULT_ALLOW_BACKUP)+
+            "\n\n# Sets the time interval between performing backups:\n# h - hours\n# m - minutes\n# anything else counts as seconds.\n# Only positive integer values are allowed.\nbackup_interval "+
+            string(DEFAULT_BACKUP_INTERVAL)+
+            "\n\n# Generate the authentication key:\ngenerate_key "+
+            BoolToStr(DEFAULT_GENERATE_KEY)+
+            "\n\n# Should the db load from a backup file:\n# true  - load from backups\n# false - do not load from backups\n# ask   - ask the user whether to load from the backup file\nload_backup "+
+            string(DEFAULT_LOAD_BACKUP)
+            );
             return ProcessConfig();
         }
     }
@@ -147,11 +158,11 @@ int ParseBackupInterval(Parameters& params, string& intervalStr)
 }
 
 //how many settings there are in total
-#define NUM_SETTINGS 6
+#define NUM_SETTINGS 7
 int SetParameters(Parameters& params, vector<string>& str)
 {
     bool settings_set[NUM_SETTINGS] { false };
-    enum {manual_config, port, num_tables, allow_backup, backup_interval, generate_key };
+    enum {manual_config, port, num_tables, allow_backup, backup_interval, generate_key, load_backup };
     int settingsNum = 0;
     for (int i = 0; i < str.size() - 1; i++)
     {
@@ -243,6 +254,22 @@ int SetParameters(Parameters& params, vector<string>& str)
                 settingsNum--;
                 params.allow_backup = DEFAULT_ALLOW_BACKUP;
                 cout << boolalpha << "allow_backup: unset, using default (" << params.allow_backup << ")\n";
+            }
+            continue;
+        }
+
+        if (!settings_set[load_backup] && str[i].find("--load_backup") != string::npos)
+        {
+            settings_set[load_backup] = true;
+            if (str[i + 1] == "true" || str[i + 1] == "false" || str[i + 1] == "ask")
+            {
+                params.load_backup = str[i + 1];
+                settingsNum++;
+            }
+            else
+            {
+                params.load_backup = DEFAULT_LOAD_BACKUP;
+                cout << "allow_backup: unset, using default (" << params.load_backup << ")\n";
             }
             continue;
         }
@@ -343,38 +370,35 @@ int main(int argc, char **argv)
 
     //TODO: the controller needs to be global, same goes for the backuphandler.
     controller = new Controller(dbParameters.num_tables);
-
-    BackupHandler handler2(controller, true);
-    // if (handler2.CheckBackup() == true)
-    // {
-    //     //std::cin.clear();
-    //     char loadFromBackupChar;
-    //     if (autoload == true)
-    //     {
-    //         loadFromBackupChar = {'y'};
-    //     }
-    //     else
-    //     {
-    //         std::cout << "Backup file found. Load from backup? (y/n): ";
-    //         std::cin >> loadFromBackupChar;
-    //     }
-
-    //     while (loadFromBackupChar != 'Y' && loadFromBackupChar != 'N' && loadFromBackupChar != 'y' && loadFromBackupChar != 'n')
-    //     {
-    //         std::cout << "Invalid input. Please enter 'y' or 'n': ";
-    //         std::cin >> loadFromBackupChar;
-    //     }
-    //     if (loadFromBackupChar == 'Y' || loadFromBackupChar == 'y')
-    //     {
-        //TODO: autoload flag to ask if it should load the backup or not
-            handler2.LoadBackup();
-    //         std::cout << "Loaded from backup.\n";
-    //     }
-    //     else
-    //     {
-    //         std::cout << "Backup will not be loaded.\n";
-    //     }
-    // }
+    {
+        BackupHandler handler2(controller, true);
+        if (handler2.CheckBackup())
+        {
+            if (dbParameters.load_backup == "true")
+            {
+                handler2.LoadBackup();
+            }
+            else if (dbParameters.load_backup == "ask")
+            {
+                int shouldLoad = PromptYN("Backup file found. Load from backup? (y/n): ");
+                while (shouldLoad < 0)
+                {
+                    shouldLoad = PromptYN("Invalid input, enter 'y' or 'n': ");
+                }
+                if (shouldLoad >= 1)
+                {
+                    handler2.LoadBackup();
+                    cout << "Loaded from backup.\n";
+                }
+                else
+                {
+                    cout << "loading canceled.\n";
+                }
+            }
+            else
+                cout << "loading from backup is disabled.\n";
+        }
+    }
     const char* port = dbParameters.port.c_str();
     OnMessageReceived = &MessageReceived;
     Socket *socket = new Socket(port);
@@ -419,8 +443,6 @@ int main(int argc, char **argv)
     cout << "Database Initialized. " << std::endl;
 
     socket->Listen();
-
-    cout << "Stopped.\n";
 
     delete socket;
     delete controller;
