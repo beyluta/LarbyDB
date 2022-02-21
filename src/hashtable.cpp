@@ -5,7 +5,8 @@ class Hashtable
 {
 private:
     vector<string> table;
-
+    
+public:
     int Hash(string value)
     {
         int hash = 0;
@@ -16,7 +17,6 @@ private:
         return hash;
     }
 
-public:
     void AddTo(int hash, string &value)
     {
         if (table.size() <= hash)

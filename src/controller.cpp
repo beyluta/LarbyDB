@@ -174,7 +174,8 @@ public:
             }
         }
         std::string output = key;
-        hashtables[0].Add(DB_KEY_POSITION, key); //fix later. It's saving keys in different places every time
+        hashtables[0].Remove(hashtables[0].Hash(DB_KEY_POSITION));
+        hashtables[0].Add(DB_KEY_POSITION, key);
         return output;
     }
 
