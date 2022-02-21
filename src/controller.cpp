@@ -1,5 +1,6 @@
 #include "controller.h"
-
+// where the authentication key is stored in the db
+#define DB_KEY_POSITION "K"
 class Controller
 {
 private:
@@ -46,9 +47,7 @@ public:
 
         if (words[0].find("AUTH") != string::npos && words.size() > 1)
         {
-            string &key = words[1];
-
-            if (hashtables[0].Contains(key))
+            if (hashtables[0].Get(DB_KEY_POSITION) == words[1])
             {
                 hashtables[0].Add(tempIP);
                 return GetHttpStatusCode(200);
@@ -175,7 +174,7 @@ public:
             }
         }
         std::string output = key;
-        hashtables[0].Add(key);
+        hashtables[0].Add(DB_KEY_POSITION, key); //fix later. It's saving keys in different places every time
         return output;
     }
 
