@@ -1,7 +1,7 @@
 #include "main.h"
 // careful with changing these: things might break.
 #define DEFAULT_PORT "8080"
-#define DEFAULT_MANUAL_CONFIG true
+#define DEFAULT_MANUAL_CONFIG false
 #define DEFAULT_GENERATE_KEY true
 #define DEFAULT_ALLOW_BACKUP true
 #define DEFAULT_NUM_TABLES 2
@@ -414,10 +414,10 @@ int main(int argc, char **argv)
     << "\n\n"
     << " ###################################################\n"
     << "##...._..............._.............____..____.....##\n"
-    << "##...|.|....__._._.__|.|__.._..._..|.._.\\|.__.)....##\n"
-    << "##...|.|.../._`.|.'__|.'_.\\|.|.|.|.|.|.|.|.._.\\....##\n"
-    << "##...|.|__|.(_|.|.|..|.|_).|.|_|.|.|.|_|.|.|_).|...##\n"
-    << "##...|_____\\__,_|_|..|_.__/.\\__,.|.|____/|____/....##\n"
+    << "##...| |....__._._.__| |__.._..._..|  _ \\| __ )....##\n"
+    << "##...| |.../ _` | '__| '_ \\| |.| |.| |.| |  _ \\....##\n"
+    << "##...| |__| (_| | |..| |_) | |_| |.| |_| | |_) |...##\n"
+    << "##...|_____\\__,_|_|..|_.__/.\\__, |.|____/|____/....##\n"
     << "##..........................|___/..................##\n"
     << " ###################################################\n"
     << "\n\n";
@@ -434,7 +434,8 @@ int main(int argc, char **argv)
     if (dbParameters.generate_key)
     {
         controller->protectedByKey = true;
-        std::cout << "Key: " << controller->GenerateKey() << "\n";
+        controller->GenerateKey();
+        std::cout << "Key: " << controller->hashtables[0].Get(DB_KEY_POSITION) << "\n";
     }
     else
     {

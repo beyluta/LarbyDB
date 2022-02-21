@@ -1,6 +1,4 @@
 #include "controller.h"
-// where the authentication key is stored in the db
-#define DB_KEY_POSITION "K"
 class Controller
 {
 private:
@@ -154,10 +152,10 @@ public:
         return GetHttpStatusCode(401);
     }
 
-    std::string GenerateKey(int length = 16)
+    void GenerateKey(int length = 16)
     {
         srand(time(nullptr));
-        std::string key;
+        string key;
         for (int i = 0; i < length; i++)
         {
             switch (rand() % 3)
@@ -173,10 +171,8 @@ public:
                 break;
             }
         }
-        std::string output = key;
         hashtables[0].Remove(hashtables[0].Hash(DB_KEY_POSITION));
         hashtables[0].Add(DB_KEY_POSITION, key);
-        return output;
     }
 
     bool IsAuthorized()
