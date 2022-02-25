@@ -69,13 +69,14 @@ public:
         }
     }
 
-    ~Socket()
+    ~Socket() //this never gets called, should we keep it?
     {
         close(newSocketfd);
         close(socketfd);
+        std::cout << "~Socket()\n";
     }
 
-    Socket(const char *port)
+    void SetPort(const char* port)
     {
         Socket::port = port;
     }

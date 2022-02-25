@@ -13,7 +13,12 @@ public:
     std::string tempIP;
     bool protectedByKey = false;
 
-    Controller(int numTables = 2)
+    ~Controller()
+    {
+        std::cout << "~Controller()\n";
+    }
+
+    void SetSize(int numTables = 2)
     {
         if (numTables < 2)
         {

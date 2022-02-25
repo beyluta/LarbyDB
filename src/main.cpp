@@ -2,7 +2,10 @@
 
 using namespace std;
 
-Controller *controller;
+Controller controller;
+Socket serverSocket;
+Timer* backupTimer;
+Timer* ttlTimer;
 
 /* Event handler which triggers when a socket message is received
    through an available TCP port. The message and IP address of the client
@@ -11,8 +14,8 @@ std::string MessageReceived(const char *msg, const char *ip)
 {
     if (strlen(msg) > 0)
     {
-        controller->tempIP = ip;
-        return controller->GetResolvedResponse(msg);
+        controller.tempIP = ip;
+        return controller.GetResolvedResponse(msg);
     }
     return GetHttpStatusCode(404);
 }
@@ -20,7 +23,7 @@ std::string MessageReceived(const char *msg, const char *ip)
 /* Thread timer which triggers every couple of seconds to peform a backup */
 int BackupHandlerMessage(int var)
 {
-    BackupHandler handler(controller, true);
+    BackupHandler handler(&controller, true);
     handler.BeginBackup();
     return 0;
 }
@@ -30,26 +33,34 @@ int BackupHandlerMessage(int var)
    TTL reaches 0, it effectively expires and is removed from the database.*/
 int TTLTimer(int arg)
 {
-    for (int i = 0; i < controller->packets.size(); i++)
+    for (int i = 0; i < controller.packets.size(); i++)
     {
-        if (controller->packets.at(i).time_to_live > 0)
+        if (controller.packets.at(i).time_to_live > 0)
         {
-            controller->packets.at(i).time_to_live--;
+            controller.packets.at(i).time_to_live--;
         }
         else
         {
-            int table = controller->packets.at(i).table;
-            int hash = controller->packets.at(i).hash;
-            controller->packets.erase(controller->packets.begin() + i);
-            controller->hashtables[table].Remove(hash);
+            int table = controller.packets.at(i).table;
+            int hash = controller.packets.at(i).hash;
+            controller.packets.erase(controller.packets.begin() + i);
+            controller.hashtables[table].Remove(hash);
         }
     }
     return 0;
 }
 
+void OnInterrupt(int sigInt)
+{
+    delete backupTimer;
+    delete ttlTimer;
+    exit(sigInt);
+}
+
 int main(int argc, char **argv)
 {
     signal(SIGPIPE, SIG_IGN);
+    signal(SIGINT, OnInterrupt);
     Parameters dbParameters;
     {
         vector<string> configArguments = ProcessConfig();
@@ -120,15 +131,14 @@ int main(int argc, char **argv)
     }
     
     //TODO: there probably is a way to make the timers stack allocated. Look into that.
-    Timer *backupTimer = new Timer();
-    Timer *ttlTimer = new Timer();
+    backupTimer = new Timer();
+    ttlTimer = new Timer();
     backupTimer->Subscribe(BackupHandlerMessage, 0);
     ttlTimer->Subscribe(TTLTimer, 0);
 
-    //TODO: the controller needs to be global, same goes for the backuphandler.
-    controller = new Controller(dbParameters.num_tables);
+    controller.SetSize(dbParameters.num_tables);
     {
-        BackupHandler handler2(controller, true);
+        BackupHandler handler2(&controller, true);
         if (handler2.CheckBackup())
         {
             if (dbParameters.load_backup == "true")
@@ -158,7 +168,7 @@ int main(int argc, char **argv)
     }
     const char* port = dbParameters.port.c_str();
     OnMessageReceived = &MessageReceived;
-    Socket *socket = new Socket(port);
+    serverSocket.SetPort(port);
 
     if (dbParameters.allow_backup)
     {
@@ -190,9 +200,9 @@ int main(int argc, char **argv)
 
     if (dbParameters.generate_key)
     {
-        controller->protectedByKey = true;
-        controller->GenerateKey();
-        std::cout << "Key: " << controller->hashtables[0].Get(DB_KEY_POSITION) << "\n";
+        controller.protectedByKey = true;
+        controller.GenerateKey();
+        std::cout << "Key: " << controller.hashtables[0].Get(DB_KEY_POSITION) << "\n";
     }
     else
     {
@@ -200,10 +210,10 @@ int main(int argc, char **argv)
     }
     cout << "Database Initialized. " << std::endl;
 
-    socket->Listen();
+    serverSocket.Listen();
 
-    delete socket;
-    delete controller;
+    // delete socket;
+    // delete controller;
     delete backupTimer;
     delete ttlTimer;
 
