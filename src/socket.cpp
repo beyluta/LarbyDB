@@ -69,7 +69,7 @@ public:
         }
     }
 
-    ~Socket() //this never gets called, should we keep it?
+    ~Socket()
     {
         close(newSocketfd);
         close(socketfd);
