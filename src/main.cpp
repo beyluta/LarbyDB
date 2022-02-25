@@ -4,8 +4,8 @@ using namespace std;
 
 Controller controller;
 Socket serverSocket;
-Timer* backupTimer;
-Timer* ttlTimer;
+Timer backupTimer;
+Timer ttlTimer;
 
 /* Event handler which triggers when a socket message is received
    through an available TCP port. The message and IP address of the client
@@ -52,8 +52,8 @@ int TTLTimer(int arg)
 
 void OnInterrupt(int sigInt)
 {
-    delete backupTimer;
-    delete ttlTimer;
+    // delete backupTimer;
+    // delete ttlTimer;
     exit(sigInt);
 }
 
@@ -131,10 +131,9 @@ int main(int argc, char **argv)
     }
     
     //TODO: there probably is a way to make the timers stack allocated. Look into that.
-    backupTimer = new Timer();
-    ttlTimer = new Timer();
-    backupTimer->Subscribe(BackupHandlerMessage, 0);
-    ttlTimer->Subscribe(TTLTimer, 0);
+    Timer ttlTimer;
+    backupTimer.Subscribe(BackupHandlerMessage, 0);
+    ttlTimer.Subscribe(TTLTimer, 0);
 
     controller.SetSize(dbParameters.num_tables);
     {
@@ -172,9 +171,9 @@ int main(int argc, char **argv)
 
     if (dbParameters.allow_backup)
     {
-        backupTimer->Start(dbParameters.backup_interval);
+        backupTimer.Start(dbParameters.backup_interval);
     }
-    ttlTimer->Start(1);
+    ttlTimer.Start(1);
 
     // fancy ascii art
     cout
@@ -214,8 +213,8 @@ int main(int argc, char **argv)
 
     // delete socket;
     // delete controller;
-    delete backupTimer;
-    delete ttlTimer;
+    // delete backupTimer;
+    // delete ttlTimer;
 
     return 0;
 }
