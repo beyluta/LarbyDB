@@ -73,7 +73,6 @@ public:
     {
         close(newSocketfd);
         close(socketfd);
-        std::cout << "~Socket()\n";
     }
 
     void SetPort(const char* port)

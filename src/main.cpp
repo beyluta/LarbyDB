@@ -50,10 +50,10 @@ int TTLTimer(int arg)
     return 0;
 }
 
+//gets called on receiving an interrupt signal.
 void OnInterrupt(int sigInt)
 {
-    // delete backupTimer;
-    // delete ttlTimer;
+    cout << "\nStopped." << endl;
     exit(sigInt);
 }
 
@@ -130,8 +130,6 @@ int main(int argc, char **argv)
         PromptBool("generate authentication key? (y/n): ", dbParameters.generate_key, DEFAULT_GENERATE_KEY);
     }
     
-    //TODO: there probably is a way to make the timers stack allocated. Look into that.
-    Timer ttlTimer;
     backupTimer.Subscribe(BackupHandlerMessage, 0);
     ttlTimer.Subscribe(TTLTimer, 0);
 
@@ -210,11 +208,5 @@ int main(int argc, char **argv)
     cout << "Database Initialized. " << std::endl;
 
     serverSocket.Listen();
-
-    // delete socket;
-    // delete controller;
-    // delete backupTimer;
-    // delete ttlTimer;
-
     return 0;
 }
