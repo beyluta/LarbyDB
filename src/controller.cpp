@@ -1,5 +1,4 @@
 #include "controller.h"
-
 class Controller
 {
 private:
@@ -46,9 +45,7 @@ public:
 
         if (words[0].find("AUTH") != string::npos && words.size() > 1)
         {
-            string &key = words[1];
-
-            if (hashtables[0].Contains(key))
+            if (hashtables[0].Get(DB_KEY_POSITION) == words[1])
             {
                 hashtables[0].Add(tempIP);
                 return GetHttpStatusCode(200);
@@ -155,10 +152,10 @@ public:
         return GetHttpStatusCode(401);
     }
 
-    std::string GenerateKey(int length = 16)
+    void GenerateKey(int length = 16)
     {
         srand(time(nullptr));
-        std::string key;
+        string key;
         for (int i = 0; i < length; i++)
         {
             switch (rand() % 3)
@@ -174,9 +171,8 @@ public:
                 break;
             }
         }
-        std::string output = key;
-        hashtables[0].Add(key);
-        return output;
+        hashtables[0].Remove(hashtables[0].Hash(DB_KEY_POSITION));
+        hashtables[0].Add(DB_KEY_POSITION, key);
     }
 
     bool IsAuthorized()

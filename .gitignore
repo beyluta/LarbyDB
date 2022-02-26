@@ -3,3 +3,6 @@
 .vscode/settings.json
 LarbyDB
 Backups/*
+src/main
+config.conf
+src/config.conf

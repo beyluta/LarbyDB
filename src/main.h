@@ -7,3 +7,4 @@
 #include "timer.cpp"
 #include "backuphandler.cpp"
 #include "signal.h"
+#include "config.h"

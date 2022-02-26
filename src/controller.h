@@ -7,3 +7,6 @@
 #include "socket.h"
 #include "httpcodes.h"
 #include "packet.h"
+
+// where the authentication key is stored in the db
+#define DB_KEY_POSITION "K"
