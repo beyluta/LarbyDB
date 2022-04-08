@@ -27,14 +27,13 @@ int TTLTimer(int arg)
         if (controller.packets.at(i).time_to_live > 0)
         {
             controller.packets.at(i).time_to_live--;
+            continue;
         }
-        else
-        {
-            int table = controller.packets.at(i).table;
-            int hash = controller.packets.at(i).hash;
-            controller.packets.erase(controller.packets.begin() + i);
-            controller.hashtables[table].Remove(hash);
-        }
+
+        int table = controller.packets.at(i).table;
+        int hash = controller.packets.at(i).hash;
+        controller.packets.erase(controller.packets.begin() + i);
+        controller.hashtables[table].Remove(hash);
     }
     return 0;
 }
