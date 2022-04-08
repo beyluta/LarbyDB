@@ -7,20 +7,12 @@ Socket serverSocket;
 Timer backupTimer;
 Timer ttlTimer;
 
-/* Event handler which triggers when a socket message is received
-   through an available TCP port. The message and IP address of the client
-   will be exposed during the transaction. */
 std::string MessageReceived(const char *msg, const char *ip)
 {
-    if (strlen(msg) > 0)
-    {
-        controller.tempIP = ip;
-        return controller.GetResolvedResponse(msg);
-    }
-    return GetHttpStatusCode(404);
+    controller.tempIP = ip;
+    return strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : GetHttpStatusCode(404);
 }
 
-/* Thread timer which triggers every couple of seconds to peform a backup */
 int BackupHandlerMessage(int var)
 {
     BackupHandler handler(&controller, true);
@@ -28,9 +20,6 @@ int BackupHandlerMessage(int var)
     return 0;
 }
 
-/* Thread timer which triggers every second and is responsible for counting
-   down the time_to_live variable of every TTL-Enabled piece of data. When the
-   TTL reaches 0, it effectively expires and is removed from the database.*/
 int TTLTimer(int arg)
 {
     for (int i = 0; i < controller.packets.size(); i++)
@@ -50,7 +39,6 @@ int TTLTimer(int arg)
     return 0;
 }
 
-//gets called on receiving an interrupt signal.
 void OnInterrupt(int sigInt)
 {
     cout << "\nStopped." << endl;
@@ -66,8 +54,8 @@ int main(int argc, char **argv)
         vector<string> configArguments = ProcessConfig();
         int configSettings = SetParameters(dbParameters, configArguments);
         if (NUM_SETTINGS - configSettings > 0)
-            cout << "WARNING: config settings unset ("<< NUM_SETTINGS - configSettings << " out of "<< NUM_SETTINGS <<"), using fallback values.\n";
-        
+            cout << "WARNING: config settings unset (" << NUM_SETTINGS - configSettings << " out of " << NUM_SETTINGS << "), using fallback values.\n";
+
         if (argc > 1)
         {
             vector<string> launchArguments(argv + 1, argv + argc);
@@ -77,8 +65,7 @@ int main(int argc, char **argv)
 
     if (dbParameters.manual_config)
     {
-        // for boolean type settings
-        auto PromptBool = [&] (const char* msg, bool& setting, bool defaultVal)
+        auto PromptBool = [&](const char *msg, bool &setting, bool defaultVal)
         {
             int result = PromptYN(msg);
             if (result >= 0 && result <= 1)
@@ -93,9 +80,9 @@ int main(int argc, char **argv)
         };
 
         cout << "LarbyDB manual configuration mode.\n"
-        << "To Disable manual configuration, run with '--manual_config false'\n"
-        << "or set 'manual_config' to 'false' in config.conf\n\n";
-        
+             << "To Disable manual configuration, run with '--manual_config false'\n"
+             << "or set 'manual_config' to 'false' in config.conf\n\n";
+
         cout << "enter port: ";
         cin >> dbParameters.port;
 
@@ -114,7 +101,7 @@ int main(int argc, char **argv)
         }
 
         PromptBool("allow automatic backup? (y/n): ", dbParameters.allow_backup, DEFAULT_ALLOW_BACKUP);
-        // backup interval
+
         if (dbParameters.allow_backup)
         {
             cout << "set the backup interval: ";
@@ -129,7 +116,7 @@ int main(int argc, char **argv)
         }
         PromptBool("generate authentication key? (y/n): ", dbParameters.generate_key, DEFAULT_GENERATE_KEY);
     }
-    
+
     backupTimer.Subscribe(BackupHandlerMessage, 0);
     ttlTimer.Subscribe(TTLTimer, 0);
 
@@ -163,7 +150,7 @@ int main(int argc, char **argv)
                 cout << "loading from backup is disabled.\n";
         }
     }
-    const char* port = dbParameters.port.c_str();
+    const char *port = dbParameters.port.c_str();
     OnMessageReceived = &MessageReceived;
     serverSocket.SetPort(port);
 
@@ -173,27 +160,26 @@ int main(int argc, char **argv)
     }
     ttlTimer.Start(1);
 
-    // fancy ascii art
     cout
-    << "\n\n"
-    << " ###################################################\n"
-    << "##...._..............._.............____..____.....##\n"
-    << "##...| |....__._._.__| |__.._..._..|  _ \\| __ )....##\n"
-    << "##...| |.../ _` | '__| '_ \\| |.| |.| |.| |  _ \\....##\n"
-    << "##...| |__| (_| | |..| |_) | |_| |.| |_| | |_) |...##\n"
-    << "##...|_____\\__,_|_|..|_.__/.\\__, |.|____/|____/....##\n"
-    << "##..........................|___/..................##\n"
-    << " ###################################################\n"
-    << "\n\n";
+        << "\n\n"
+        << " ###################################################\n"
+        << "##...._..............._.............____..____.....##\n"
+        << "##...| |....__._._.__| |__.._..._..|  _ \\| __ )....##\n"
+        << "##...| |.../ _` | '__| '_ \\| |.| |.| |.| |  _ \\....##\n"
+        << "##...| |__| (_| | |..| |_) | |_| |.| |_| | |_) |...##\n"
+        << "##...|_____\\__,_|_|..|_.__/.\\__, |.|____/|____/....##\n"
+        << "##..........................|___/..................##\n"
+        << " ###################################################\n"
+        << "\n\n";
 
     cout
-    << "port: " << dbParameters.port << '\n'
-    << "tables: " << dbParameters.num_tables << '\n'
-    << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
-    << "backup_interval: "
-    << (dbParameters.allow_backup ? to_string(dbParameters.backup_interval)+" seconds" : "unset")
-    << '\n'
-    << "generate_key: " << BoolToStr(dbParameters.generate_key) << '\n';
+        << "port: " << dbParameters.port << '\n'
+        << "tables: " << dbParameters.num_tables << '\n'
+        << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
+        << "backup_interval: "
+        << (dbParameters.allow_backup ? to_string(dbParameters.backup_interval) + " seconds" : "unset")
+        << '\n'
+        << "generate_key: " << BoolToStr(dbParameters.generate_key) << '\n';
 
     if (dbParameters.generate_key)
     {
