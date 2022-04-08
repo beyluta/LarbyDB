@@ -53,7 +53,9 @@ int main(int argc, char **argv)
         vector<string> configArguments = ProcessConfig();
         int configSettings = SetParameters(dbParameters, configArguments);
         if (NUM_SETTINGS - configSettings > 0)
+        {
             cout << "WARNING: config settings unset (" << NUM_SETTINGS - configSettings << " out of " << NUM_SETTINGS << "), using fallback values.\n";
+        }
 
         if (argc > 1)
         {
@@ -146,7 +148,9 @@ int main(int argc, char **argv)
                 }
             }
             else
+            {
                 cout << "loading from backup is disabled.\n";
+            }
         }
     }
     const char *port = dbParameters.port.c_str();
