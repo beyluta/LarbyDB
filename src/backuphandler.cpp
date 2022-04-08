@@ -54,7 +54,7 @@ public:
         }
         file.CreateFile(configStringNoSpaces);
 
-        string content = "";
+        string content;
         for (int i = 0; i < controller->GetSize(); i++)
         {
             content += "{\"id\":\"" + to_string(i) + "\",\"data\":" + controller->hashtables[i].GetAll() + "}\n";
