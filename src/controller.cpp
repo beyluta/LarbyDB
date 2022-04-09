@@ -19,6 +19,7 @@ public:
         {
             numTables = 2;
         }
+
         hashtables.resize(numTables);
     }
 
@@ -27,20 +28,21 @@ public:
         return hashtables.size();
     }
 
-    /*Function to interpret the input string. Spilts the string into words,
-    then checks which commands to execute.*/
     string GetResolvedResponse(string request)
     {
         vector<string> words;
         string word;
+
         for (int i = 0; i < request.size(); i++)
         {
             word += request[i];
+
             if (request[i] == ' ' || request.size() - 1 == i)
             {
                 words.push_back(std::move(word));
             }
         }
+
         words.back().pop_back();
 
         if (words[0].find("AUTH") != string::npos && words.size() > 1)
@@ -53,19 +55,24 @@ public:
         }
 
         if (!IsAuthorized())
+        {
             return GetHttpStatusCode(401);
+        }
 
         if (words[0].find("SET") != string::npos && words.size() > 3)
         {
             string &key = words[1];
             key.pop_back();
-
             int table = atoi(words[2].c_str());
+
             if (table <= 0)
-                return GetHttpStatusCode(403); //0 shouldn't be accessible
+            {
+                return GetHttpStatusCode(403);
+            }
 
             int ttl = atoi(words[3].c_str());
-            string value = "";
+            string value;
+
             for (int i = 4; i < words.size(); i++)
             {
                 value += words[i];
@@ -79,6 +86,7 @@ public:
             if (table < hashtables.size())
             {
                 int hash = hashtables[table].Add(key, value);
+
                 if (ttl > 0)
                 {
                     Packet p;
@@ -87,6 +95,7 @@ public:
                     p.table = table;
                     packets.push_back(p);
                 }
+
                 return GetHttpStatusCode(201);
             }
         }
@@ -96,14 +105,18 @@ public:
             string &key = words[1];
             key.pop_back();
             int table = atoi(words[2].c_str());
-            if (table <= 0 || table >= hashtables.size())
-                return GetHttpStatusCode(403);
 
-            if (key.find("ALL") != string::npos) //change ALL to * later...
+            if (table <= 0 || table >= hashtables.size())
+            {
+                return GetHttpStatusCode(403);
+            }
+
+            if (key.find("ALL") != string::npos)
             {
                 if (words.size() > 3)
                 {
                     int dash = words[3].find("-");
+
                     if (dash != string::npos)
                     {
                         int start = atoi((words[3].substr(0, dash)).c_str());
@@ -114,7 +127,12 @@ public:
                     {
                         int amount = atoi(words[3].c_str());
                         int skip = 1;
-                        if (words.size() > 4) { skip = atoi(words[4].c_str()); }
+
+                        if (words.size() > 4)
+                        {
+                            skip = atoi(words[4].c_str());
+                        }
+
                         if (amount > 0 && skip > 0)
                         {
                             return hashtables[table].GetAmount(amount, skip);
@@ -137,8 +155,11 @@ public:
             string &key = words[1];
             key.pop_back();
             int table = atoi(words[2].c_str());
+
             if (table <= 0)
+            {
                 return GetHttpStatusCode(403);
+            }
 
             if (IsStringANumber(key))
             {
@@ -156,6 +177,7 @@ public:
     {
         srand(time(nullptr));
         string key;
+
         for (int i = 0; i < length; i++)
         {
             switch (rand() % 3)
@@ -171,15 +193,13 @@ public:
                 break;
             }
         }
+
         hashtables[0].Remove(hashtables[0].Hash(DB_KEY_POSITION));
         hashtables[0].Add(DB_KEY_POSITION, key);
     }
 
     bool IsAuthorized()
     {
-        if (hashtables[0].Contains(tempIP) || !protectedByKey)
-            return true;
-        else
-            return false;
+        return hashtables[0].Contains(tempIP) || !protectedByKey ? true : false;
     }
 };
