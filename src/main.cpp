@@ -92,6 +92,7 @@ int main(int argc, char **argv)
         string numTablesInput;
         cin >> numTablesInput;
         int numTables = atoi(numTablesInput.c_str());
+
         if (numTables > 1)
         {
             dbParameters.num_tables = numTables;
@@ -116,6 +117,7 @@ int main(int argc, char **argv)
             string dflt = DEFAULT_BACKUP_INTERVAL;
             ParseBackupInterval(dbParameters, dflt);
         }
+
         PromptBool("generate authentication key? (y/n): ", dbParameters.generate_key, DEFAULT_GENERATE_KEY);
     }
 
@@ -156,6 +158,7 @@ int main(int argc, char **argv)
             }
         }
     }
+
     const char *port = dbParameters.port.c_str();
     OnMessageReceived = &MessageReceived;
     serverSocket.SetPort(port);
@@ -164,6 +167,7 @@ int main(int argc, char **argv)
     {
         backupTimer.Start(dbParameters.backup_interval);
     }
+
     ttlTimer.Start(1);
 
     cout
@@ -197,6 +201,7 @@ int main(int argc, char **argv)
     {
         std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
     }
+
     cout << "Database Initialized. " << std::endl;
 
     serverSocket.Listen();

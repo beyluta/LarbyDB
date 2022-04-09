@@ -63,7 +63,7 @@ vector<string> ProcessConfig()
             }
         }
 
-        if (args.size() < 1) // if empty, fill in with default values.
+        if (args.size() < 1)
         {
             configFile.OverwriteFile("config.conf",
                                      "#LarbyDB config\n# If set to true, will ask the user to input parameters on launch:\nmanual_config " +
@@ -86,34 +86,22 @@ vector<string> ProcessConfig()
     return args;
 }
 
-int ParseBackupInterval(Parameters &params, string &intervalStr)
+void ParseBackupInterval(Parameters &params, string &intervalStr)
 {
-    int result = 0;
-    int interval = atoi(intervalStr.c_str());
+    int interval = atoi(intervalStr.c_str()) > 0 ? atoi(intervalStr.c_str()) : atoi(string(DEFAULT_BACKUP_INTERVAL).c_str());
 
-    if (interval < 1)
+    if (intervalStr.find("h") == intervalStr.size() - 1)
     {
-        string dflt = DEFAULT_BACKUP_INTERVAL;
-        ParseBackupInterval(params, dflt);
+        params.backup_interval = interval * 3600;
+    }
+    else if (intervalStr.find("m") == intervalStr.size() - 1)
+    {
+        params.backup_interval = interval * 60;
     }
     else
     {
-        result = 1;
-
-        if (intervalStr.find("h") == intervalStr.size() - 1)
-        {
-            params.backup_interval = interval * 3600;
-        }
-        else if (intervalStr.find("m") == intervalStr.size() - 1)
-        {
-            params.backup_interval = interval * 60;
-        }
-        else
-        {
-            params.backup_interval = interval;
-        }
+        params.backup_interval = interval;
     }
-    return result;
 }
 
 // how many settings there are in total
@@ -173,6 +161,7 @@ int SetParameters(Parameters &params, vector<string> &str)
             }
             continue;
         }
+
         if (!settings_set[num_tables] && str[i].find("--num_tables") != string::npos)
         {
             settings_set[num_tables] = true;
@@ -190,20 +179,15 @@ int SetParameters(Parameters &params, vector<string> &str)
             }
             continue;
         }
+
         if (!settings_set[backup_interval] && str[i].find("--backup_interval") != string::npos)
         {
             settings_set[backup_interval] = true;
-            int result = ParseBackupInterval(params, str[i + 1]);
-
-            if (result < 1)
-            {
-                cout << "backup_interval: unset, using default (" << params.backup_interval << ")\n";
-            }
-            settingsNum += result;
+            ParseBackupInterval(params, str[i + 1]);
+            settingsNum++;
             continue;
         }
 
-        // TODO: improve these in the future
         if (!settings_set[generate_key] && str[i].find("--generate_key") != string::npos)
         {
             settings_set[generate_key] = true;
@@ -225,6 +209,7 @@ int SetParameters(Parameters &params, vector<string> &str)
             }
             continue;
         }
+
         if (!settings_set[allow_backup] && str[i].find("--allow_backup") != string::npos)
         {
             settings_set[allow_backup] = true;
