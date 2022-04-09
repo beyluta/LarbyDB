@@ -90,6 +90,7 @@ int ParseBackupInterval(Parameters &params, string &intervalStr)
 {
     int result = 0;
     int interval = atoi(intervalStr.c_str());
+
     if (interval < 1)
     {
         string dflt = DEFAULT_BACKUP_INTERVAL;
@@ -266,7 +267,14 @@ int SetParameters(Parameters &params, vector<string> &str)
     return settingsNum;
 }
 
-int PromptYN(const char *msg)
+enum UserInputState
+{
+    YES = 1,
+    NO = 0,
+    INVALID = -1,
+};
+
+UserInputState PromptYN(const char *msg)
 {
     string input;
     cout << msg;
@@ -274,14 +282,14 @@ int PromptYN(const char *msg)
 
     if (input == "N" || input == "n")
     {
-        return 0;
+        return NO;
     }
     else if (input == "Y" || input == "y")
     {
-        return 1;
+        return YES;
     }
     else
     {
-        return -1; // for invalid input
+        return INVALID;
     }
 }

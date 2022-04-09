@@ -68,10 +68,11 @@ int main(int argc, char **argv)
     {
         auto PromptBool = [&](const char *msg, bool &setting, bool defaultVal)
         {
-            int result = PromptYN(msg);
-            if (result >= 0 && result <= 1)
+            UserInputState answer = PromptYN(msg);
+
+            if (answer == YES || answer == NO)
             {
-                setting = result;
+                setting = answer;
             }
             else
             {
@@ -132,12 +133,14 @@ int main(int argc, char **argv)
             }
             else if (dbParameters.load_backup == "ask")
             {
-                int shouldLoad = PromptYN("Backup file found. Load from backup? (y/n): ");
-                while (shouldLoad < 0)
+                UserInputState answer = PromptYN("Backup file found. Load from backup? (y/n): ");
+
+                while (answer == INVALID)
                 {
-                    shouldLoad = PromptYN("Invalid input, enter 'y' or 'n': ");
+                    answer = PromptYN("Invalid input, enter 'y' or 'n': ");
                 }
-                if (shouldLoad >= 1)
+
+                if (answer == YES)
                 {
                     handler2.LoadBackup();
                     cout << "Loaded from backup.\n";
