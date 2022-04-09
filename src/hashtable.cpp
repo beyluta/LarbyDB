@@ -82,14 +82,7 @@ public:
             return "";
         }
 
-        if (table.at(hash) == "")
-        {
-            return "";
-        }
-        else
-        {
-            return table.at(hash);
-        }
+        return table.at(hash) == "" ? "" : table.at(hash);
     }
 
     string GetAll()
@@ -204,12 +197,7 @@ public:
             return false;
         }
 
-        if (table.at(hash) != "" && table.at(hash) == value)
-        {
-            return true;
-        }
-
-        return false;
+        return table.at(hash) != "" && table.at(hash) == value ? true : false;
     }
 
     void PrintTable()
