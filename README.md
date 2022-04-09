@@ -24,6 +24,7 @@ Alternatively, you can compile it with g++: `g++ -o LarbyDB -pthread -lpthread s
 To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB --port 3000`).<br>
 
 ## Database commands
+`AUTH <KEY>` - authorize current device to write and read from the database<br>
 `SET <KEY> <TABLE> <EXPIRATION IN SECONDS> <CONTENT>` - set a value<br>
 `GET <KEY> <TABLE>` - get a value<br>
 `GET ALL <TABLE>` - get all values<br>
