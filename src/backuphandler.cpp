@@ -33,18 +33,21 @@ public:
         }
 
         string dbPath = string(homedir) + "/LarbyDB/";
+
         if (!file.DirectoryExists(dbPath))
         {
             file.CreateDirectory(dbPath);
         }
 
         string backupPath = dbPath + "Backups/";
+
         if (!file.DirectoryExists(backupPath))
         {
             file.CreateDirectory(backupPath);
         }
 
         string configStringNoSpaces = "";
+
         for (int i = 0; i < configFile.length(); i++)
         {
             if (configFile[i] != ' ' && configFile[i] != '\n')
@@ -52,13 +55,16 @@ public:
                 configStringNoSpaces += configFile[i];
             }
         }
+
         file.CreateFile(configStringNoSpaces);
 
         string content;
+
         for (int i = 0; i < controller->GetSize(); i++)
         {
             content += "{\"id\":\"" + to_string(i) + "\",\"data\":" + controller->hashtables[i].GetAll() + "}\n";
         }
+
         file.OverwriteFile(configStringNoSpaces, content);
     }
 
