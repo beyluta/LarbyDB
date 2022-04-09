@@ -1,6 +1,8 @@
-src/main.exe
-src/main
 .vscode/tasks.json
 .vscode/launch.json
 .vscode/settings.json
+LarbyDB
+Backups/*
 src/main
+config.conf
+src/config.conf

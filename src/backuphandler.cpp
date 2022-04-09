@@ -9,20 +9,16 @@ private:
     bool clear_backups = false;
 
 public:
-    BackupHandler(Controller *controller_, bool clear_backups_)
+    BackupHandler(Controller *controller, bool clear_backups)
     {
-        clear_backups = clear_backups_;
+        this->clear_backups = clear_backups;
         config_path = string(homedir) + "/LarbyDB/Backups/";
-        controller = controller_;
+        this->controller = controller;
     }
 
     bool CheckBackup()
     {
-        if (file.GetFilesInDirectory(config_path).size() > 0)
-        {
-            return true;
-        }
-        return false;
+        return file.GetFilesInDirectory(config_path).size() > 0 ? true : false;
     }
 
     void BeginBackup()
@@ -37,18 +33,21 @@ public:
         }
 
         string dbPath = string(homedir) + "/LarbyDB/";
+
         if (!file.DirectoryExists(dbPath))
         {
             file.CreateDirectory(dbPath);
         }
 
         string backupPath = dbPath + "Backups/";
+
         if (!file.DirectoryExists(backupPath))
         {
             file.CreateDirectory(backupPath);
         }
 
         string configStringNoSpaces = "";
+
         for (int i = 0; i < configFile.length(); i++)
         {
             if (configFile[i] != ' ' && configFile[i] != '\n')
@@ -56,13 +55,16 @@ public:
                 configStringNoSpaces += configFile[i];
             }
         }
+
         file.CreateFile(configStringNoSpaces);
 
-        string content = "";
+        string content;
+
         for (int i = 0; i < controller->GetSize(); i++)
         {
             content += "{\"id\":\"" + to_string(i) + "\",\"data\":" + controller->hashtables[i].GetAll() + "}\n";
         }
+
         file.OverwriteFile(configStringNoSpaces, content);
     }
 
@@ -72,20 +74,25 @@ public:
         string filepath = config_path + files[0];
         ifstream file(filepath);
         string line;
-        string id = "";
+
         while (getline(file, line))
         {
             string table = GetJSONFieldValues(line, "id");
             string objectString = GetJSONFieldValues(line, "data");
             vector<string> parsedObjects = SplitJSONStringObjects(objectString);
+
             if (objectString.length() > 0)
             {
                 for (int i = 0; i < parsedObjects.size(); i += 2)
                 {
                     string key = GetJSONFieldValues(parsedObjects[i], "index");
                     string value = GetJSONFieldValues(parsedObjects[i + 1], "value");
+
                     if (controller->GetSize() <= atoi(table.c_str()))
+                    {
                         controller->hashtables.resize(atoi(table.c_str()) + 1);
+                    }
+
                     controller->hashtables[atoi(table.c_str())].AddTo(atoi(key.c_str()), value);
                 }
             }

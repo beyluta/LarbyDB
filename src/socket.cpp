@@ -65,7 +65,6 @@ public:
             if (n < 0)
             {
                 std::cout << "Couldn't write to socket";
-                return;
             }
         }
     }
@@ -76,7 +75,7 @@ public:
         close(socketfd);
     }
 
-    Socket(const char *port)
+    void SetPort(const char* port)
     {
         Socket::port = port;
     }

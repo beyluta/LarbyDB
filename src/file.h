@@ -46,6 +46,7 @@ public:
         {
             DIR *dir;
             struct dirent *ent;
+
             if ((dir = opendir(dirname.c_str())) != NULL)
             {
                 while ((ent = readdir(dir)) != NULL)
@@ -72,6 +73,7 @@ public:
     {
         DIR *dir;
         dir = opendir(directory.c_str());
+
         if (dir)
         {
             closedir(dir);
@@ -85,6 +87,7 @@ public:
         std::vector<std::string> files;
         DIR *dir;
         struct dirent *ent;
+
         if ((dir = opendir(directory.c_str())) != NULL)
         {
             while ((ent = readdir(dir)) != NULL)
