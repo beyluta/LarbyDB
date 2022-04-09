@@ -1,4 +1,3 @@
-// careful with changing these: things might break.
 #define DEFAULT_PORT "8080"
 #define DEFAULT_MANUAL_CONFIG false
 #define DEFAULT_GENERATE_KEY true
@@ -6,6 +5,7 @@
 #define DEFAULT_NUM_TABLES 2
 #define DEFAULT_BACKUP_INTERVAL "30m"
 #define DEFAULT_LOAD_BACKUP "ask"
+#define DEFAULT_NUM_SETTINGS 7
 
 struct Parameters
 {
@@ -16,6 +16,13 @@ struct Parameters
     bool manual_config;
     int backup_interval;
     string load_backup;
+};
+
+enum UserInputState
+{
+    YES = 1,
+    NO = 0,
+    INVALID = -1,
 };
 
 string BoolToStr(bool b)
@@ -104,11 +111,9 @@ void ParseBackupInterval(Parameters &params, string &intervalStr)
     }
 }
 
-// how many settings there are in total
-#define NUM_SETTINGS 7
 int SetParameters(Parameters &params, vector<string> &str)
 {
-    bool settings_set[NUM_SETTINGS]{false};
+    bool settings_set[DEFAULT_NUM_SETTINGS]{false};
     enum
     {
         manual_config,
@@ -251,13 +256,6 @@ int SetParameters(Parameters &params, vector<string> &str)
     }
     return settingsNum;
 }
-
-enum UserInputState
-{
-    YES = 1,
-    NO = 0,
-    INVALID = -1,
-};
 
 UserInputState PromptYN(const char *msg)
 {

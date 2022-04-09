@@ -52,9 +52,9 @@ int main(int argc, char **argv)
     {
         vector<string> configArguments = ProcessConfig();
         int configSettings = SetParameters(dbParameters, configArguments);
-        if (NUM_SETTINGS - configSettings > 0)
+        if (DEFAULT_NUM_SETTINGS - configSettings > 0)
         {
-            cout << "WARNING: config settings unset (" << NUM_SETTINGS - configSettings << " out of " << NUM_SETTINGS << "), using fallback values.\n";
+            cout << "WARNING: config settings unset (" << DEFAULT_NUM_SETTINGS - configSettings << " out of " << DEFAULT_NUM_SETTINGS << "), using fallback values.\n";
         }
 
         if (argc > 1)
