@@ -5,15 +5,17 @@ class Hashtable
 {
 private:
     vector<string> table;
-    
+
 public:
     int Hash(string value)
     {
         int hash = 0;
+
         for (int i = 0; i < value.length(); i++)
         {
             hash += value[i];
         }
+
         return hash;
     }
 
@@ -33,6 +35,7 @@ public:
     void Add(string &value)
     {
         int hash = Hash(value);
+
         if (table.size() <= hash)
         {
             table.resize(hash + 1);
@@ -42,7 +45,6 @@ public:
         {
             table.at(hash) = move(value);
         }
-
         else
         {
             cout << GetHttpStatusCode(507) << endl;
@@ -52,6 +54,7 @@ public:
     int Add(string key, string &value)
     {
         int hash = Hash(key);
+
         if (table.size() <= hash)
         {
             table.resize(hash + 1);
@@ -62,18 +65,18 @@ public:
             table.at(hash) = move(value);
             return hash;
         }
-
         else
         {
             cout << GetHttpStatusCode(507) << endl;
         }
 
-        return hash; //TODO: something weird is going on with the returns, check out with the debugger later...
+        return hash; // TODO: something weird is going on with the returns, check out with the debugger later...
     }
 
     string Get(string key)
     {
         int hash = Hash(key);
+
         if (table.size() <= hash)
         {
             return "";
@@ -83,7 +86,6 @@ public:
         {
             return "";
         }
-
         else
         {
             return table.at(hash);
@@ -93,6 +95,7 @@ public:
     string GetAll()
     {
         string result = "[";
+
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")
@@ -100,18 +103,24 @@ public:
                 result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},";
             }
         }
+
         if (result[result.size() - 1] == ',')
         {
             result.pop_back();
         }
+
         return result + "]";
     }
 
     string GetInRange(int start, int end)
     {
-        if (start > end) { return "[]"; }
+        if (start > end)
+        {
+            return "[]";
+        }
         string result = "[";
         int a = 0;
+
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")
@@ -120,13 +129,16 @@ public:
                 {
                     result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},\n";
                 }
+
                 a++;
             }
         }
+
         if (result[result.size() - 1] == ',')
         {
             result.pop_back();
         }
+
         return result + "]";
     }
 
@@ -134,6 +146,7 @@ public:
     {
         string result = "[";
         int a = 0;
+
         for (int i = 0; i < table.size(); i++)
         {
             if (table.at(i) != "")
@@ -142,20 +155,28 @@ public:
                 {
                     result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},\n";
                 }
+
                 a++;
             }
-            if (a >= amount * skip) { break; }
+
+            if (a >= amount * skip)
+            {
+                break;
+            }
         }
+
         if (result[result.size() - 1] == ',')
         {
             result.pop_back();
         }
+
         return result + "]";
     }
 
     void Remove(string value)
     {
         int hash = Hash(value);
+
         if (table.size() <= hash)
         {
             return;
@@ -177,14 +198,17 @@ public:
     bool Contains(string value)
     {
         int hash = Hash(value);
+
         if (table.size() <= hash)
         {
             return false;
         }
+
         if (table.at(hash) != "" && table.at(hash) == value)
         {
             return true;
         }
+
         return false;
     }
 
