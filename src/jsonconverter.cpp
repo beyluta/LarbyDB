@@ -98,35 +98,52 @@ private:
         return charIndexes;
     }
 
-    // { "key":"this", "value":"that" }
+    string GetSubstringBetweenIndices(string str, int start, int end)
+    {
+        string result;
+
+        for (int i = start + 1; i < end; i++)
+        {
+            result += str[i];
+        }
+
+        return result;
+    }
+
 public:
     Json(string json)
     {
-        vector<int> charIndexes = GetCharCount("\"[]{}", json);
+        vector<int> charIndexes = GetCharCount("\"[]{}:,", json);
+        string lastValue;
+        int count = 1;
 
-        if (charIndexes.size() % 2 != 0)
+        for (int i = 0; i < charIndexes.size(); i++)
         {
-            cout << "Invalid JSON Object: " << json << endl;
-            return;
-        }
+            char charPtr = json[charIndexes[i]];
+            char nextCharPtr = json[charIndexes[i + 1]];
+            
+            if (charPtr == nextCharPtr)
+            {
+                int currentIndex = charIndexes[i];
+                int nextIndex = charIndexes[i + 1];
+                string substr = GetSubstringBetweenIndices(json, currentIndex, nextIndex);
+                
+                if (count <= 0)
+                {
+                    Add(lastValue, substr);
+                    count = 2;
+                }
 
-        
-        
-        // for (int i = 0; i < charIndexes.size(); i++)
-        // {
-        //     if (i + 1 < charIndexes.size())
-        //     {
-        //         if (json[charIndexes[i]] == json[charIndexes[i + 1]])
-        //         {
-        //             cout << json[charIndexes[i]] << " and " << json[charIndexes[i + 1]] << endl;
-        //         }
-        //     }
-        // }
+                count--;
+                lastValue = substr;
+                i++;
+            }
+        }
     }
 
     string operator[](string key)
     {
-        return "";
+        return Get(key);
     }
 };
 
@@ -134,6 +151,6 @@ int main()
 {
     // JsonParser parser;
     // cout << parser.GetType("[{ \"key\" : \"value\"}]") << "\n";
-    Json json("{ \"key\" : \"value\" }");
+    Json json("{ \"key\" : \"value\", \"name\" : \"pedro\" }");
     return 0;
 }
