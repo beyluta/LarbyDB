@@ -115,6 +115,28 @@ private:
         return str;
     }
 
+    string GetObjectFromJsonArray(int index)
+    {
+        vector<int> charIndexes = GetCharCount("{}", json);
+        int iteration = 0;
+
+        for (int i = 0; i < charIndexes.size(); i += 2)
+        {
+            string substring = GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1], false);
+
+            if (iteration == index)
+            {
+                return substring;
+            }
+            else if (i % 2 == 0)
+            {
+                iteration++;
+            }
+        }
+
+        return "";
+    }
+
 public:
     string json;
 
@@ -168,7 +190,7 @@ public:
 
     string operator[] (int key)
     {
-        return "";
+        return GetObjectFromJsonArray(key);
     }
 
     string operator[](string key)
@@ -179,9 +201,10 @@ public:
 
 int main()
 {
-    Json json("{ \"people\" : [{ \"name\":\"beyluta\" }], \"single\":\"pedro :<\" }");
+    Json json("{ \"people\" : [{ \"name\":\"beyluta\" }, { \"name\":\"micha\" }], \"single\":\"pedro :<\" }");
     cout << json["people"] << endl;
-    Json json2(json["people"]);
-    cout << json2["name"] << endl;
+    // Json json2(json["people"]);
+    // cout << json2["name"] << endl;
+    // cout << json2[1] << endl;
     return 0;
 }

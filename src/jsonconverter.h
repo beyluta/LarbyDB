@@ -18,6 +18,7 @@ namespace JsonUtilities
         string GetSubstringBetweenIndices(string str, int start, int end, bool exclusive = true);
         bool CompareAssert(char a, char b);
         string TrimString(string str);
+        string GetObjectFromJsonArray(int index);
 
     public:
         string json;
