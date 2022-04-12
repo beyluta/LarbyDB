@@ -122,18 +122,18 @@ public:
     {
         json = TrimString(json);
         this->json = json;
-        int bracketsAndBracesToTrim = 0;
+        int removeCharsCount = 0;
 
         for (int i = 0; i < json.length(); i++)
         {
             if (json[i] == '\"')
             {
-                json.erase(0, bracketsAndBracesToTrim);
-                json.erase(json.length() - bracketsAndBracesToTrim, bracketsAndBracesToTrim);
+                json.erase(0, removeCharsCount);
+                json.erase(json.length() - removeCharsCount, removeCharsCount);
                 break;
             }
 
-            bracketsAndBracesToTrim++;
+            removeCharsCount++;
         }
         
         vector<int> charIndexes = GetCharCount("\"[]{}", json);
