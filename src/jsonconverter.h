@@ -32,7 +32,7 @@ namespace JsonUtilities
         void Add(string key, string value);
         string Get(string key);
         vector<int> GetCharCount(string includedCharacters, string json);
-        string GetSubstringBetweenIndices(string str, int start, int end);
+        string GetSubstringBetweenIndices(string str, int start, int end, bool exclusive = true);
         bool CompareAssert(char a, char b);
 
     public:

@@ -117,11 +117,12 @@ private:
         return charIndexes;
     }
 
-    string GetSubstringBetweenIndices(string str, int start, int end)
+    string GetSubstringBetweenIndices(string str, int start, int end, bool exclusive = true)
     {
         string result;
+        end = !exclusive ? end += 1 : end;
 
-        for (int i = start + 1; i < end; i++)
+        for (int i = start + exclusive; i < end; i++)
         {
             result += str[i];
         }
@@ -154,7 +155,8 @@ public:
         {            
             if (CompareAssert(json[charIndexes[i]], json[charIndexes[i + 1]]))
             {
-                string substr = GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1]);
+                string substr = count > 0 ? GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1]) :
+                GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1], !CompareAssert(json[charIndexes[i]], '['));
                 
                 if (count <= 0)
                 {
@@ -179,7 +181,7 @@ int main()
 {
     // JsonParser parser;
     // cout << parser.GetType("[{ \"key\" : \"value\"}]") << "\n";
-    Json json("{ \"name\" : [{ \"age\":\"21\" }], \"show\":\"neptunia\"");
-    cout << json["name"] << endl;
+    Json json("{ \"person\" : [{ \"name\":\"larry\" }], \"Movie\":\"The last airbender\", \"people\" : [{ \"name\":\"beyluta\" }] }");
+    cout << json["people"] << endl;
     return 0;
 }
