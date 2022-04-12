@@ -1,42 +1,5 @@
 #include "jsonconverter.h"
 
-class JsonParser
-{
-public:
-    enum JsonType
-    {
-        JSON_OBJECT = 0,
-        JSON_ARRAY = 1,
-        JSON_STRING = 2,
-        JSON_NUMBER = 3,
-        JSON_TRUE = 4,
-        JSON_FALSE = 5,
-        JSON_NULL = 6
-    };
-
-    string Get(string json)
-    {
-        return json;
-    }
-
-    JsonType GetType(string json)
-    {
-        json.erase(std::remove_if(json.begin(), json.end(), ::isspace), json.end());
-        int end = json.length() - 1;
-
-        if (json[0] == '{' && json[end] == '}')
-        {
-            return JSON_OBJECT;
-        }
-        if (json[0] == '[' && json[end] == ']')
-        {
-            return JSON_ARRAY;
-        }
-
-        return JSON_NULL;
-    }
-};
-
 class Json
 {
 private:
@@ -112,13 +75,7 @@ private:
                     charIndexes.push_back(i);
                 }
             }
-        }
-
-        // for (auto i: charIndexes)
-        // {
-        //     cout << json[i];
-        // }
-        
+        }     
 
         return charIndexes;
     }
@@ -150,9 +107,35 @@ private:
         return false;
     }
 
+    string TrimString(string str) 
+    {
+        const char* typeOfWhitespaces = " \t\n\r\f\v";
+        str.erase(str.find_last_not_of(typeOfWhitespaces) + 1);
+        str.erase(0,str.find_first_not_of(typeOfWhitespaces));
+        return str;
+    }
+
 public:
+    string json;
+
     Json(string json)
     {
+        json = TrimString(json);
+        this->json = json;
+        int bracketsAndBracesToTrim = 0;
+
+        for (int i = 0; i < json.length(); i++)
+        {
+            if (json[i] == '\"')
+            {
+                json.erase(0, bracketsAndBracesToTrim);
+                json.erase(json.length() - bracketsAndBracesToTrim, bracketsAndBracesToTrim);
+                break;
+            }
+
+            bracketsAndBracesToTrim++;
+        }
+        
         vector<int> charIndexes = GetCharCount("\"[]{}", json);
         string lastValue;
         int count = 1;
@@ -191,9 +174,7 @@ public:
 
 int main()
 {
-    // JsonParser parser;
-    // cout << parser.GetType("[{ \"key\" : \"value\"}]") << "\n";
-    Json json(" \"person\" : { \"name\":\"larry\" }, \"people\" : [{ \"name\":\"beyluta\" }], \"single\":\"pedro :<\" ");
-    cout << json["single"] << endl;
+    Json json("{ \"person\" : { \"name\":\"larry\" }, \"people\" : [{ \"name\":\"beyluta\" }], \"single\":\"pedro :<\" }");
+    cout << json["people"] << endl;
     return 0;
 }
