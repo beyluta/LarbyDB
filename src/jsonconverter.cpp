@@ -89,7 +89,7 @@ private:
         {
             for (int j = 0; j < includedCharacters.length(); j++)
             {
-                if (json[i] == includedCharacters[j] && json[i] == '[')
+                if (json[i] == includedCharacters[j] && json[i] == '[' || json[i] == '{')
                 {
                     if (openedBracesOrBrackets <= 0)
                     {
@@ -98,7 +98,7 @@ private:
 
                     openedBracesOrBrackets++;
                 }
-                else if (json[i] == includedCharacters[j] && json[i] == ']')
+                else if (json[i] == includedCharacters[j] && json[i] == ']' || json[i] == '}')
                 {
                     if (openedBracesOrBrackets <= 1)
                     {
@@ -113,6 +113,12 @@ private:
                 }
             }
         }
+
+        // for (auto i: charIndexes)
+        // {
+        //     cout << json[i];
+        // }
+        
 
         return charIndexes;
     }
@@ -155,8 +161,14 @@ public:
         {            
             if (CompareAssert(json[charIndexes[i]], json[charIndexes[i + 1]]))
             {
+                bool isEnclosedInBracketsOrBraces = CompareAssert(json[charIndexes[i]], '[') || CompareAssert(json[charIndexes[i]], '{') ? true : false;
                 string substr = count > 0 ? GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1]) :
-                GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1], !CompareAssert(json[charIndexes[i]], '['));
+                GetSubstringBetweenIndices(
+                    json,
+                    charIndexes[i],
+                    charIndexes[i + 1],
+                    !isEnclosedInBracketsOrBraces
+                );
                 
                 if (count <= 0)
                 {
@@ -181,7 +193,7 @@ int main()
 {
     // JsonParser parser;
     // cout << parser.GetType("[{ \"key\" : \"value\"}]") << "\n";
-    Json json("{ \"person\" : [{ \"name\":\"larry\" }], \"Movie\":\"The last airbender\", \"people\" : [{ \"name\":\"beyluta\" }] }");
-    cout << json["people"] << endl;
+    Json json(" \"person\" : { \"name\":\"larry\" }, \"people\" : [{ \"name\":\"beyluta\" }], \"single\":\"pedro :<\" ");
+    cout << json["single"] << endl;
     return 0;
 }
