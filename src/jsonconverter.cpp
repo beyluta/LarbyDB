@@ -83,12 +83,31 @@ private:
     vector<int> GetCharCount(string includedCharacters, string json)
     {
         vector<int> charIndexes;
+        int openedBracesOrBrackets = 0;
 
         for (int i = 0; i < json.length(); i++)
         {
             for (int j = 0; j < includedCharacters.length(); j++)
             {
-                if (json[i] == includedCharacters[j])
+                if (json[i] == includedCharacters[j] && json[i] == '[')
+                {
+                    if (openedBracesOrBrackets <= 0)
+                    {
+                        charIndexes.push_back(i);
+                    }
+
+                    openedBracesOrBrackets++;
+                }
+                else if (json[i] == includedCharacters[j] && json[i] == ']')
+                {
+                    if (openedBracesOrBrackets <= 1)
+                    {
+                        charIndexes.push_back(i);
+                    }
+
+                    openedBracesOrBrackets--;
+                }
+                else if (json[i] == includedCharacters[j] && openedBracesOrBrackets <= 0)
                 {
                     charIndexes.push_back(i);
                 }
@@ -110,23 +129,32 @@ private:
         return result;
     }
 
+    bool CompareAssert(char a, char b)
+    {    
+        if (a == b)
+        {
+            return true;
+        }
+        else if (a == '[' && b == ']' || a == '{' && b == '}')
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 public:
     Json(string json)
     {
-        vector<int> charIndexes = GetCharCount("\"[]{}:,", json);
+        vector<int> charIndexes = GetCharCount("\"[]{}", json);
         string lastValue;
         int count = 1;
 
         for (int i = 0; i < charIndexes.size(); i++)
-        {
-            char charPtr = json[charIndexes[i]];
-            char nextCharPtr = json[charIndexes[i + 1]];
-            
-            if (charPtr == nextCharPtr)
+        {            
+            if (CompareAssert(json[charIndexes[i]], json[charIndexes[i + 1]]))
             {
-                int currentIndex = charIndexes[i];
-                int nextIndex = charIndexes[i + 1];
-                string substr = GetSubstringBetweenIndices(json, currentIndex, nextIndex);
+                string substr = GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1]);
                 
                 if (count <= 0)
                 {
@@ -151,6 +179,7 @@ int main()
 {
     // JsonParser parser;
     // cout << parser.GetType("[{ \"key\" : \"value\"}]") << "\n";
-    Json json("{ \"key\" : \"value\", \"name\" : \"pedro\" }");
+    Json json("{ \"name\" : [{ \"age\":\"21\" }], \"show\":\"neptunia\"");
+    cout << json["name"] << endl;
     return 0;
 }
