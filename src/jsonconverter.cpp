@@ -166,6 +166,11 @@ public:
         }
     }
 
+    string operator[] (int key)
+    {
+        return "";
+    }
+
     string operator[](string key)
     {
         return Get(key);
@@ -174,7 +179,9 @@ public:
 
 int main()
 {
-    Json json("{ \"person\" : { \"name\":\"larry\" }, \"people\" : [{ \"name\":\"beyluta\" }], \"single\":\"pedro :<\" }");
+    Json json("{ \"people\" : [{ \"name\":\"beyluta\" }], \"single\":\"pedro :<\" }");
     cout << json["people"] << endl;
+    Json json2(json["people"]);
+    cout << json2["name"] << endl;
     return 0;
 }
