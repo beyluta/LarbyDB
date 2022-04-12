@@ -198,13 +198,3 @@ public:
         return Get(key);
     }
 };
-
-int main()
-{
-    Json json("{ \"people\" : [{ \"name\":\"beyluta\" }, { \"name\":\"micha\" }], \"single\":\"pedro :<\" }");
-    cout << json["people"] << endl;
-    // Json json2(json["people"]);
-    // cout << json2["name"] << endl;
-    // cout << json2[1] << endl;
-    return 0;
-}
