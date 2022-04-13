@@ -19,7 +19,7 @@ public:
         return hash;
     }
 
-    void AddTo(int hash, string &value)
+    void AddTo(int hash, string value)
     {
         if (table.size() <= hash)
         {
@@ -28,11 +28,11 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = move(value);
+            table.at(hash) = value;
         }
     }
 
-    void Add(string &value)
+    void Add(string value)
     {
         int hash = Hash(value);
 
@@ -43,7 +43,7 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = move(value);
+            table.at(hash) = value;
         }
         else
         {
@@ -51,7 +51,7 @@ public:
         }
     }
 
-    int Add(string key, string &value)
+    int Add(string key, string value)
     {
         int hash = Hash(key);
 
@@ -62,7 +62,7 @@ public:
 
         if (table.at(hash) == "")
         {
-            table.at(hash) = move(value);
+            table.at(hash) = value;
             return hash;
         }
         else
