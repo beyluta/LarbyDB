@@ -32,3 +32,7 @@ To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB -
 `GET ALL <TABLE> <START-END>` - get values within the specified range<br>
 `DEL <KEY> <TABLE>` - delete a value<br>
 `DEL <INDEX> <TABLE>` - delete a value by index<br>
+
+## Working with JSON
+The current version of LarbyDB has support for JSON as a data type. Please note that certain characters such as `[`, `]`, `{`, `}`, `"`, etc... must be escaped before sending to the database. Escape these character by placing a `\` in front of them. Example:<br>
+`SET <KEY> <TABLE> <EXPIRATION IN SECONDS> \[\{ \"name\":\"John\", \"surname\":\"Titor\" \}\]`
