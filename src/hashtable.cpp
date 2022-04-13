@@ -93,7 +93,8 @@ public:
         {
             if (table.at(i) != "")
             {
-                result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},";
+                string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},";
+                result += "{\"index\":\"" + to_string(i) + "\"," + value;
             }
         }
 
@@ -120,7 +121,8 @@ public:
             {
                 if (a >= start && a <= end)
                 {
-                    result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},\n";
+                    string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},\n";
+                    result += "{\"index\":\"" + to_string(i) + "\"," + value;
                 }
 
                 a++;
@@ -146,7 +148,8 @@ public:
             {
                 if (a >= (skip * amount) - amount)
                 {
-                    result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},\n";
+                    string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},\n";
+                    result += "{\"index\":\"" + to_string(i) + "\"," + value;
                 }
 
                 a++;
