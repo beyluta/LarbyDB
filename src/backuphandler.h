@@ -1,3 +1,5 @@
 #pragma once
 #include "file.h"
-#include "jsonextract.h"
+#include "jsonconverter.h"
+#include <fstream>
+#include <string>

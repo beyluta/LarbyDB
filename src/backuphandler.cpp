@@ -72,30 +72,47 @@ public:
     {
         vector<string> files = file.GetFilesInDirectory(config_path);
         string filepath = config_path + files[0];
-        ifstream file(filepath);
-        string line;
+        fstream file;
 
-        while (getline(file, line))
+        file.open(filepath, ios::in);
+
+        if (file.is_open())
         {
-            string table = GetJSONFieldValues(line, "id");
-            string objectString = GetJSONFieldValues(line, "data");
-            vector<string> parsedObjects = SplitJSONStringObjects(objectString);
+            string line;
 
-            if (objectString.length() > 0)
+            while (getline(file, line))
             {
-                for (int i = 0; i < parsedObjects.size(); i += 2)
-                {
-                    string key = GetJSONFieldValues(parsedObjects[i], "index");
-                    string value = GetJSONFieldValues(parsedObjects[i + 1], "value");
+                Json json(line);
+                string table = json["id"];
+                Json data = json["data"];
+                bool endOfData = false;
+                int i = 0;
 
-                    if (controller->GetSize() <= atoi(table.c_str()))
+                while (!endOfData)
+                {
+                    if (data[i] == "")
                     {
-                        controller->hashtables.resize(atoi(table.c_str()) + 1);
+                        endOfData = true;
+                    }
+                    else
+                    {
+                        Json row = data[i];
+                        string index = row["index"];
+                        string value = row["value"];
+
+                        if (controller->GetSize() <= atoi(table.c_str()))
+                        {
+                            controller->hashtables.resize(atoi(table.c_str()) + 1);
+                        }
+
+                        controller->hashtables[atoi(table.c_str())].AddTo(atoi(index.c_str()), value);
                     }
 
-                    controller->hashtables[atoi(table.c_str())].AddTo(atoi(key.c_str()), value);
+                    i++;
                 }
             }
+
+            file.close();
         }
     }
 };
