@@ -146,7 +146,7 @@ public:
             }
             else
             {
-                return hashtables[table].Get(key);
+                return hashtables[table].Get(key) == "" ? GetHttpStatusCode(404) : hashtables[table].Get(key);
             }
         }
 
