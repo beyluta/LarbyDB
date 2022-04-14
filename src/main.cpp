@@ -10,7 +10,8 @@ Timer ttlTimer;
 std::string MessageReceived(const char *msg, const char *ip)
 {
     controller.tempIP = ip;
-    return strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : GetHttpStatusCode(404);
+    string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : GetHttpStatusCode(404);
+    return response + "\r\n\0";
 }
 
 int BackupHandlerMessage(int var)
