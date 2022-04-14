@@ -33,6 +33,6 @@ To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB -
 `DEL <KEY> <TABLE>` - delete a value<br>
 `DEL <INDEX> <TABLE>` - delete a value by index<br>
 
-## Working with JSON
-The current version of LarbyDB has support for JSON as a data type. Please note that certain characters such as `[`, `]`, `{`, `}`, `"`, etc... must be escaped before sending to the database. Escape these character by placing a `\` in front of them. Example:<br>
-`SET <KEY> <TABLE> <EXPIRATION IN SECONDS> \[\{ \"name\":\"John\", \"surname\":\"Titor\" \}\]`
+## Sending request and receiving responses
+When sending a request to the database, the response you might get could be plain text or JSON format depending on how you submitted the data. The following commands will always return a JSON response:<br> `GET ALL`, `GET ALL <START-END>`.<br><br> If the data you submitted was already JSON-Formatted then you will get a JSON response from the following commands:<br> `GET <KEY> <TABLE>`<br><br>
+Here is an example:<br> `SET users 1 0 [{"name":"John"}, {"name":"Titor"}]`<br>`GET users 1`<br>`Response: [{"name":"John"}, {"name":"Titor"}]`
