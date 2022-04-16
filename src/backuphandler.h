@@ -3,4 +3,4 @@
 #include "jsonconverter.h"
 #include <fstream>
 #include <string>
-using namespace JsonUilities;
+using namespace JsonUtilities;

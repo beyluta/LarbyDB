@@ -4,7 +4,7 @@
 #include <vector>
 using namespace std;
 
-namespace JsonUilities
+namespace JsonUtilities
 {
     class Json
     {
