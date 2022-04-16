@@ -1,6 +1,7 @@
 #include "main.h"
 
 using namespace std;
+using namespace SocketUtility;
 
 Controller controller;
 Socket serverSocket;
@@ -161,7 +162,7 @@ int main(int argc, char **argv)
     }
 
     const char *port = dbParameters.port.c_str();
-    OnMessageReceived = &MessageReceived;
+    serverSocket.OnMessageReceived = &MessageReceived;
     serverSocket.SetPort(port);
 
     if (dbParameters.allow_backup)

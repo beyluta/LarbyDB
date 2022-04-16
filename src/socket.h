@@ -10,4 +10,14 @@
 #include <iostream>
 #include <functional>
 
-std::function<std::string(const char *, const char*)> OnMessageReceived;
+namespace SocketUtility
+{
+    class Socket
+    {
+    public:
+        void Listen();
+        ~Socket();
+        void SetPort(const char *port);
+        std::function<std::string(const char *, const char *)> OnMessageReceived;
+    };
+}
