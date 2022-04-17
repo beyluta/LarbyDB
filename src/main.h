@@ -1,10 +1,9 @@
 #pragma once
 #include <iostream>
 #include "socket.h"
-#include "socket.cpp"
-#include "hashtable.cpp"
-#include "controller.cpp"
-#include "timer.cpp"
-#include "backuphandler.cpp"
+#include "hashtable.h"
+#include "controller.h"
+#include "timer.h"
+#include "backuphandler.h"
 #include "signal.h"
 #include "config.h"

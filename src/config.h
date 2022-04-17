@@ -1,3 +1,7 @@
+#include "file.h"
+
+using namespace FileUtility;
+
 #define DEFAULT_PORT "8080"
 #define DEFAULT_MANUAL_CONFIG false
 #define DEFAULT_GENERATE_KEY true
