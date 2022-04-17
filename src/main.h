@@ -3,7 +3,7 @@
 #include "socket.h"
 #include "hashtable.cpp"
 #include "controller.cpp"
-#include "timer.cpp"
+#include "timer.h"
 #include "backuphandler.cpp"
 #include "signal.h"
 #include "config.h"
