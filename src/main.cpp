@@ -3,6 +3,8 @@
 using namespace std;
 using namespace SocketUtility;
 using namespace TimerUtility;
+using namespace BackupUtility;
+using namespace ControllerUtility;
 
 Controller controller;
 Socket serverSocket;
@@ -12,7 +14,7 @@ Timer ttlTimer;
 std::string MessageReceived(const char *msg, const char *ip)
 {
     controller.tempIP = ip;
-    string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : GetHttpStatusCode(404);
+    string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : "Not Found";
     return response + "\r\n\0";
 }
 
