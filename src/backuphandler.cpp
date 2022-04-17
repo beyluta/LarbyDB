@@ -1,5 +1,7 @@
 #include "backuphandler.h"
 
+using namespace FileUtility;
+
 class BackupHandler
 {
 private:
