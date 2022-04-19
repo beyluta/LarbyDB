@@ -188,6 +188,7 @@ int main(int argc, char **argv)
         << "\n\n";
 
     cout
+        << "Version: " << SEMANTIC_VERSION << '\n'
         << "port: " << dbParameters.port << '\n'
         << "tables: " << dbParameters.num_tables << '\n'
         << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
