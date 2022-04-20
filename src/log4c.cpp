@@ -33,11 +33,13 @@ void Log4c::LogToFile(string log)
         file.CreateFile(path);
     }
 
-    file.AppendLineToTextFile(path, GetTime() + ": " + log);
+    file.AppendLineToTextFile(path, log);
 }
 
 void Log4c::LogActivity(string log, Log4c::IOSystem io)
 {
+    log = GetTime() + ": " + log;
+
     switch (io)
     {
     case Log4c::IOSystem::TERMINAL:
@@ -45,6 +47,11 @@ void Log4c::LogActivity(string log, Log4c::IOSystem io)
         break;
 
     case Log4c::IOSystem::FILESYSTEM:
+        LogToFile(log);
+        break;
+
+    case Log4c::IOSystem::BOTH:
+        LOG(log);
         LogToFile(log);
         break;
 

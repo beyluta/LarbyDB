@@ -209,10 +209,8 @@ int main(int argc, char **argv)
         std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
     }
 
-    cout << "Database Initialized. " << std::endl;
+    log4c.LogActivity("Database Initialized", Log4c::IOSystem::BOTH);
 
-    log4c.LogActivity("lenny face", Log4c::IOSystem::FILESYSTEM);
-    log4c.LogActivity("larry too darn cute", Log4c::IOSystem::FILESYSTEM);
     serverSocket.Listen();
     return 0;
 }
