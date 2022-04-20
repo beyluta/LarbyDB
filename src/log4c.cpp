@@ -36,14 +36,20 @@ void Log4c::LogToFile(string log)
     file.AppendLineToTextFile(path, log);
 }
 
-void Log4c::LogActivity(string log, Log4c::IOSystem io)
+void Log4c::LogToTerminal(string log, Log4c::Color color)
+{
+    string code = "\033[0;" + to_string((int)color) + ";49m" + log + "\033[0m";
+    LOG(code);
+}
+
+void Log4c::LogActivity(string log, Log4c::IOSystem io, Color color)
 {
     log = GetTime() + ": " + log;
 
     switch (io)
     {
     case Log4c::IOSystem::TERMINAL:
-        LOG(log);
+        LogToTerminal(log, color);
         break;
 
     case Log4c::IOSystem::FILESYSTEM:
@@ -51,7 +57,7 @@ void Log4c::LogActivity(string log, Log4c::IOSystem io)
         break;
 
     case Log4c::IOSystem::BOTH:
-        LOG(log);
+        LogToTerminal(log, color);
         LogToFile(log);
         break;
 

@@ -16,11 +16,20 @@ using std::string;
 
 class Log4c
 {
-private:
-    string GetTime(const char *format = "%H:%M:%S");
-    void LogToFile(string log);
-
 public:
+    enum Color
+    {
+        WHITE = 97,
+        BLACK = 30,
+        RED = 31,
+        GREEN = 32,
+        BLUE = 34,
+        YELLOW = 33,
+        MAGENTA = 34,
+        CYAN = 36,
+        LIGHT_GRAY = 37,
+        DARK_GRAY = 90,
+    };
     enum IOSystem
     {
         UNDEFINED = 0,
@@ -28,5 +37,10 @@ public:
         FILESYSTEM = 2,
         BOTH = 3
     };
-    void LogActivity(string log, IOSystem io = IOSystem::UNDEFINED);
+    void LogActivity(string log, IOSystem io = IOSystem::UNDEFINED, Color color = Color::WHITE);
+
+private:
+    string GetTime(const char *format = "%H:%M:%S");
+    void LogToFile(string log);
+    void LogToTerminal(string log, Color color = Color::WHITE);
 };
