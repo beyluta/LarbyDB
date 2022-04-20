@@ -46,7 +46,7 @@ int TTLTimer(int arg)
 
 void OnInterrupt(int sigInt)
 {
-    cout << "\nStopped." << endl;
+    log4c.LogActivity("Database Interrupted", Log4c::IOSystem::BOTH, Log4c::Color::GREEN);
     exit(sigInt);
 }
 
