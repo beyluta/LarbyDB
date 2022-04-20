@@ -14,6 +14,16 @@ void File::CreateDirectory(string dirname)
     mkdir(dirname.c_str(), 0777);
 }
 
+void File::AppendLineToTextFile(string filename, string line)
+{
+    ifstream file;
+    file.open(filename);
+    stringstream stream;
+    stream << file.rdbuf();
+    OverwriteFile(filename, stream.str() + "\n" + line);
+    file.close();
+}
+
 void File::OverwriteFile(string filename, string content)
 {
     ofstream file;

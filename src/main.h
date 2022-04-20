@@ -7,3 +7,4 @@
 #include "backuphandler.h"
 #include "signal.h"
 #include "config.h"
+#include "log4c.h"

@@ -23,6 +23,7 @@ namespace FileUtility
     public:
         void CreateFile(string filename);
         void CreateDirectory(string dirname);
+        void AppendLineToTextFile(string filename, string line);
         void OverwriteFile(string filename, string content);
         void DeleteFile(string filename);
         void DeleteDirectory(string dirname, bool empty);

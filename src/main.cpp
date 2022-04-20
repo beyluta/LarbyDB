@@ -10,6 +10,7 @@ Controller controller;
 Socket serverSocket;
 Timer backupTimer;
 Timer ttlTimer;
+Log4c log4c;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
@@ -210,6 +211,8 @@ int main(int argc, char **argv)
 
     cout << "Database Initialized. " << std::endl;
 
+    log4c.LogActivity("lenny face", Log4c::IOSystem::FILESYSTEM);
+    log4c.LogActivity("larry too darn cute", Log4c::IOSystem::FILESYSTEM);
     serverSocket.Listen();
     return 0;
 }
