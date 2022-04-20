@@ -62,7 +62,7 @@ void Log4c::LogActivity(string log, Log4c::IOSystem io, Color color)
         break;
 
     case Log4c::IOSystem::UNDEFINED:
-        LOG("Undefined IO System when calling Log4C::LogActivity");
+        LogToTerminal("Undefined IO System when calling " + string(__func__), Log4c::Color::RED);
         break;
     }
 }
