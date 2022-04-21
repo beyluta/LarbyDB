@@ -7,13 +7,13 @@
 #include "backuphandler.h"
 #include "signal.h"
 #include "config.h"
-#include "log4c.h"
+#include "logsys.h"
 
 Controller controller;
 Socket serverSocket;
 Timer backupTimer;
 Timer ttlTimer;
-Log4c log4c;
+Logsys log4c;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
@@ -49,7 +49,7 @@ int TTLTimer(int arg)
 
 void OnInterrupt(int sigInt)
 {
-    log4c.LogActivity("Database Interrupted", Log4c::IOSystem::BOTH, Log4c::Color::GREEN);
+    log4c.LogActivity("Database Interrupted", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
     exit(sigInt);
 }
 
@@ -212,7 +212,7 @@ int main(int argc, char **argv)
         std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
     }
 
-    log4c.LogActivity("Database Initialized", Log4c::IOSystem::BOTH, Log4c::Color::GREEN);
+    log4c.LogActivity("Database Initialized", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
 
     serverSocket.Listen();
     return 0;

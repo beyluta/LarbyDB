@@ -1,7 +1,7 @@
 #include "controller.h"
 #include "file.h"
 #include "socket.h"
-#include "log4c.h"
+#include "logsys.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -15,6 +15,7 @@ std::vector<Hashtable> hashtables;
 std::vector<Packet> packets;
 std::string tempIP;
 bool protectedByKey = false;
+Logsys logsys;
 
 void Controller::SetSize(int numTables)
 {
@@ -53,12 +54,14 @@ string Controller::GetResolvedResponse(string request)
         if (hashtables[0].Get(DB_KEY_POSITION) == words[1])
         {
             hashtables[0].Add(tempIP);
+            logsys.LogActivity(tempIP + " Authorized on this machine", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
             return "OK";
         }
     }
 
     if (!IsAuthorized())
     {
+        logsys.LogActivity(tempIP + " Machine not authorized: type 'AUTH <KEY>' to authorize this machine", Logsys::IOSystem::BOTH, Logsys::Color::RED);
         return "Unauthorized";
     }
 
@@ -70,6 +73,7 @@ string Controller::GetResolvedResponse(string request)
 
         if (table <= 0)
         {
+            logsys.LogActivity("Attempt to write to table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to write to", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             return "Forbidden";
         }
 
@@ -99,6 +103,7 @@ string Controller::GetResolvedResponse(string request)
                 packets.push_back(p);
             }
 
+            logsys.LogActivity("Key: " + key + "; Value: " + value + "; has been added to the database", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
             return "Created";
         }
     }
@@ -111,6 +116,7 @@ string Controller::GetResolvedResponse(string request)
 
         if (table <= 0 || table >= hashtables.size())
         {
+            logsys.LogActivity("Attempt to read from table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to read from", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             return "Forbidden";
         }
 
@@ -124,6 +130,7 @@ string Controller::GetResolvedResponse(string request)
                 {
                     int start = atoi((words[3].substr(0, dash)).c_str());
                     int end = atoi(words[3].substr(dash + 1).c_str());
+                    logsys.LogActivity("Retrieved from table " + to_string(table) + " values rangin from " + to_string(start) + " to " + to_string(end), Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
                     return hashtables[table].GetInRange(start, end);
                 }
                 else
@@ -138,17 +145,20 @@ string Controller::GetResolvedResponse(string request)
 
                     if (amount > 0 && skip > 0)
                     {
+                        logsys.LogActivity("Retrieved " + to_string(amount) + " values starting from " + to_string(skip), Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
                         return hashtables[table].GetAmount(amount, skip);
                     }
                 }
             }
             else
             {
+                logsys.LogActivity("Retrieved all values", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
                 return hashtables[table].GetAll();
             }
         }
         else
         {
+            logsys.LogActivity("Value of key: " + key + "; does not exist", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             return hashtables[table].Get(key) == "" ? "Not Found" : hashtables[table].Get(key);
         }
     }
@@ -161,6 +171,7 @@ string Controller::GetResolvedResponse(string request)
 
         if (table <= 0)
         {
+            logsys.LogActivity("Attempt to delete from table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to delete from", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             return "Forbidden";
         }
 
@@ -170,6 +181,7 @@ string Controller::GetResolvedResponse(string request)
             return "OK";
         }
 
+        logsys.LogActivity("Value of key: " + key + "; has been deleted", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
         hashtables[table].Remove(key);
         return "OK";
     }

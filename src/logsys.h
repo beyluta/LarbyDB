@@ -8,7 +8,7 @@ using std::string;
 #define LOG(x) cout << x << endl;
 #define LOG_PATH string(homedir) + "/LarbyDB/Logs/"
 
-class Log4c
+class Logsys
 {
 public:
     enum Color

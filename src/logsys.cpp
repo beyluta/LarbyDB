@@ -1,4 +1,4 @@
-#include "log4c.h"
+#include "logsys.h"
 #include <iostream>
 #include <chrono>
 #include <ctime>
@@ -9,7 +9,7 @@
 
 File file;
 
-string Log4c::GetTime(const char *format)
+string Logsys::GetTime(const char *format)
 {
     using namespace std::chrono;
 
@@ -24,7 +24,7 @@ string Log4c::GetTime(const char *format)
     return oss.str();
 }
 
-void Log4c::LogToFile(string log)
+void Logsys::LogToFile(string log)
 {
     string path = LOG_PATH + "log.txt";
 
@@ -41,33 +41,33 @@ void Log4c::LogToFile(string log)
     file.AppendLineToTextFile(path, log);
 }
 
-void Log4c::LogToTerminal(string log, Log4c::Color color)
+void Logsys::LogToTerminal(string log, Logsys::Color color)
 {
     string code = "\033[0;" + to_string((int)color) + ";49m" + log + "\033[0m";
     LOG(code);
 }
 
-void Log4c::LogActivity(string log, Log4c::IOSystem io, Color color)
+void Logsys::LogActivity(string log, Logsys::IOSystem io, Color color)
 {
     log = GetTime() + ": " + log;
 
     switch (io)
     {
-    case Log4c::IOSystem::TERMINAL:
+    case Logsys::IOSystem::TERMINAL:
         LogToTerminal(log, color);
         break;
 
-    case Log4c::IOSystem::FILESYSTEM:
+    case Logsys::IOSystem::FILESYSTEM:
         LogToFile(log);
         break;
 
-    case Log4c::IOSystem::BOTH:
+    case Logsys::IOSystem::BOTH:
         LogToTerminal(log, color);
         LogToFile(log);
         break;
 
-    case Log4c::IOSystem::UNDEFINED:
-        LogToTerminal("Undefined IO System when calling " + string(__func__), Log4c::Color::RED);
+    case Logsys::IOSystem::UNDEFINED:
+        LogToTerminal("Undefined IO System when calling " + string(__func__), Logsys::Color::RED);
         break;
     }
 }
