@@ -209,7 +209,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
+        log4c.LogActivity("WARNING: Running in unsafe mode. All commands will be accessible without a key!", Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW);
     }
 
     log4c.LogActivity("Database Initialized", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
