@@ -1,6 +1,8 @@
 #include "timer.h"
-
-using namespace TimerUtility;
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <pthread.h>
 
 std::vector<int (*)(int)> subscribbers;
 

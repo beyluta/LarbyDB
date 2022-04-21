@@ -1,7 +1,8 @@
 #include "backuphandler.h"
-
-using namespace FileUtility;
-using namespace BackupUtility;
+#include "file.h"
+#include "jsonconverter.h"
+#include <fstream>
+#include <string>
 
 Controller *m_controller;
 File m_file;

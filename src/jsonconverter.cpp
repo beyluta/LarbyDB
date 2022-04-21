@@ -1,5 +1,5 @@
 #include "jsonconverter.h"
-using namespace JsonUtilities;
+#include <algorithm>
 
 vector<string> values;
 

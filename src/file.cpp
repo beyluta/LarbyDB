@@ -1,6 +1,11 @@
 #include "file.h"
-
-using namespace FileUtility;
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <algorithm>
+#include <string.h>
+#include <sstream>
+#include <fstream>
 
 void File::CreateFile(string filename)
 {
@@ -12,6 +17,16 @@ void File::CreateFile(string filename)
 void File::CreateDirectory(string dirname)
 {
     mkdir(dirname.c_str(), 0777);
+}
+
+void File::AppendLineToTextFile(string filename, string line)
+{
+    ifstream file;
+    file.open(filename);
+    stringstream stream;
+    stream << file.rdbuf();
+    OverwriteFile(filename, stream.str() + "\n" + line);
+    file.close();
 }
 
 void File::OverwriteFile(string filename, string content)
