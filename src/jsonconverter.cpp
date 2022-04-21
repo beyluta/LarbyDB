@@ -1,4 +1,6 @@
 #include "jsonconverter.h"
+#include <algorithm>
+
 using namespace JsonUtilities;
 
 vector<string> values;

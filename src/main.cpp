@@ -1,4 +1,13 @@
-#include "main.h"
+#include <iostream>
+#include <cstring>
+#include "socket.h"
+#include "hashtable.h"
+#include "controller.h"
+#include "timer.h"
+#include "backuphandler.h"
+#include "signal.h"
+#include "config.h"
+#include "log4c.h"
 
 using namespace std;
 using namespace SocketUtility;

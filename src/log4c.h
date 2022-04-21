@@ -1,11 +1,5 @@
 #pragma once
 #include <iostream>
-#include <chrono>
-#include <ctime>
-#include <sstream>
-#include <string>
-#include <iomanip>
-#include "file.h"
 
 using std::cout;
 using std::endl;

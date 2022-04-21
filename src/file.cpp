@@ -1,4 +1,11 @@
 #include "file.h"
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <algorithm>
+#include <string.h>
+#include <sstream>
+#include <fstream>
 
 using namespace FileUtility;
 

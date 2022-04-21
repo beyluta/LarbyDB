@@ -1,8 +1,4 @@
 #pragma once
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <pthread.h>
 #include <vector>
 
 namespace TimerUtility

@@ -1,6 +1,5 @@
 #include "hashtable.h"
 
-using namespace std;
 using namespace HashtableUtility;
 
 vector<string> table;

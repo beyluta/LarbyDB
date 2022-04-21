@@ -1,4 +1,9 @@
 #include "controller.h"
+#include "file.h"
+#include "socket.h"
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace ControllerUtility;
 

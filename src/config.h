@@ -1,4 +1,6 @@
 #include "file.h"
+#include <sstream>
+#include <fstream>
 
 using namespace FileUtility;
 

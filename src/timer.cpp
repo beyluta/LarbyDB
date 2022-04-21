@@ -1,4 +1,8 @@
 #include "timer.h"
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <pthread.h>
 
 using namespace TimerUtility;
 

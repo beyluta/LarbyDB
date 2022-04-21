@@ -1,15 +1,8 @@
 #pragma once
 #include <iostream>
-#include <sstream>
-#include <fstream>
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <algorithm>
 #include <vector>
-#include <string.h>
+#include <unistd.h>
 
 using namespace std;
 
