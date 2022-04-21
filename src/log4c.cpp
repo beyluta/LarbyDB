@@ -7,8 +7,6 @@
 #include <iomanip>
 #include "file.h"
 
-using namespace FileUtility;
-
 File file;
 
 string Log4c::GetTime(const char *format)

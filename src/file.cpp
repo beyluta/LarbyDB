@@ -7,8 +7,6 @@
 #include <sstream>
 #include <fstream>
 
-using namespace FileUtility;
-
 void File::CreateFile(string filename)
 {
     ofstream file;

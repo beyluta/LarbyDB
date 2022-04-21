@@ -10,10 +10,6 @@
 #include "log4c.h"
 
 using namespace std;
-using namespace SocketUtility;
-using namespace TimerUtility;
-using namespace BackupUtility;
-using namespace ControllerUtility;
 
 Controller controller;
 Socket serverSocket;

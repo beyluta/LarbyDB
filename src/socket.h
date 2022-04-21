@@ -2,14 +2,11 @@
 #include <iostream>
 #include <functional>
 
-namespace SocketUtility
+class Socket
 {
-    class Socket
-    {
-    public:
-        void Listen();
-        ~Socket();
-        void SetPort(const char *port);
-        std::function<std::string(const char *, const char *)> OnMessageReceived;
-    };
-}
+public:
+    void Listen();
+    ~Socket();
+    void SetPort(const char *port);
+    std::function<std::string(const char *, const char *)> OnMessageReceived;
+};

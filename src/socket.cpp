@@ -8,9 +8,6 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-
-using namespace SocketUtility;
-
 const char *port;
 int socketfd, newSocketfd;
 

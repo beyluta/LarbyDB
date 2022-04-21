@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-using namespace ControllerUtility;
-
 bool Controller::IsStringANumber(string &str)
 {
     return std::all_of(str.begin(), str.end(), ::isdigit);

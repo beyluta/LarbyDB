@@ -4,8 +4,6 @@
 #include <chrono>
 #include <pthread.h>
 
-using namespace TimerUtility;
-
 std::vector<int (*)(int)> subscribbers;
 
 void Timer::Task(int delay, std::vector<int (*)(int)> subs)

@@ -1,7 +1,5 @@
 #include "hashtable.h"
 
-using namespace HashtableUtility;
-
 vector<string> table;
 
 int Hashtable::Hash(string value)

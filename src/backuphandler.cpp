@@ -4,10 +4,6 @@
 #include <fstream>
 #include <string>
 
-using namespace FileUtility;
-using namespace BackupUtility;
-using namespace JsonUtilities;
-
 Controller *m_controller;
 File m_file;
 string m_configPath;
