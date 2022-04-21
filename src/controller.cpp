@@ -1,6 +1,7 @@
 #include "controller.h"
 #include "file.h"
 #include "socket.h"
+#include "log4c.h"
 #include <iostream>
 #include <string>
 #include <vector>
