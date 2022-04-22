@@ -47,9 +47,12 @@ void Logsys::LogToTerminal(string log, Logsys::Color color)
     LOG(code);
 }
 
-void Logsys::LogActivity(string log, Logsys::IOSystem io, Color color)
+void Logsys::LogActivity(string log, Logsys::IOSystem io, Color color, bool showTime)
 {
-    log = GetTime() + ": " + log;
+    if (showTime)
+    {
+        log = GetTime() + ": " + log;
+    }
 
     switch (io)
     {

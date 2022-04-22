@@ -31,7 +31,7 @@ public:
         FILESYSTEM = 2,
         BOTH = 3
     };
-    void LogActivity(string log, IOSystem io = IOSystem::UNDEFINED, Color color = Color::WHITE);
+    void LogActivity(string log, IOSystem io = IOSystem::UNDEFINED, Color color = Color::WHITE, bool showTime = true);
 
 private:
     string GetTime(const char *format = "%H:%M:%S");

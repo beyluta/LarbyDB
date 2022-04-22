@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         int configSettings = SetParameters(dbParameters, configArguments);
         if (DEFAULT_NUM_SETTINGS - configSettings > 0)
         {
-            cout << "WARNING: config settings unset (" << DEFAULT_NUM_SETTINGS - configSettings << " out of " << DEFAULT_NUM_SETTINGS << "), using fallback values.\n";
+            log4c.LogActivity("WARNING: config settings unset (" + std::to_string(DEFAULT_NUM_SETTINGS - configSettings) + " out of " + std::to_string(DEFAULT_NUM_SETTINGS) + "), using fallback values", Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW, false);
         }
 
         if (argc > 1)
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
         else
         {
             dbParameters.num_tables = DEFAULT_NUM_TABLES;
-            std::cout << "Invalid input, using the default value (" << dbParameters.num_tables << ").\n";
+            log4c.LogActivity("Invalid input, using the default value (" + std::to_string(dbParameters.num_tables) + ")", Logsys::IOSystem::TERMINAL, Logsys::Color::RED, false);
         }
 
         PromptBool("allow automatic backup? (y/n): ", dbParameters.allow_backup, DEFAULT_ALLOW_BACKUP);
@@ -154,16 +154,16 @@ int main(int argc, char **argv)
                 if (answer == YES)
                 {
                     handler2.LoadBackup();
-                    std::cout << "Loaded from backup.\n";
+                    log4c.LogActivity("Loaded from backup", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
                 }
                 else
                 {
-                    std::cout << "loading canceled.\n";
+                    log4c.LogActivity("Loading canceled", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
                 }
             }
             else
             {
-                std::cout << "loading from backup is disabled.\n";
+                log4c.LogActivity("Loading from backup is disabled", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
             }
         }
     }
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
     {
         controller.protectedByKey = true;
         controller.GenerateKey();
-        std::cout << "Key: " << controller.hashtables[0].Get(DB_KEY_POSITION) << "\n";
+        log4c.LogActivity("Key: " + controller.hashtables[0].Get(DB_KEY_POSITION), Logsys::IOSystem::TERMINAL, Logsys::Color::WHITE, false);
     }
     else
     {
