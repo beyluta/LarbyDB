@@ -45,6 +45,7 @@ vector<int> Json::GetCharCount(string includedCharacters, string json)
 {
     vector<int> charIndexes;
     int openedBracesOrBrackets = 0;
+    int doubleQuotes = 0;
 
     for (int i = 0; i < json.length(); i++)
     {
@@ -52,6 +53,11 @@ vector<int> Json::GetCharCount(string includedCharacters, string json)
         {
             if (json[i] == includedCharacters[j] && json[i] == '[' || json[i] == '{')
             {
+                if (doubleQuotes % 2 != 0)
+                {
+                    continue;
+                }
+
                 if (openedBracesOrBrackets <= 0)
                 {
                     charIndexes.push_back(i);
@@ -61,6 +67,11 @@ vector<int> Json::GetCharCount(string includedCharacters, string json)
             }
             else if (json[i] == includedCharacters[j] && json[i] == ']' || json[i] == '}')
             {
+                if (doubleQuotes % 2 != 0)
+                {
+                    continue;
+                }
+
                 if (openedBracesOrBrackets <= 1)
                 {
                     charIndexes.push_back(i);
@@ -75,6 +86,7 @@ vector<int> Json::GetCharCount(string includedCharacters, string json)
                     continue;
                 }
 
+                doubleQuotes++;
                 charIndexes.push_back(i);
             }
         }
