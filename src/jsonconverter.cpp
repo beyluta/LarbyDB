@@ -70,6 +70,11 @@ vector<int> Json::GetCharCount(string includedCharacters, string json)
             }
             else if (json[i] == includedCharacters[j] && openedBracesOrBrackets <= 0)
             {
+                if (i > 0 && json[i - 1] == '\\')
+                {
+                    continue;
+                }
+
                 charIndexes.push_back(i);
             }
         }
