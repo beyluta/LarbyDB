@@ -1,101 +1,117 @@
 #include "backuphandler.h"
+#include "file.h"
+#include "jsonconverter.h"
+#include <fstream>
+#include <string>
 
-class BackupHandler
+Controller *m_controller;
+File m_file;
+string m_configPath;
+bool m_clearBackups = false;
+
+BackupHandler::BackupHandler(Controller *controller, bool clearBackups)
 {
-private:
-    Controller *controller;
-    File file;
-    string config_path;
-    bool clear_backups = false;
+    m_clearBackups = clearBackups;
+    m_configPath = string(homedir) + "/LarbyDB/Backups/";
+    m_controller = controller;
+}
 
-public:
-    BackupHandler(Controller *controller, bool clear_backups)
+bool BackupHandler::CheckBackup()
+{
+    return m_file.GetFilesInDirectory(m_configPath).size() > 0 ? true : false;
+}
+
+void BackupHandler::BeginBackup()
+{
+    time_t date = time(0);
+    string date_str = to_string(date);
+    string configFile = m_configPath + date_str + ".txt";
+
+    if (m_clearBackups)
     {
-        this->clear_backups = clear_backups;
-        config_path = string(homedir) + "/LarbyDB/Backups/";
-        this->controller = controller;
+        m_file.DeleteDirectory(m_configPath, true);
     }
 
-    bool CheckBackup()
+    string dbPath = string(homedir) + "/LarbyDB/";
+
+    if (!m_file.DirectoryExists(dbPath))
     {
-        return file.GetFilesInDirectory(config_path).size() > 0 ? true : false;
+        m_file.CreateDirectory(dbPath);
     }
 
-    void BeginBackup()
+    string backupPath = dbPath + "Backups/";
+
+    if (!m_file.DirectoryExists(backupPath))
     {
-        time_t date = time(0);
-        string date_str = to_string(date);
-        string configFile = config_path + date_str + ".txt";
-
-        if (clear_backups)
-        {
-            file.DeleteDirectory(config_path, true);
-        }
-
-        string dbPath = string(homedir) + "/LarbyDB/";
-
-        if (!file.DirectoryExists(dbPath))
-        {
-            file.CreateDirectory(dbPath);
-        }
-
-        string backupPath = dbPath + "Backups/";
-
-        if (!file.DirectoryExists(backupPath))
-        {
-            file.CreateDirectory(backupPath);
-        }
-
-        string configStringNoSpaces = "";
-
-        for (int i = 0; i < configFile.length(); i++)
-        {
-            if (configFile[i] != ' ' && configFile[i] != '\n')
-            {
-                configStringNoSpaces += configFile[i];
-            }
-        }
-
-        file.CreateFile(configStringNoSpaces);
-
-        string content;
-
-        for (int i = 0; i < controller->GetSize(); i++)
-        {
-            content += "{\"id\":\"" + to_string(i) + "\",\"data\":" + controller->hashtables[i].GetAll() + "}\n";
-        }
-
-        file.OverwriteFile(configStringNoSpaces, content);
+        m_file.CreateDirectory(backupPath);
     }
 
-    void LoadBackup()
+    string configStringNoSpaces = "";
+
+    for (int i = 0; i < configFile.length(); i++)
     {
-        vector<string> files = file.GetFilesInDirectory(config_path);
-        string filepath = config_path + files[0];
-        ifstream file(filepath);
+        if (configFile[i] != ' ' && configFile[i] != '\n')
+        {
+            configStringNoSpaces += configFile[i];
+        }
+    }
+
+    m_file.CreateFile(configStringNoSpaces);
+
+    string content;
+
+    for (int i = 0; i < m_controller->GetSize(); i++)
+    {
+        content += "{\"id\":\"" + to_string(i) + "\",\"data\":" + m_controller->hashtables[i].GetAll() + "}\n";
+    }
+
+    m_file.OverwriteFile(configStringNoSpaces, content);
+}
+
+void BackupHandler::LoadBackup()
+{
+    vector<string> files = m_file.GetFilesInDirectory(m_configPath);
+    string filepath = m_configPath + files[0];
+    fstream file;
+
+    file.open(filepath, ios::in);
+
+    if (file.is_open())
+    {
         string line;
 
         while (getline(file, line))
         {
-            string table = GetJSONFieldValues(line, "id");
-            string objectString = GetJSONFieldValues(line, "data");
-            vector<string> parsedObjects = SplitJSONStringObjects(objectString);
+            Json json(line);
+            string table = json["id"];
+            Json data = json["data"];
+            bool endOfData = false;
+            int i = 0;
 
-            if (objectString.length() > 0)
+            while (!endOfData)
             {
-                for (int i = 0; i < parsedObjects.size(); i += 2)
+                if (data[i] == "")
                 {
-                    string key = GetJSONFieldValues(parsedObjects[i], "index");
-                    string value = GetJSONFieldValues(parsedObjects[i + 1], "value");
+                    endOfData = true;
+                }
+                else
+                {
+                    Json row = data[i];
+                    string index = row["index"];
+                    string value = row["value"];
 
-                    if (controller->GetSize() <= atoi(table.c_str()))
+                    if (m_controller->GetSize() <= atoi(table.c_str()))
                     {
-                        controller->hashtables.resize(atoi(table.c_str()) + 1);
+                        m_controller->hashtables.resize(atoi(table.c_str()) + 1);
                     }
 
-                    controller->hashtables[atoi(table.c_str())].AddTo(atoi(key.c_str()), value);
+                    m_controller->hashtables[atoi(table.c_str())].AddTo(atoi(index.c_str()), value);
                 }
+
+                i++;
             }
         }
+
+        file.close();
     }
-};
+}
