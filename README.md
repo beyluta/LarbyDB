@@ -6,7 +6,6 @@ Developed under `g++ version 10.3.0`
 
 1. Clone the repo: `git clone https://github.com/beyluta/LarbyDB.git`
 2. Compile by typing `make` while inside the project's folder.<br>
-Alternatively, you can compile it with g++: `g++ -o LarbyDB -pthread -lpthread src/main.cpp`
 3. To run the software, type `./LarbyDB`
 
 ## Settings/Launch Arguments
@@ -32,3 +31,8 @@ To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB -
 `GET ALL <TABLE> <START-END>` - get values within the specified range<br>
 `DEL <KEY> <TABLE>` - delete a value<br>
 `DEL <INDEX> <TABLE>` - delete a value by index<br>
+
+## Sending request and receiving responses
+When sending a request to the database, the response you might get could be plain text or JSON format depending on how you submitted the data. The following commands will always return a JSON response: `GET ALL`, `GET ALL <START-END>`.<br> If the data you submitted was already JSON-Formatted then you will get a JSON response from the following commands: `GET <KEY> <TABLE>`<br><br>
+Here is an example:<br> `SET users 1 0 [{"name":"John"}, {"name":"Titor"}]`<br>`GET users 1`<br>`Response: [{"name":"John"}, {"name":"Titor"}]`<br><br>
+Keep in mind that the database sends the following carriage returns that you must strip before using the response: `\r\n\0`
