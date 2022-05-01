@@ -60,7 +60,8 @@ void Socket::Listen()
         if (isMessageValid)
         {
             bzero(buffer, MAX_BUFFER_SIZE);
-            n = read(newSocketfd, buffer, MAX_BUFFER_SIZE - 1);
+            n = recv(newSocketfd, buffer, MAX_BUFFER_SIZE - 1, 0);
+            //n = read(newSocketfd, buffer, MAX_BUFFER_SIZE - 1);
 
             if (n >= MAX_BUFFER_SIZE - 1)
             {
