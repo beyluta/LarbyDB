@@ -1,85 +1,82 @@
 #include "socket.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
 
-const char *port;
-int socketfd, newSocketfd;
-
-void Socket::Listen()
+class Socket
 {
-    int portno;
-    socklen_t clilen;
-    char buffer[256];
-    struct sockaddr_in serv_addr, cli_addr;
-    int n;
+private:
+    const char *port;
+    int socketfd, newSocketfd;
 
-    if (strlen(port) < 2)
+public:
+    void Listen()
     {
-        std::cout << "Invalid Port" << std::endl;
-        return;
-    }
+        int portno;
+        socklen_t clilen;
+        char buffer[256];
+        struct sockaddr_in serv_addr, cli_addr;
+        int n;
 
-    socketfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (socketfd < 0)
-    {
-        std::cout << "Couldn't Open Port" << std::endl;
-    }
-
-    bzero((char *)&serv_addr, sizeof(serv_addr));
-    portno = atoi(port);
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(portno);
-    if (bind(socketfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-        std::cout << "Couldn't bind to server address" << std::endl;
-        return;
-    }
-
-    for (;;)
-    {
-        listen(socketfd, 5);
-        clilen = sizeof(cli_addr);
-        newSocketfd = accept(socketfd, (struct sockaddr *)&cli_addr, &clilen);
-        if (newSocketfd < 0)
+        if (strlen(Socket::port) < 2)
         {
-            std::cout << "Couldn't accept request" << std::endl;
+            std::cout << "Invalid Port" << std::endl;
             return;
         }
 
-        bzero(buffer, 256);
-        n = read(newSocketfd, buffer, 255);
-        if (n < 0)
+        socketfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (socketfd < 0)
         {
-            std::cout << "Couldn't read from socket" << std::endl;
+            std::cout << "Couldn't Open Port" << std::endl;
+        }
+
+        bzero((char *)&serv_addr, sizeof(serv_addr));
+        portno = atoi(Socket::port);
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_addr.s_addr = INADDR_ANY;
+        serv_addr.sin_port = htons(portno);
+        if (bind(socketfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        {
+            std::cout << "Couldn't bind to server address" << std::endl;
             return;
         }
 
-        char *ipAddr = inet_ntoa(cli_addr.sin_addr);
-        std::string response = OnMessageReceived(buffer, ipAddr);
-        int length = strlen(response.c_str());
-
-        n = write(newSocketfd, response.c_str(), length);
-        if (n < 0)
+        for (;;)
         {
-            std::cout << "Couldn't write to socket";
+            listen(socketfd, 5);
+            clilen = sizeof(cli_addr);
+            newSocketfd = accept(socketfd, (struct sockaddr *)&cli_addr, &clilen);
+            if (newSocketfd < 0)
+            {
+                std::cout << "Couldn't accept request" << std::endl;
+                return;
+            }
+
+            bzero(buffer, 256);
+            n = read(newSocketfd, buffer, 255);
+            if (n < 0)
+            {
+                std::cout << "Couldn't read from socket" << std::endl;
+                return;
+            }
+
+            char *ipAddr = inet_ntoa(cli_addr.sin_addr);
+            std::string response = OnMessageReceived(buffer, ipAddr);
+            int length = strlen(response.c_str());
+
+            n = write(newSocketfd, response.c_str(), length);
+            if (n < 0)
+            {
+                std::cout << "Couldn't write to socket";
+            }
         }
     }
-}
 
-Socket::~Socket()
-{
-    close(newSocketfd);
-    close(socketfd);
-}
+    ~Socket()
+    {
+        close(newSocketfd);
+        close(socketfd);
+    }
 
-void Socket::SetPort(const char *portStr)
-{
-    port = portStr;
-}
+    void SetPort(const char* port)
+    {
+        Socket::port = port;
+    }
+};

@@ -1,219 +1,205 @@
 #include "controller.h"
-#include "file.h"
-#include "socket.h"
-#include "logsys.h"
-#include <iostream>
-#include <string>
-#include <vector>
-
-bool Controller::IsStringANumber(string &str)
+class Controller
 {
-    return std::all_of(str.begin(), str.end(), ::isdigit);
-}
-
-std::vector<Hashtable> hashtables;
-std::vector<Packet> packets;
-std::string tempIP;
-bool protectedByKey = false;
-Logsys logsys;
-
-void Controller::SetSize(int numTables)
-{
-    if (numTables < 2)
+private:
+    bool IsStringANumber(string &str)
     {
-        numTables = 2;
+        return std::all_of(str.begin(), str.end(), ::isdigit);
     }
 
-    hashtables.resize(numTables);
-}
+public:
+    std::vector<Hashtable> hashtables;
+    std::vector<Packet> packets;
+    std::string tempIP;
+    bool protectedByKey = false;
 
-int Controller::GetSize()
-{
-    return hashtables.size();
-}
-
-string Controller::GetResolvedResponse(string request)
-{
-    vector<string> words;
-    string word;
-
-    for (int i = 0; i < request.size(); i++)
+    void SetSize(int numTables = 2)
     {
-        word += request[i];
-
-        if (request[i] == ' ' || request.size() - 1 == i)
+        if (numTables < 2)
         {
-            words.push_back(std::move(word));
+            numTables = 2;
         }
+
+        hashtables.resize(numTables);
     }
 
-    words.back().pop_back();
-
-    if (words[0].find("AUTH") != string::npos && words.size() > 1)
+    int GetSize()
     {
-        if (hashtables[0].Get(DB_KEY_POSITION) == words[1])
-        {
-            hashtables[0].Add(tempIP);
-            logsys.LogActivity(tempIP + " Authorized on this machine", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
-            return "OK";
-        }
+        return hashtables.size();
     }
 
-    if (!IsAuthorized())
+    string GetResolvedResponse(string request)
     {
-        logsys.LogActivity(tempIP + " Machine not authorized: type 'AUTH <KEY>' to authorize this machine", Logsys::IOSystem::BOTH, Logsys::Color::RED);
-        return "Unauthorized";
-    }
+        vector<string> words;
+        string word;
 
-    if (words[0].find("SET") != string::npos && words.size() > 3)
-    {
-        string &key = words[1];
-        key.pop_back();
-        int table = atoi(words[2].c_str());
-
-        if (table <= 0)
+        for (int i = 0; i < request.size(); i++)
         {
-            logsys.LogActivity("Attempt to write to table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to write to", Logsys::IOSystem::BOTH, Logsys::Color::RED);
-            return "Forbidden";
-        }
+            word += request[i];
 
-        int ttl = atoi(words[3].c_str());
-        string value;
-
-        for (int i = 4; i < words.size(); i++)
-        {
-            value += words[i];
-        }
-
-        if (table >= hashtables.size())
-        {
-            hashtables.resize(table + 1);
-        }
-
-        if (table < hashtables.size())
-        {
-            int hash = hashtables[table].Add(key, value);
-
-            if (ttl > 0)
+            if (request[i] == ' ' || request.size() - 1 == i)
             {
-                Packet p;
-                p.hash = hash;
-                p.time_to_live = ttl;
-                p.table = table;
-                packets.push_back(p);
+                words.push_back(std::move(word));
+            }
+        }
+
+        words.back().pop_back();
+
+        if (words[0].find("AUTH") != string::npos && words.size() > 1)
+        {
+            if (hashtables[0].Get(DB_KEY_POSITION) == words[1])
+            {
+                hashtables[0].Add(tempIP);
+                return GetHttpStatusCode(200);
+            }
+        }
+
+        if (!IsAuthorized())
+        {
+            return GetHttpStatusCode(401);
+        }
+
+        if (words[0].find("SET") != string::npos && words.size() > 3)
+        {
+            string &key = words[1];
+            key.pop_back();
+            int table = atoi(words[2].c_str());
+
+            if (table <= 0)
+            {
+                return GetHttpStatusCode(403);
             }
 
-            logsys.LogActivity("Key: " + key + "; Value: " + value + "; has been added to the database", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
-            return "Created";
-        }
-    }
+            int ttl = atoi(words[3].c_str());
+            string value;
 
-    if (words[0].find("GET") != string::npos && words.size() > 2)
-    {
-        string &key = words[1];
-        key.pop_back();
-        int table = atoi(words[2].c_str());
-
-        if (table <= 0 || table >= hashtables.size())
-        {
-            logsys.LogActivity("Attempt to read from table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to read from", Logsys::IOSystem::BOTH, Logsys::Color::RED);
-            return "Forbidden";
-        }
-
-        if (key.find("ALL") != string::npos)
-        {
-            if (words.size() > 3)
+            for (int i = 4; i < words.size(); i++)
             {
-                int dash = words[3].find("-");
+                value += words[i];
+            }
 
-                if (dash != string::npos)
+            if (table >= hashtables.size())
+            {
+                hashtables.resize(table + 1);
+            }
+
+            if (table < hashtables.size())
+            {
+                int hash = hashtables[table].Add(key, value);
+
+                if (ttl > 0)
                 {
-                    int start = atoi((words[3].substr(0, dash)).c_str());
-                    int end = atoi(words[3].substr(dash + 1).c_str());
-                    logsys.LogActivity("Retrieved from table " + to_string(table) + " values rangin from " + to_string(start) + " to " + to_string(end), Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
-                    return hashtables[table].GetInRange(start, end);
+                    Packet p;
+                    p.hash = hash;
+                    p.time_to_live = ttl;
+                    p.table = table;
+                    packets.push_back(p);
+                }
+
+                return GetHttpStatusCode(201);
+            }
+        }
+
+        if (words[0].find("GET") != string::npos && words.size() > 2)
+        {
+            string &key = words[1];
+            key.pop_back();
+            int table = atoi(words[2].c_str());
+
+            if (table <= 0 || table >= hashtables.size())
+            {
+                return GetHttpStatusCode(403);
+            }
+
+            if (key.find("ALL") != string::npos)
+            {
+                if (words.size() > 3)
+                {
+                    int dash = words[3].find("-");
+
+                    if (dash != string::npos)
+                    {
+                        int start = atoi((words[3].substr(0, dash)).c_str());
+                        int end = atoi(words[3].substr(dash + 1).c_str());
+                        return hashtables[table].GetInRange(start, end);
+                    }
+                    else
+                    {
+                        int amount = atoi(words[3].c_str());
+                        int skip = 1;
+
+                        if (words.size() > 4)
+                        {
+                            skip = atoi(words[4].c_str());
+                        }
+
+                        if (amount > 0 && skip > 0)
+                        {
+                            return hashtables[table].GetAmount(amount, skip);
+                        }
+                    }
                 }
                 else
                 {
-                    int amount = atoi(words[3].c_str());
-                    int skip = 1;
-
-                    if (words.size() > 4)
-                    {
-                        skip = atoi(words[4].c_str());
-                    }
-
-                    if (amount > 0 && skip > 0)
-                    {
-                        logsys.LogActivity("Retrieved " + to_string(amount) + " values starting from " + to_string(skip), Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
-                        return hashtables[table].GetAmount(amount, skip);
-                    }
+                    return hashtables[table].GetAll();
                 }
             }
             else
             {
-                logsys.LogActivity("Retrieved all values", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
-                return hashtables[table].GetAll();
+                return hashtables[table].Get(key);
             }
         }
-        else
+
+        if (words[0].find("DEL") != string::npos && words.size() > 2)
         {
-            logsys.LogActivity("Value of key: " + key + "; does not exist", Logsys::IOSystem::BOTH, Logsys::Color::RED);
-            return hashtables[table].Get(key) == "" ? "Not Found" : hashtables[table].Get(key);
+            string &key = words[1];
+            key.pop_back();
+            int table = atoi(words[2].c_str());
+
+            if (table <= 0)
+            {
+                return GetHttpStatusCode(403);
+            }
+
+            if (IsStringANumber(key))
+            {
+                hashtables[table].Remove(atoi(key.c_str()));
+                return GetHttpStatusCode(200);
+            }
+
+            hashtables[table].Remove(key);
+            return GetHttpStatusCode(200);
         }
+        return GetHttpStatusCode(401);
     }
 
-    if (words[0].find("DEL") != string::npos && words.size() > 2)
+    void GenerateKey(int length = 16)
     {
-        string &key = words[1];
-        key.pop_back();
-        int table = atoi(words[2].c_str());
+        srand(time(nullptr));
+        string key;
 
-        if (table <= 0)
+        for (int i = 0; i < length; i++)
         {
-            logsys.LogActivity("Attempt to delete from table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to delete from", Logsys::IOSystem::BOTH, Logsys::Color::RED);
-            return "Forbidden";
+            switch (rand() % 3)
+            {
+            case (0):
+                key += std::to_string(rand() % 10);
+                break;
+            case (1):
+                key += ('A' + rand() % 26);
+                break;
+            case (2):
+                key += ('a' + rand() % 26);
+                break;
+            }
         }
 
-        if (IsStringANumber(key))
-        {
-            hashtables[table].Remove(atoi(key.c_str()));
-            return "OK";
-        }
-
-        logsys.LogActivity("Value of key: " + key + "; has been deleted", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
-        hashtables[table].Remove(key);
-        return "OK";
+        hashtables[0].Remove(hashtables[0].Hash(DB_KEY_POSITION));
+        hashtables[0].Add(DB_KEY_POSITION, key);
     }
-    return "Unauthorized";
-}
 
-void Controller::GenerateKey(int length)
-{
-    srand(time(nullptr));
-    string key;
-
-    for (int i = 0; i < length; i++)
+    bool IsAuthorized()
     {
-        switch (rand() % 3)
-        {
-        case (0):
-            key += std::to_string(rand() % 10);
-            break;
-        case (1):
-            key += ('A' + rand() % 26);
-            break;
-        case (2):
-            key += ('a' + rand() % 26);
-            break;
-        }
+        return hashtables[0].Contains(tempIP) || !protectedByKey ? true : false;
     }
-
-    hashtables[0].Remove(hashtables[0].Hash(DB_KEY_POSITION));
-    hashtables[0].Add(DB_KEY_POSITION, key);
-}
-
-bool Controller::IsAuthorized()
-{
-    return hashtables[0].Contains(tempIP) || !protectedByKey ? true : false;
-}
+};
