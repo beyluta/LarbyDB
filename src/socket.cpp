@@ -8,6 +8,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#define MAX_BUFFER_SIZE 1048576
+
 const char *port;
 int socketfd, newSocketfd;
 
@@ -15,7 +17,7 @@ void Socket::Listen()
 {
     int portno;
     socklen_t clilen;
-    char buffer[256];
+    char buffer[MAX_BUFFER_SIZE];
     struct sockaddr_in serv_addr, cli_addr;
     int n;
 
@@ -47,28 +49,43 @@ void Socket::Listen()
         listen(socketfd, 5);
         clilen = sizeof(cli_addr);
         newSocketfd = accept(socketfd, (struct sockaddr *)&cli_addr, &clilen);
+        bool isMessageValid = true;
+
         if (newSocketfd < 0)
         {
             std::cout << "Couldn't accept request" << std::endl;
-            return;
+            isMessageValid = false;
         }
 
-        bzero(buffer, 256);
-        n = read(newSocketfd, buffer, 255);
-        if (n < 0)
+        if (isMessageValid)
         {
-            std::cout << "Couldn't read from socket" << std::endl;
-            return;
+            bzero(buffer, MAX_BUFFER_SIZE);
+            n = read(newSocketfd, buffer, MAX_BUFFER_SIZE - 1);
+
+            if (n >= MAX_BUFFER_SIZE - 1)
+            {
+                std::cout << "Message exceeded buffer limit" << std::endl;
+                isMessageValid = false;
+            }
+
+            if (n < 0)
+            {
+                std::cout << "Couldn't read from socket" << std::endl;
+                isMessageValid = false;
+            }
         }
 
-        char *ipAddr = inet_ntoa(cli_addr.sin_addr);
-        std::string response = OnMessageReceived(buffer, ipAddr);
-        int length = strlen(response.c_str());
-
-        n = write(newSocketfd, response.c_str(), length);
-        if (n < 0)
+        if (isMessageValid)
         {
-            std::cout << "Couldn't write to socket";
+            char *ipAddr = inet_ntoa(cli_addr.sin_addr);
+            std::string response = OnMessageReceived(buffer, ipAddr);
+            int length = strlen(response.c_str());
+
+            n = write(newSocketfd, response.c_str(), length);
+            if (n < 0)
+            {
+                std::cout << "Couldn't write to socket";
+            }
         }
     }
 }
