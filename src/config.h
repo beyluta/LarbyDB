@@ -12,6 +12,15 @@
 #define DEFAULT_NUM_SETTINGS 7
 #define SEMANTIC_VERSION "v0.2.0"
 
+#define OPTION_MANUAL_CONFIG "manual-config"
+#define OPTION_PORT "port"
+#define OPTION_NUM_TABLES "num-tables"
+#define OPTION_ALLOW_BACKUP "allow-backup"
+#define OPTION_BACKUP_INTERVAL "backup-interval"
+#define OPTION_GENERATE_KEY "generate-key"
+#define OPTION_LOAD_BACKUP "load-backup"
+
+
 struct Parameters
 {
     string port;
@@ -78,20 +87,20 @@ vector<string> ProcessConfig()
         if (args.size() < 1)
         {
             configFile.OverwriteFile("config.conf",
-                                     "#LarbyDB config\n# If set to true, will ask the user to input parameters on launch:\nmanual_config " +
-                                         BoolToStr(DEFAULT_MANUAL_CONFIG) +
-                                         "\n\n# sets the port:" +
-                                         "\nport " + string(DEFAULT_PORT) +
-                                         "\n\n# How many hashtables the db has (minimum 2):" +
-                                         "\nnum_tables " + to_string(DEFAULT_NUM_TABLES) +
-                                         "\n\n# Should the db perform automatic backups:\n# true | false\nallow_backup " +
-                                         BoolToStr(DEFAULT_ALLOW_BACKUP) +
-                                         "\n\n# Sets the time interval between performing backups:\n# h - hours\n# m - minutes\n# anything else counts as seconds.\n# Only positive integer values are allowed.\nbackup_interval " +
-                                         string(DEFAULT_BACKUP_INTERVAL) +
-                                         "\n\n# Generate the authentication key:\ngenerate_key " +
-                                         BoolToStr(DEFAULT_GENERATE_KEY) +
-                                         "\n\n# Should the db load from a backup file:\n# true  - load from backups\n# false - do not load from backups\n# ask   - ask the user whether to load from the backup file\nload_backup " +
-                                         string(DEFAULT_LOAD_BACKUP));
+                                     "#LarbyDB config\n# If set to true, will ask the user to input parameters on launch:\n"+
+                                         string(OPTION_MANUAL_CONFIG)+" "+BoolToStr(DEFAULT_MANUAL_CONFIG)+
+                                         "\n\n# sets the port:\n"+
+                                         OPTION_PORT+" "+DEFAULT_PORT+
+                                         "\n\n# How many hashtables the db has (minimum 2):\n"+
+                                         OPTION_NUM_TABLES+" " +to_string(DEFAULT_NUM_TABLES)+
+                                         "\n\n# Should the db perform automatic backups:\n# true | false\n"+
+                                         OPTION_ALLOW_BACKUP+" "+BoolToStr(DEFAULT_ALLOW_BACKUP)+
+                                         "\n\n# Sets the time interval between performing backups:\n# h - hours\n# m - minutes\n# anything else counts as seconds.\n# Only positive integer values are allowed.\n"+
+                                         OPTION_BACKUP_INTERVAL+" "+DEFAULT_BACKUP_INTERVAL+
+                                         "\n\n# Generate the authentication key:\n"+
+                                         OPTION_GENERATE_KEY" "+BoolToStr(DEFAULT_GENERATE_KEY)+
+                                         "\n\n# Should the db load from a backup file:\n# true  - load from backups\n# false - do not load from backups\n# ask   - ask the user whether to load from the backup file\n"+
+                                         OPTION_LOAD_BACKUP+" "+DEFAULT_LOAD_BACKUP);
             return ProcessConfig();
         }
     }
@@ -133,7 +142,7 @@ int SetParameters(Parameters &params, vector<string> &str)
 
     for (int i = 0; i < str.size() - 1; i++)
     {
-        if (!settings_set[manual_config] && str[i].find("--manual_config") != string::npos)
+        if (!settings_set[manual_config] && str[i].find(OPTION_MANUAL_CONFIG) != string::npos)
         {
             settings_set[manual_config] = true;
             settingsNum++;
@@ -150,12 +159,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             {
                 settingsNum--;
                 params.manual_config = DEFAULT_MANUAL_CONFIG;
-                cout << boolalpha << "manual_config: unset, using default (" << params.manual_config << ")\n";
+                cout << boolalpha << OPTION_MANUAL_CONFIG << ": unset, using default (" << params.manual_config << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[port] && str[i].find("--port") != string::npos)
+        if (!settings_set[port] && str[i].find(OPTION_PORT) != string::npos)
         {
             settings_set[port] = true;
 
@@ -167,12 +176,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             else
             {
                 params.port = std::move(string(DEFAULT_PORT));
-                cout << "port: unset, using default (" << params.port << ")\n";
+                cout << OPTION_PORT << ": unset, using default (" << params.port << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[num_tables] && str[i].find("--num_tables") != string::npos)
+        if (!settings_set[num_tables] && str[i].find(OPTION_NUM_TABLES) != string::npos)
         {
             settings_set[num_tables] = true;
             int num = atoi(str[i + 1].c_str());
@@ -185,12 +194,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             else
             {
                 params.num_tables = DEFAULT_NUM_TABLES;
-                cout << "num_tables: unset, using default (" << params.num_tables << ")\n";
+                cout << OPTION_NUM_TABLES << ": unset, using default (" << params.num_tables << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[backup_interval] && str[i].find("--backup_interval") != string::npos)
+        if (!settings_set[backup_interval] && str[i].find(OPTION_BACKUP_INTERVAL) != string::npos)
         {
             settings_set[backup_interval] = true;
             ParseBackupInterval(params, str[i + 1]);
@@ -198,7 +207,7 @@ int SetParameters(Parameters &params, vector<string> &str)
             continue;
         }
 
-        if (!settings_set[generate_key] && str[i].find("--generate_key") != string::npos)
+        if (!settings_set[generate_key] && str[i].find(OPTION_GENERATE_KEY) != string::npos)
         {
             settings_set[generate_key] = true;
             settingsNum++;
@@ -215,12 +224,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             {
                 settingsNum--;
                 params.generate_key = DEFAULT_GENERATE_KEY;
-                cout << boolalpha << "generate_key: unset, using default (" << params.generate_key << ")\n";
+                cout << boolalpha << OPTION_GENERATE_KEY << ": unset, using default (" << params.generate_key << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[allow_backup] && str[i].find("--allow_backup") != string::npos)
+        if (!settings_set[allow_backup] && str[i].find(OPTION_ALLOW_BACKUP) != string::npos)
         {
             settings_set[allow_backup] = true;
             settingsNum++;
@@ -237,12 +246,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             {
                 settingsNum--;
                 params.allow_backup = DEFAULT_ALLOW_BACKUP;
-                cout << boolalpha << "allow_backup: unset, using default (" << params.allow_backup << ")\n";
+                cout << boolalpha << OPTION_ALLOW_BACKUP << ": unset, using default (" << params.allow_backup << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[load_backup] && str[i].find("--load_backup") != string::npos)
+        if (!settings_set[load_backup] && str[i].find(OPTION_LOAD_BACKUP) != string::npos)
         {
             settings_set[load_backup] = true;
 
@@ -254,7 +263,7 @@ int SetParameters(Parameters &params, vector<string> &str)
             else
             {
                 params.load_backup = DEFAULT_LOAD_BACKUP;
-                cout << "allow_backup: unset, using default (" << params.load_backup << ")\n";
+                cout << OPTION_LOAD_BACKUP << ": unset, using default (" << params.load_backup << ")\n";
             }
             continue;
         }
