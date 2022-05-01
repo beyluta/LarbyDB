@@ -1,7 +1,3 @@
-#include "file.h"
-#include <sstream>
-#include <fstream>
-
 #define DEFAULT_PORT "8080"
 #define DEFAULT_MANUAL_CONFIG false
 #define DEFAULT_GENERATE_KEY true
@@ -10,7 +6,6 @@
 #define DEFAULT_BACKUP_INTERVAL "30m"
 #define DEFAULT_LOAD_BACKUP "ask"
 #define DEFAULT_NUM_SETTINGS 7
-#define SEMANTIC_VERSION "v0.2.0"
 
 struct Parameters
 {

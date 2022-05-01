@@ -1,191 +1,213 @@
 #include "hashtable.h"
 
-vector<string> table;
-
-int Hashtable::Hash(string value)
+using namespace std;
+class Hashtable
 {
-    int hash = 0;
+private:
+    vector<string> table;
 
-    for (int i = 0; i < value.length(); i++)
+public:
+    int Hash(string value)
     {
-        hash += value[i];
-    }
+        int hash = 0;
 
-    return hash;
-}
+        for (int i = 0; i < value.length(); i++)
+        {
+            hash += value[i];
+        }
 
-void Hashtable::AddTo(int hash, string value)
-{
-    if (table.size() <= hash)
-    {
-        table.resize(hash + 1);
-    }
-
-    if (table.at(hash) == "")
-    {
-        table.at(hash) = value;
-    }
-}
-
-void Hashtable::Add(string value)
-{
-    int hash = Hash(value);
-
-    if (table.size() <= hash)
-    {
-        table.resize(hash + 1);
-    }
-
-    if (table.at(hash) == "")
-    {
-        table.at(hash) = value;
-    }
-}
-
-int Hashtable::Add(string key, string value)
-{
-    int hash = Hash(key);
-
-    if (table.size() <= hash)
-    {
-        table.resize(hash + 1);
-    }
-
-    if (table.at(hash) == "")
-    {
-        table.at(hash) = value;
         return hash;
     }
 
-    return hash; // TODO: something weird is going on with the returns, check out with the debugger later...
-}
-
-string Hashtable::Get(string key)
-{
-    int hash = Hash(key);
-
-    if (table.size() <= hash)
+    void AddTo(int hash, string &value)
     {
-        return "";
-    }
-
-    return table.at(hash) == "" ? "" : table.at(hash);
-}
-
-string Hashtable::GetAll()
-{
-    string result = "[";
-
-    for (int i = 0; i < table.size(); i++)
-    {
-        if (table.at(i) != "")
+        if (table.size() <= hash)
         {
-            string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},";
-            result += "{\"index\":\"" + to_string(i) + "\"," + value;
+            table.resize(hash + 1);
+        }
+
+        if (table.at(hash) == "")
+        {
+            table.at(hash) = move(value);
         }
     }
 
-    if (result[result.size() - 1] == ',')
+    void Add(string &value)
     {
-        result.pop_back();
-    }
+        int hash = Hash(value);
 
-    return result + "]";
-}
-
-string Hashtable::GetInRange(int start, int end)
-{
-    if (start > end)
-    {
-        return "[]";
-    }
-    string result = "[";
-    int a = 0;
-
-    for (int i = 0; i < table.size(); i++)
-    {
-        if (table.at(i) != "")
+        if (table.size() <= hash)
         {
-            if (a >= start && a <= end)
+            table.resize(hash + 1);
+        }
+
+        if (table.at(hash) == "")
+        {
+            table.at(hash) = move(value);
+        }
+        else
+        {
+            cout << GetHttpStatusCode(507) << endl;
+        }
+    }
+
+    int Add(string key, string &value)
+    {
+        int hash = Hash(key);
+
+        if (table.size() <= hash)
+        {
+            table.resize(hash + 1);
+        }
+
+        if (table.at(hash) == "")
+        {
+            table.at(hash) = move(value);
+            return hash;
+        }
+        else
+        {
+            cout << GetHttpStatusCode(507) << endl;
+        }
+
+        return hash; // TODO: something weird is going on with the returns, check out with the debugger later...
+    }
+
+    string Get(string key)
+    {
+        int hash = Hash(key);
+
+        if (table.size() <= hash)
+        {
+            return "";
+        }
+
+        return table.at(hash) == "" ? "" : table.at(hash);
+    }
+
+    string GetAll()
+    {
+        string result = "[";
+
+        for (int i = 0; i < table.size(); i++)
+        {
+            if (table.at(i) != "")
             {
-                string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},\n";
-                result += "{\"index\":\"" + to_string(i) + "\"," + value;
+                result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},";
+            }
+        }
+
+        if (result[result.size() - 1] == ',')
+        {
+            result.pop_back();
+        }
+
+        return result + "]";
+    }
+
+    string GetInRange(int start, int end)
+    {
+        if (start > end)
+        {
+            return "[]";
+        }
+        string result = "[";
+        int a = 0;
+
+        for (int i = 0; i < table.size(); i++)
+        {
+            if (table.at(i) != "")
+            {
+                if (a >= start && a <= end)
+                {
+                    result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},\n";
+                }
+
+                a++;
+            }
+        }
+
+        if (result[result.size() - 1] == ',')
+        {
+            result.pop_back();
+        }
+
+        return result + "]";
+    }
+
+    string GetAmount(int amount, int skip)
+    {
+        string result = "[";
+        int a = 0;
+
+        for (int i = 0; i < table.size(); i++)
+        {
+            if (table.at(i) != "")
+            {
+                if (a >= (skip * amount) - amount)
+                {
+                    result += "{\"index\":\"" + to_string(i) + "\",\"value\":\"" + table.at(i) + "\"},\n";
+                }
+
+                a++;
             }
 
-            a++;
-        }
-    }
-
-    if (result[result.size() - 1] == ',')
-    {
-        result.pop_back();
-    }
-
-    return result + "]";
-}
-
-string Hashtable::GetAmount(int amount, int skip)
-{
-    string result = "[";
-    int a = 0;
-
-    for (int i = 0; i < table.size(); i++)
-    {
-        if (table.at(i) != "")
-        {
-            if (a >= (skip * amount) - amount)
+            if (a >= amount * skip)
             {
-                string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},\n";
-                result += "{\"index\":\"" + to_string(i) + "\"," + value;
+                break;
             }
-
-            a++;
         }
 
-        if (a >= amount * skip)
+        if (result[result.size() - 1] == ',')
         {
-            break;
+            result.pop_back();
+        }
+
+        return result + "]";
+    }
+
+    void Remove(string value)
+    {
+        int hash = Hash(value);
+
+        if (table.size() <= hash)
+        {
+            return;
+        }
+
+        table.at(hash) = "";
+    }
+
+    void Remove(int hash)
+    {
+        if (table.size() <= hash)
+        {
+            return;
+        }
+
+        table.at(hash) = "";
+    }
+
+    bool Contains(string value)
+    {
+        int hash = Hash(value);
+
+        if (table.size() <= hash)
+        {
+            return false;
+        }
+
+        return table.at(hash) != "" && table.at(hash) == value ? true : false;
+    }
+
+    void PrintTable()
+    {
+        for (int i = 0; i < table.size(); i++)
+        {
+            if (table.at(i) != "")
+            {
+                cout << "  [" << i << "]: " << table.at(i) << "\n";
+            }
         }
     }
-
-    if (result[result.size() - 1] == ',')
-    {
-        result.pop_back();
-    }
-
-    return result + "]";
-}
-
-void Hashtable::Remove(string value)
-{
-    int hash = Hash(value);
-
-    if (table.size() <= hash)
-    {
-        return;
-    }
-
-    table.at(hash) = "";
-}
-
-void Hashtable::Remove(int hash)
-{
-    if (table.size() <= hash)
-    {
-        return;
-    }
-
-    table.at(hash) = "";
-}
-
-bool Hashtable::Contains(string value)
-{
-    int hash = Hash(value);
-
-    if (table.size() <= hash)
-    {
-        return false;
-    }
-
-    return table.at(hash) != "" && table.at(hash) == value ? true : false;
-}
+};
