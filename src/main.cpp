@@ -49,7 +49,8 @@ int TTLTimer(int arg)
 
 void OnInterrupt(int sigInt)
 {
-    log4c.LogActivity("Database Interrupted", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+    cout << "\n";
+    log4c.LogActivity("\nInterrupt signal received.", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
     exit(sigInt);
 }
 

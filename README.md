@@ -12,13 +12,13 @@ Developed under `g++ version 10.3.0`
 
 | **Setting**       | **Description**                      | **Arguments**      | **Default value** |
 |-------------------|--------------------------------------|--------------------|:-----------------:|
-| `manual_config`   | if set to true, asks the user to input<br>parameters upon launching the program | `true`, `false`| `false` |
+| `manual-config`   | if set to true, asks the user to input<br>parameters upon launching the program | `true`, `false`| `false` |
 | `port`            | sets the port                        | *positive integer* | `8080`            |
-| `num_tables`      | sets the number of tables            | *positive integer* | `2`               |
-| `allow_backup`    | allow automatic backups              | `true`, `false`    | `true`            |
-| `backup_interval` | time interval between backups |*positive int for seconds*,<br>*positive int+`h` for hours*,<br>*positive int+`m` for minutes*   |`30m`|
-| `generate_key`    | generate authorization key on launch | `true`, `false`    | `true`            |
-| `load_backup`     | whether to load from backup on launch| `true`, `false`, `ask`| `ask`          |
+| `num-tables`      | sets the number of tables            | *positive integer* | `2`               |
+| `allow-backup`    | allow automatic backups              | `true`, `false`    | `true`            |
+| `backup-interval` | time interval between backups |*positive int for seconds*,<br>*positive int+`h` for hours*,<br>*positive int+`m` for minutes*   |`30m`|
+| `generate-key`    | generate authorization key on launch | `true`, `false`    | `true`            |
+| `load-backup`     | whether to load from backup on launch| `true`, `false`, `ask`| `ask`          |
 
 To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB --port 3000`).<br>
 
