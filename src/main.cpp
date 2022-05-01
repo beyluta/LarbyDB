@@ -1,16 +1,25 @@
-#include "main.h"
-
-using namespace std;
+#include <iostream>
+#include <cstring>
+#include "socket.h"
+#include "hashtable.h"
+#include "controller.h"
+#include "timer.h"
+#include "backuphandler.h"
+#include "signal.h"
+#include "config.h"
+#include "logsys.h"
 
 Controller controller;
 Socket serverSocket;
 Timer backupTimer;
 Timer ttlTimer;
+Logsys log4c;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
     controller.tempIP = ip;
-    return strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : GetHttpStatusCode(404);
+    std::string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : "Not Found";
+    return response + "\r\n\0";
 }
 
 int BackupHandlerMessage(int var)
@@ -40,7 +49,7 @@ int TTLTimer(int arg)
 
 void OnInterrupt(int sigInt)
 {
-    cout << "\nStopped." << endl;
+    log4c.LogActivity("Database Interrupted", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
     exit(sigInt);
 }
 
@@ -50,16 +59,16 @@ int main(int argc, char **argv)
     signal(SIGINT, OnInterrupt);
     Parameters dbParameters;
     {
-        vector<string> configArguments = ProcessConfig();
+        std::vector<std::string> configArguments = ProcessConfig();
         int configSettings = SetParameters(dbParameters, configArguments);
         if (DEFAULT_NUM_SETTINGS - configSettings > 0)
         {
-            cout << "WARNING: config settings unset (" << DEFAULT_NUM_SETTINGS - configSettings << " out of " << DEFAULT_NUM_SETTINGS << "), using fallback values.\n";
+            log4c.LogActivity("WARNING: config settings unset (" + std::to_string(DEFAULT_NUM_SETTINGS - configSettings) + " out of " + std::to_string(DEFAULT_NUM_SETTINGS) + "), using fallback values", Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW, false);
         }
 
         if (argc > 1)
         {
-            vector<string> launchArguments(argv + 1, argv + argc);
+            std::vector<std::string> launchArguments(argv + 1, argv + argc);
             SetParameters(dbParameters, launchArguments);
         }
     }
@@ -77,20 +86,20 @@ int main(int argc, char **argv)
             else
             {
                 setting = DEFAULT_ALLOW_BACKUP;
-                cout << boolalpha << "Invalid input, using the default value (" << setting << ").\n";
+                std::cout << boolalpha << "Invalid input, using the default value (" << setting << ").\n";
             }
         };
 
-        cout << "LarbyDB manual configuration mode.\n"
-             << "To Disable manual configuration, run with '--manual_config false'\n"
-             << "or set 'manual_config' to 'false' in config.conf\n\n";
+        std::cout << "LarbyDB manual configuration mode.\n"
+                  << "To Disable manual configuration, run with '--manual_config false'\n"
+                  << "or set 'manual_config' to 'false' in config.conf\n\n";
 
-        cout << "enter port: ";
-        cin >> dbParameters.port;
+        std::cout << "enter port: ";
+        std::cin >> dbParameters.port;
 
         cout << "enter the number of tables for the database (minimum is 2): ";
-        string numTablesInput;
-        cin >> numTablesInput;
+        std::string numTablesInput;
+        std::cin >> numTablesInput;
         int numTables = atoi(numTablesInput.c_str());
 
         if (numTables > 1)
@@ -100,21 +109,21 @@ int main(int argc, char **argv)
         else
         {
             dbParameters.num_tables = DEFAULT_NUM_TABLES;
-            cout << "Invalid input, using the default value (" << dbParameters.num_tables << ").\n";
+            log4c.LogActivity("Invalid input, using the default value (" + std::to_string(dbParameters.num_tables) + ")", Logsys::IOSystem::TERMINAL, Logsys::Color::RED, false);
         }
 
         PromptBool("allow automatic backup? (y/n): ", dbParameters.allow_backup, DEFAULT_ALLOW_BACKUP);
 
         if (dbParameters.allow_backup)
         {
-            cout << "set the backup interval: ";
-            string inputBackupStr;
-            cin >> inputBackupStr;
+            std::cout << "set the backup interval: ";
+            std::string inputBackupStr;
+            std::cin >> inputBackupStr;
             ParseBackupInterval(dbParameters, inputBackupStr);
         }
         else
         {
-            string dflt = DEFAULT_BACKUP_INTERVAL;
+            std::string dflt = DEFAULT_BACKUP_INTERVAL;
             ParseBackupInterval(dbParameters, dflt);
         }
 
@@ -145,22 +154,22 @@ int main(int argc, char **argv)
                 if (answer == YES)
                 {
                     handler2.LoadBackup();
-                    cout << "Loaded from backup.\n";
+                    log4c.LogActivity("Loaded from backup", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
                 }
                 else
                 {
-                    cout << "loading canceled.\n";
+                    log4c.LogActivity("Loading canceled", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
                 }
             }
             else
             {
-                cout << "loading from backup is disabled.\n";
+                log4c.LogActivity("Loading from backup is disabled", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
             }
         }
     }
 
     const char *port = dbParameters.port.c_str();
-    OnMessageReceived = &MessageReceived;
+    serverSocket.OnMessageReceived = &MessageReceived;
     serverSocket.SetPort(port);
 
     if (dbParameters.allow_backup)
@@ -170,7 +179,7 @@ int main(int argc, char **argv)
 
     ttlTimer.Start(1);
 
-    cout
+    std::cout
         << "\n\n"
         << " ###################################################\n"
         << "##...._..............._.............____..____.....##\n"
@@ -182,7 +191,8 @@ int main(int argc, char **argv)
         << " ###################################################\n"
         << "\n\n";
 
-    cout
+    std::cout
+        << "Version: " << SEMANTIC_VERSION << '\n'
         << "port: " << dbParameters.port << '\n'
         << "tables: " << dbParameters.num_tables << '\n'
         << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
@@ -195,14 +205,14 @@ int main(int argc, char **argv)
     {
         controller.protectedByKey = true;
         controller.GenerateKey();
-        std::cout << "Key: " << controller.hashtables[0].Get(DB_KEY_POSITION) << "\n";
+        log4c.LogActivity("Key: " + controller.hashtables[0].Get(DB_KEY_POSITION), Logsys::IOSystem::TERMINAL, Logsys::Color::WHITE, false);
     }
     else
     {
-        std::cout << "WARNING: Running in unsafe mode. All commands will be accessible without a key!\n";
+        log4c.LogActivity("WARNING: Running in unsafe mode. All commands will be accessible without a key!", Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW);
     }
 
-    cout << "Database Initialized. " << std::endl;
+    log4c.LogActivity("Database Initialized", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
 
     serverSocket.Listen();
     return 0;
