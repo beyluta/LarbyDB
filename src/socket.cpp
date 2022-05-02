@@ -1,4 +1,5 @@
 #include "socket.h"
+#include "logsys.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +11,9 @@
 #include <netinet/in.h>
 
 #define MAX_BUFFER_SIZE 1048576
+#define MAX_CONN 4
 
+Logsys logs;
 const char *port;
 int serverSocketfd;
 
@@ -24,14 +27,14 @@ void Socket::Listen()
 
     if (strlen(port) < 2)
     {
-        std::cout << "Invalid Port" << std::endl;
+        logs.LogActivity("Invalid port number.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
         return;
     }
 
     serverSocketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocketfd < 0)
     {
-        std::cout << "Couldn't Open Port" << std::endl;
+        logs.LogActivity("Error opening socket.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
     }
 
     bzero((char *)&serv_addr, sizeof(serv_addr));
@@ -41,13 +44,13 @@ void Socket::Listen()
     serv_addr.sin_port = htons(portno);
     if (bind(serverSocketfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
-        std::cout << "Couldn't bind to server address" << std::endl;
+        logs.LogActivity("Error on binding.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
         return;
     }
-    #define MAX_CONN 4
+
     if (listen(serverSocketfd, MAX_CONN) < 0)
     {
-        std::cout << "Error occured while listening\n";
+        logs.LogActivity("Error on listening.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
     }
 
     fd_set sockets, ready_sockets;
@@ -62,7 +65,7 @@ void Socket::Listen()
         ready_sockets = sockets;
         if (select(FD_SETSIZE, &ready_sockets, nullptr, nullptr, &timeout) < 0)
         {
-            std::cout << "Error in select()\n";
+            logs.LogActivity("Error on select.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             FD_ZERO(&sockets);
         }
         for (int i = 0; i < FD_SETSIZE; i++)
@@ -74,12 +77,12 @@ void Socket::Listen()
                     int clientSocket = accept(serverSocketfd, (struct sockaddr *)&cli_addr, &clilen);
                     if (clientSocket < 0)
                     {
-                        std::cout << "Failed to accept client\n";
+                        logs.LogActivity("Error on accepting.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
                     }
                     else
                     {
                         char *ipAddr = inet_ntoa(cli_addr.sin_addr);
-                        std::cout << ipAddr << " connected\n";
+                        logs.LogActivity("Accepted connection from " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
                         FD_SET(clientSocket, &sockets);
                     }
                 }
@@ -90,13 +93,13 @@ void Socket::Listen()
                     char *ipAddr = inet_ntoa(cli_addr.sin_addr);
                     if (n >= MAX_BUFFER_SIZE)
                     {
-                        std::cout << "Message exceeded buffer limit" << std::endl;
+                        logs.LogActivity("Received message from " + std::string(ipAddr) + " is too large.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
                         close(i);
-                        std::cout << ipAddr << " disconnected\n";
+                        logs.LogActivity("Disconnected " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
                     }
                     else if (n == 0)
                     {
-                        std::cout << ipAddr << " disconnected\n";
+                        logs.LogActivity("Disconnected " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
                     }
                     else
                     {
@@ -110,59 +113,6 @@ void Socket::Listen()
             }
         }
     }
-
-        /*
-    for (;;)
-    {
-        
-        clilen = sizeof(cli_addr);
-        newSocketfd = accept(socketfd, (struct sockaddr *)&cli_addr, &clilen);
-        
-
-        
-        bool isMessageValid = true;
-
-        if (newSocketfd < 0)
-        {
-            std::cout << "Couldn't accept request" << std::endl;
-            isMessageValid = false;
-        }
-
-        if (isMessageValid)
-        {
-            bzero(buffer, MAX_BUFFER_SIZE);
-            n = recv(newSocketfd, buffer, MAX_BUFFER_SIZE - 1, MSG_DONTWAIT);
-            //n = read(newSocketfd, buffer, MAX_BUFFER_SIZE - 1);
-
-            if (n >= MAX_BUFFER_SIZE - 1)
-            {
-                std::cout << "Message exceeded buffer limit" << std::endl;
-                isMessageValid = false;
-            }
-
-            if (n < 0)
-            {
-                std::cout << "Couldn't read from socket" << std::endl;
-                isMessageValid = false;
-            }
-        }
-
-        if (isMessageValid)
-        {
-            char *ipAddr = inet_ntoa(cli_addr.sin_addr);
-            std::string response = OnMessageReceived(buffer, ipAddr);
-            int length = strlen(response.c_str());
-
-            n = write(newSocketfd, response.c_str(), length);
-            if (n < 0)
-            {
-                std::cout << "Couldn't write to socket";
-            }
-        }
-        close(newSocketfd);
-        
-    }
-        */
 }
 
 void Socket::SetPort(const char *portStr)
