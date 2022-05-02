@@ -5,7 +5,7 @@
 class Timer
 {
 private:
-    void Task(int delay, std::vector<int (*)(int)> subs);
+    static void Task(int delay, std::function<int(int)> func);
 
 public:
     void Subscribe(std::function<int(int)>, int delay);

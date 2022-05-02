@@ -12,16 +12,19 @@ struct Task
 
 std::vector<Task> tasks;
 
-void Timer::Task(int delay, std::vector<int (*)(int)> subs)
+void Timer::Task(int delay, std::function<int(int)> func)
 {
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::seconds(delay));
-        for (int i = 0; i < subs.size(); i++)
-        {
-            std::thread t(subs[i], 0);
-            t.join();
-        }
+        std::thread t(func, 0);
+        t.join();
+
+        // for (int i = 0; i < func.size(); i++)
+        // {
+        //     std::thread t(func[i], 0);
+        //     t.join();
+        // }
     }
 }
 
