@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include "logsys.h"
 #include "socket.h"
 #include "hashtable.h"
 #include "controller.h"
@@ -7,12 +8,10 @@
 #include "backuphandler.h"
 #include "signal.h"
 #include "config.h"
-#include "logsys.h"
 
 Controller controller;
 Socket serverSocket;
-Timer backupTimer;
-Timer ttlTimer;
+Timer timer;
 Logsys log4c;
 
 std::string MessageReceived(const char *msg, const char *ip)
@@ -131,9 +130,6 @@ int main(int argc, char **argv)
         PromptBool("generate authentication key? (y/n): ", dbParameters.generate_key, DEFAULT_GENERATE_KEY);
     }
 
-    backupTimer.Subscribe(BackupHandlerMessage, 0);
-    ttlTimer.Subscribe(TTLTimer, 0);
-
     controller.SetSize(dbParameters.num_tables);
     {
         BackupHandler handler2(&controller, true);
@@ -175,10 +171,11 @@ int main(int argc, char **argv)
 
     if (dbParameters.allow_backup)
     {
-        backupTimer.Start(dbParameters.backup_interval);
+        timer.Subscribe(BackupHandlerMessage, dbParameters.backup_interval);
     }
 
-    ttlTimer.Start(1);
+    timer.Subscribe(TTLTimer, 1);
+    timer.Start();
 
     std::cout
         << "\n\n"
