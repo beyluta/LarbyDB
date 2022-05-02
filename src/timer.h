@@ -1,12 +1,13 @@
 #pragma once
 #include <vector>
+#include <functional>
 
 class Timer
 {
 private:
-    static void Task(int delay, std::vector<int (*)(int)> subs);
+    void Task(int delay, std::vector<int (*)(int)> subs);
 
 public:
-    void Subscribe(int (*func)(int), int arg);
-    void Start(int delay);
+    void Subscribe(std::function<int(int)>, int delay);
+    void Start();
 };

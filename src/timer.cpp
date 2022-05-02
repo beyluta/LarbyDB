@@ -4,7 +4,13 @@
 #include <chrono>
 #include <pthread.h>
 
-std::vector<int (*)(int)> subscribbers;
+struct Task
+{
+    int delay;
+    std::function<int(int)> function;
+};
+
+std::vector<Task> tasks;
 
 void Timer::Task(int delay, std::vector<int (*)(int)> subs)
 {
@@ -19,13 +25,19 @@ void Timer::Task(int delay, std::vector<int (*)(int)> subs)
     }
 }
 
-void Timer::Subscribe(int (*func)(int), int arg)
+void Timer::Subscribe(std::function<int(int)> func, int delay)
 {
-    subscribbers.push_back(func);
+    tasks.push_back({delay, func});
 }
 
-void Timer::Start(int delay)
+void Timer::Start()
 {
-    std::thread thread(Task, delay, subscribbers);
-    thread.detach();
+    // std::thread thread(Task, delay, subscribbers);
+    // thread.detach();
+
+    for (int i = 0; i < tasks.size(); i++)
+    {
+        std::thread t(Task, tasks[i].delay, tasks[i].function);
+        t.detach();
+    }
 }
