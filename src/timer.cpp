@@ -19,12 +19,6 @@ void Timer::Task(int delay, std::function<int(int)> func)
         std::this_thread::sleep_for(std::chrono::seconds(delay));
         std::thread t(func, 0);
         t.join();
-
-        // for (int i = 0; i < func.size(); i++)
-        // {
-        //     std::thread t(func[i], 0);
-        //     t.join();
-        // }
     }
 }
 
