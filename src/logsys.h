@@ -8,9 +8,8 @@ using std::string;
 #define LOG(x) cout << x << endl;
 #define LOG_PATH string(homedir) + "/LarbyDB/Logs/"
 
-class Logsys
+namespace Logsys
 {
-public:
     enum Color
     {
         WHITE = 97,
@@ -31,10 +30,8 @@ public:
         FILESYSTEM = 2,
         BOTH = 3
     };
-    void LogActivity(string log, IOSystem io = IOSystem::UNDEFINED, Color color = Color::WHITE, bool showTime = true);
-
-private:
     string GetTime(const char *format = "%H:%M:%S");
     void LogToFile(string log);
-    void LogToTerminal(string log, Color color = Color::WHITE);
+    void LogToTerminal(string log, Logsys::Color color);
+    void LogActivity(string log, IOSystem io = IOSystem::UNDEFINED, Color color = Color::WHITE, bool showTime = true);
 };
