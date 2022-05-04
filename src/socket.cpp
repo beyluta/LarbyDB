@@ -13,7 +13,6 @@
 #define MAX_BUFFER_SIZE 1048576
 #define MAX_CONN 4
 
-Logsys logs;
 const char *port;
 int serverSocketfd;
 
@@ -27,14 +26,14 @@ void Socket::Listen()
 
     if (strlen(port) < 2)
     {
-        logs.LogActivity("Invalid port number.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+        Logsys::LogActivity("Invalid port number.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
         return;
     }
 
     serverSocketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocketfd < 0)
     {
-        logs.LogActivity("Error opening socket.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+        Logsys::LogActivity("Error opening socket.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
     }
 
     bzero((char *)&serv_addr, sizeof(serv_addr));
@@ -44,13 +43,13 @@ void Socket::Listen()
     serv_addr.sin_port = htons(portno);
     if (bind(serverSocketfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
-        logs.LogActivity("Error on binding.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+        Logsys::LogActivity("Error on binding.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
         return;
     }
 
     if (listen(serverSocketfd, MAX_CONN) < 0)
     {
-        logs.LogActivity("Error on listening.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+        Logsys::LogActivity("Error on listening.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
     }
 
     fd_set sockets, ready_sockets;
@@ -65,7 +64,7 @@ void Socket::Listen()
         ready_sockets = sockets;
         if (select(FD_SETSIZE, &ready_sockets, nullptr, nullptr, &timeout) < 0)
         {
-            logs.LogActivity("Error on select.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+            Logsys::LogActivity("Error on select.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             FD_ZERO(&sockets);
         }
         for (int i = 0; i < FD_SETSIZE; i++)
@@ -77,12 +76,12 @@ void Socket::Listen()
                     int clientSocket = accept(serverSocketfd, (struct sockaddr *)&cli_addr, &clilen);
                     if (clientSocket < 0)
                     {
-                        logs.LogActivity("Error on accepting.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+                        Logsys::LogActivity("Error on accepting.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
                     }
                     else
                     {
                         char *ipAddr = inet_ntoa(cli_addr.sin_addr);
-                        logs.LogActivity("Accepted connection from " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+                        Logsys::LogActivity("Accepted connection from " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
                         FD_SET(clientSocket, &sockets);
                     }
                 }
@@ -93,13 +92,13 @@ void Socket::Listen()
                     char *ipAddr = inet_ntoa(cli_addr.sin_addr);
                     if (n >= MAX_BUFFER_SIZE)
                     {
-                        logs.LogActivity("Received message from " + std::string(ipAddr) + " is too large.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+                        Logsys::LogActivity("Received message from " + std::string(ipAddr) + " is too large.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
                         close(i);
-                        logs.LogActivity("Disconnected " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+                        Logsys::LogActivity("Disconnected " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
                     }
                     else if (n == 0)
                     {
-                        logs.LogActivity("Disconnected " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+                        Logsys::LogActivity("Disconnected " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
                     }
                     else
                     {
