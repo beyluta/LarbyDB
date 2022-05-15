@@ -62,21 +62,26 @@ void Socket::Listen()
     while (true)
     {
         ready_sockets = sockets;
+
         if (select(FD_SETSIZE, &ready_sockets, nullptr, nullptr, &timeout) < 0)
         {
             Logsys::LogActivity("Error on select.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             FD_ZERO(&sockets);
         }
-        for (int i = 0; i < FD_SETSIZE; i++)
+
+        for (int i = 0; i < FD_SETSIZE; ++i)
         {
             if (FD_ISSET(i, &ready_sockets))
             {
                 if (i == serverSocketfd)
                 {
                     int clientSocket = accept(serverSocketfd, (struct sockaddr *)&cli_addr, &clilen);
+
                     if (clientSocket < 0)
                     {
                         Logsys::LogActivity("Error on accepting.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+                        close(i);
+                        break;
                     }
                     else
                     {
@@ -88,8 +93,9 @@ void Socket::Listen()
                 else
                 {
                     bzero(buffer, MAX_BUFFER_SIZE);
-                    n = recv(i, buffer, MAX_BUFFER_SIZE - 1, MSG_DONTWAIT); // MSG_DONTWAIT
+                    n = recv(i, buffer, MAX_BUFFER_SIZE - 1, MSG_DONTWAIT);
                     char *ipAddr = inet_ntoa(cli_addr.sin_addr);
+
                     if (n >= MAX_BUFFER_SIZE)
                     {
                         Logsys::LogActivity("Received message from " + std::string(ipAddr) + " is too large.", Logsys::IOSystem::BOTH, Logsys::Color::RED);
@@ -107,6 +113,7 @@ void Socket::Listen()
                         send(i, response.c_str(), length, 0);
                         close(i);
                     }
+
                     FD_CLR(i, &sockets);
                 }
             }
