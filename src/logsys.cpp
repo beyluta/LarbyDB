@@ -7,6 +7,7 @@
 #include <iomanip>
 #include "file.h"
 
+using namespace Logsys;
 File file;
 
 string Logsys::GetTime(const char *format)

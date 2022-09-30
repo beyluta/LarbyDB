@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include "logsys.h"
 #include "socket.h"
 #include "hashtable.h"
 #include "controller.h"
@@ -7,13 +8,10 @@
 #include "backuphandler.h"
 #include "signal.h"
 #include "config.h"
-#include "logsys.h"
 
 Controller controller;
 Socket serverSocket;
-Timer backupTimer;
-Timer ttlTimer;
-Logsys log4c;
+Timer timer;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
@@ -50,7 +48,7 @@ int TTLTimer(int arg)
 void OnInterrupt(int sigInt)
 {
     cout << "\n";
-    log4c.LogActivity("\nInterrupt signal received.", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+    Logsys::LogActivity("\nInterrupt signal received.", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
     exit(sigInt);
 }
 
@@ -64,7 +62,7 @@ int main(int argc, char **argv)
         int configSettings = SetParameters(dbParameters, configArguments);
         if (DEFAULT_NUM_SETTINGS - configSettings > 0)
         {
-            log4c.LogActivity("WARNING: config settings unset (" + std::to_string(DEFAULT_NUM_SETTINGS - configSettings) + " out of " + std::to_string(DEFAULT_NUM_SETTINGS) + "), using fallback values", Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW, false);
+            Logsys::LogActivity("WARNING: config settings unset (" + std::to_string(DEFAULT_NUM_SETTINGS - configSettings) + " out of " + std::to_string(DEFAULT_NUM_SETTINGS) + "), using fallback values", Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW, false);
         }
 
         if (argc > 1)
@@ -110,7 +108,7 @@ int main(int argc, char **argv)
         else
         {
             dbParameters.num_tables = DEFAULT_NUM_TABLES;
-            log4c.LogActivity("Invalid input, using the default value (" + std::to_string(dbParameters.num_tables) + ")", Logsys::IOSystem::TERMINAL, Logsys::Color::RED, false);
+            Logsys::LogActivity("Invalid input, using the default value (" + std::to_string(dbParameters.num_tables) + ")", Logsys::IOSystem::TERMINAL, Logsys::Color::RED, false);
         }
 
         PromptBool("allow automatic backup? (y/n): ", dbParameters.allow_backup, DEFAULT_ALLOW_BACKUP);
@@ -130,9 +128,6 @@ int main(int argc, char **argv)
 
         PromptBool("generate authentication key? (y/n): ", dbParameters.generate_key, DEFAULT_GENERATE_KEY);
     }
-
-    backupTimer.Subscribe(BackupHandlerMessage, 0);
-    ttlTimer.Subscribe(TTLTimer, 0);
 
     controller.SetSize(dbParameters.num_tables);
     {
@@ -155,16 +150,16 @@ int main(int argc, char **argv)
                 if (answer == YES)
                 {
                     handler2.LoadBackup();
-                    log4c.LogActivity("Loaded from backup", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
+                    Logsys::LogActivity("Loaded from backup", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
                 }
                 else
                 {
-                    log4c.LogActivity("Loading canceled", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
+                    Logsys::LogActivity("Loading canceled", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
                 }
             }
             else
             {
-                log4c.LogActivity("Loading from backup is disabled", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
+                Logsys::LogActivity("Loading from backup is disabled", Logsys::IOSystem::BOTH, Logsys::Color::YELLOW, false);
             }
         }
     }
@@ -175,10 +170,11 @@ int main(int argc, char **argv)
 
     if (dbParameters.allow_backup)
     {
-        backupTimer.Start(dbParameters.backup_interval);
+        timer.Subscribe(BackupHandlerMessage, dbParameters.backup_interval);
     }
 
-    ttlTimer.Start(1);
+    timer.Subscribe(TTLTimer, 1);
+    timer.Start();
 
     std::cout
         << "\n\n"
@@ -206,14 +202,14 @@ int main(int argc, char **argv)
     {
         controller.protectedByKey = true;
         controller.GenerateKey();
-        log4c.LogActivity("Key: " + controller.hashtables[0].Get(DB_KEY_POSITION), Logsys::IOSystem::TERMINAL, Logsys::Color::WHITE, false);
+        Logsys::LogActivity("Key: " + controller.hashtables[0].Get(DB_KEY_POSITION), Logsys::IOSystem::TERMINAL, Logsys::Color::WHITE, false);
     }
     else
     {
-        log4c.LogActivity("WARNING: Running in unsafe mode. All commands will be accessible without a key!", Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW);
+        Logsys::LogActivity("WARNING: Running in unsafe mode. All commands will be accessible without a key!", Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW);
     }
 
-    log4c.LogActivity("Database Initialized", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+    Logsys::LogActivity("Database Initialized", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
 
     serverSocket.Listen();
     return 0;
