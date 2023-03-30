@@ -13,9 +13,6 @@
 #define MAX_BUFFER_SIZE 1048576
 #define MAX_CONN 4
 
-const char *port;
-int serverSocketfd;
-
 void Socket::Listen()
 {
     int portno;
