@@ -1,7 +1,5 @@
 #include "hashtable.h"
 
-vector<string> table;
-
 int Hashtable::Hash(string value)
 {
     int hash = 0;

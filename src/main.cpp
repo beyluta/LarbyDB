@@ -8,6 +8,7 @@
 #include "backuphandler.h"
 #include "signal.h"
 #include "config.h"
+#include "http.h"
 
 Controller controller;
 Socket serverSocket;
@@ -17,6 +18,7 @@ std::string MessageReceived(const char *msg, const char *ip)
 {
     controller.tempIP = ip;
     std::string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : "Not Found";
+    std::cout << PrepareHTTPResponse(msg, response) << std::endl;
     return response + "\r\n\0";
 }
 
