@@ -1,6 +1,24 @@
 #pragma once
 #include <iostream>
+#include <algorithm>
 #include "hashtable.h"
+
+class HTTP
+{
+    public:
+        Hashtable properties;
+        Hashtable parameters;
+        std::string method;
+        std::string body;
+
+        HTTP(Hashtable properties, Hashtable parameters, std::string method = "GET", std::string body = "")
+        {
+            this->properties = properties;
+            this->parameters = parameters;
+            this->body = body;
+            this->method = method;
+        }
+};
 
 enum class HTTPResponseCode
 {
@@ -20,7 +38,82 @@ enum class HTTPResponseCode
     GATEWAY_TIMEOUT = 504
 };
 
-std::string PrepareHTTPResponse(std::string request, std::string response)
+Hashtable GetHTTPProperties(std::string request)
+{
+    Hashtable properties;
+    std::string property = "";
+    std::string value = "";
+    bool propertyFound = false;
+    for (int i = 0; i < request.length(); i++)
+    {
+        if (request[i] == '\r' || request[i] == '\n') 
+        {
+            properties.Add(property, value);
+            property = "";
+            value = "";
+            propertyFound = false;
+            continue;
+        }
+
+        if (request[i] == ':' && !propertyFound)
+        {
+            propertyFound = true;
+            continue;
+        }
+
+        if (!propertyFound && request[i] != ' ')
+        {
+            property += request[i];
+        }
+        
+        if (propertyFound && (request[i] != ' ' || value.length() > 0))
+        {
+            value += request[i];
+        }
+    }
+    return properties;
+}
+
+Hashtable GetHTTPParameters(std::string query)
+{
+    Hashtable parameters;
+    std::string currentParameter = "";
+    std::string currentValue = "";
+    bool parameterFound = false;
+    for (int i = 0; i < query.length(); i++)
+    {
+        if (query[i] == '=')
+        {
+            parameterFound = true;
+            continue;
+        }
+
+        if (query[i] == '&' || i == query.length() - 1)
+        {
+            if (i == query.length() - 1)
+            {
+                currentValue += query[i];
+            }
+            parameters.Add(currentParameter, currentValue);
+            currentParameter = "";
+            currentValue = "";
+            parameterFound = false;
+            continue;
+        }
+
+        if (!parameterFound)
+        {
+            currentParameter += query[i];;
+        }
+        else
+        {
+            currentValue += query[i];
+        }
+    }
+    return parameters;
+}
+
+HTTP GetHTTP(std::string request)
 {
     // int length = response.length();
     // return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(length) + "\r\n\r\n" + response;
@@ -30,6 +123,7 @@ std::string PrepareHTTPResponse(std::string request, std::string response)
     std::string parameters = "";
     bool methodFound = false;
     bool parametersFound = false;
+    Hashtable requestProperties = GetHTTPProperties(request);
     for (int i = 0; i < request.length(); i++)
     {
         if (request[i] == ' ' && !methodFound)
@@ -56,14 +150,22 @@ std::string PrepareHTTPResponse(std::string request, std::string response)
             }
         }
 
-        if (request[i] == '\r' || request[i] == '\n') 
-        {
-            break;
-        }
-
         if (!methodFound) {
             method += request[i];
         }
     }
-    return request;
+
+    if (methodFound && method == "GET")
+    {
+        Hashtable parametersTable = GetHTTPParameters(parameters);
+    }
+
+    if (methodFound && method == "POST")
+    {
+        int contentLength = atoi(requestProperties.Get("Content-Length").c_str());
+        std::string body = request.substr(request.length() - contentLength, contentLength);
+        return HTTP(requestProperties, GetHTTPParameters(parameters), method, body);
+    }
+
+    return HTTP(requestProperties, GetHTTPParameters(parameters), method);
 }

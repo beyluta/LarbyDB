@@ -13,12 +13,30 @@
 Controller controller;
 Socket serverSocket;
 Timer timer;
+bool isHTTPEnabled = true;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
     controller.tempIP = ip;
     std::string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : "Not Found";
-    std::cout << PrepareHTTPResponse(msg, response) << std::endl;
+
+    if (isHTTPEnabled)
+    {
+        HTTP httpResponse = GetHTTP(msg);
+        if (httpResponse.method == "GET")
+        {
+            std::string table = httpResponse.parameters.Get("table");
+            std::string key = httpResponse.parameters.Get("key");
+            std::string value = controller.Get(key, std::stoi(table));
+            std::cout << "GET Req: " << value << std::endl;
+        }
+
+        if (httpResponse.method == "POST")
+        {
+            std::cout << httpResponse.body << std::endl;
+        }
+    }
+
     return response + "\r\n\0";
 }
 

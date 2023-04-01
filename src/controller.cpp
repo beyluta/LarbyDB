@@ -31,6 +31,16 @@ int Controller::GetSize()
     return hashtables.size();
 }
 
+string Controller::Get(string key, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return nullptr;
+    }
+
+    return hashtables[table].Get(key);
+}
+
 string Controller::GetResolvedResponse(string request)
 {
     vector<string> words;

@@ -17,6 +17,7 @@ public:
     bool protectedByKey;
     void SetSize(int numTables = 2);
     int GetSize();
+    string Get(string key, int table = 0);
     string GetResolvedResponse(string request);
     void GenerateKey(int length = 16);
     bool IsAuthorized();
