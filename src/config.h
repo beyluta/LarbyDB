@@ -6,16 +6,18 @@
 #define DEFAULT_MANUAL_CONFIG false
 #define DEFAULT_GENERATE_KEY true
 #define DEFAULT_ALLOW_BACKUP true
+#define DEFAULT_ENABLE_HTTP false
 #define DEFAULT_NUM_TABLES 2
 #define DEFAULT_BACKUP_INTERVAL "30m"
 #define DEFAULT_LOAD_BACKUP "ask"
 #define DEFAULT_NUM_SETTINGS 7
-#define SEMANTIC_VERSION "v0.2.1"
+#define SEMANTIC_VERSION "v1.0.0"
 
 #define OPTION_MANUAL_CONFIG "manual-config"
 #define OPTION_PORT "port"
 #define OPTION_NUM_TABLES "num-tables"
 #define OPTION_ALLOW_BACKUP "allow-backup"
+#define OPTION_ENABLE_HTTP "enable-http"
 #define OPTION_BACKUP_INTERVAL "backup-interval"
 #define OPTION_GENERATE_KEY "generate-key"
 #define OPTION_LOAD_BACKUP "load-backup"
@@ -30,6 +32,7 @@ struct Parameters
     bool manual_config;
     int backup_interval;
     string load_backup;
+    bool enable_http;
 };
 
 enum UserInputState
@@ -99,6 +102,8 @@ vector<string> ProcessConfig()
                                          OPTION_BACKUP_INTERVAL+" "+DEFAULT_BACKUP_INTERVAL+
                                          "\n\n# Generate the authentication key:\n"+
                                          OPTION_GENERATE_KEY" "+BoolToStr(DEFAULT_GENERATE_KEY)+
+                                        "\n\n# Enable Hypertext Transfer Protocol:\n"+
+                                         OPTION_ENABLE_HTTP+" "+BoolToStr(DEFAULT_ENABLE_HTTP)+
                                          "\n\n# Should the db load from a backup file:\n# true  - load from backups\n# false - do not load from backups\n# ask   - ask the user whether to load from the backup file\n"+
                                          OPTION_LOAD_BACKUP+" "+DEFAULT_LOAD_BACKUP);
             return ProcessConfig();
@@ -136,7 +141,8 @@ int SetParameters(Parameters &params, vector<string> &str)
         allow_backup,
         backup_interval,
         generate_key,
-        load_backup
+        load_backup,
+        enable_http
     };
     int settingsNum = 0;
 
@@ -264,6 +270,28 @@ int SetParameters(Parameters &params, vector<string> &str)
             {
                 params.load_backup = DEFAULT_LOAD_BACKUP;
                 cout << OPTION_LOAD_BACKUP << ": unset, using default (" << params.load_backup << ")\n";
+            }
+            continue;
+        }
+
+        if (!settings_set[enable_http] && str[i].find(OPTION_ENABLE_HTTP) != string::npos)
+        {
+            settings_set[enable_http] = true;
+            settingsNum++;
+
+            if (str[i + 1] == "true")
+            {
+                params.enable_http = true;
+            }
+            else if (str[i + 1] == "false")
+            {
+                params.enable_http = false;
+            }
+            else
+            {
+                settingsNum--;
+                params.enable_http = DEFAULT_ENABLE_HTTP;
+                cout << boolalpha << OPTION_ENABLE_HTTP << ": unset, using default (" << params.enable_http << ")\n";
             }
             continue;
         }

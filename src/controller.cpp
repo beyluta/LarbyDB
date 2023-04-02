@@ -31,6 +31,60 @@ int Controller::GetSize()
     return hashtables.size();
 }
 
+string Controller::Get(string key, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return "";
+    }
+
+    return hashtables[table].Get(key);
+}
+
+string Controller::GetAll(int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return "";
+    }
+
+    return hashtables[table].GetAll();
+}
+
+int Controller::Set(string key, string value, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return 1;
+    }
+
+    hashtables[table].Add(key, value);
+    return 0;
+}
+
+int Controller::Delete(string key, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return 1;
+    }
+
+    hashtables[table].Remove(key);
+    return 0;
+}
+
+int Controller::Auth(string key)
+{
+    if (hashtables[0].Get(DB_KEY_POSITION) == key)
+    {
+        hashtables[0].Add(tempIP);
+        Logsys::LogActivity(tempIP + " Authorized on this machine", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
+        return 0;
+    }
+
+    return 1;
+}
+
 string Controller::GetResolvedResponse(string request)
 {
     vector<string> words;
