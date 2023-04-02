@@ -149,12 +149,7 @@ HTTP GetHTTP(std::string request)
         }
     }
 
-    if (methodFound && method == "GET")
-    {
-        Hashtable parametersTable = GetHTTPParameters(parameters);
-    }
-
-    if (methodFound && method == "POST")
+    if (method == "POST")
     {
         int contentLength = atoi(requestProperties.Get("Content-Length").c_str());
         std::string body = request.substr(request.length() - contentLength, contentLength);

@@ -19,6 +19,7 @@ Developed under `g++ version 10.3.0`
 | `backup-interval` | time interval between backups |*positive int for seconds*,<br>*positive int+`h` for hours*,<br>*positive int+`m` for minutes*   |`30m`|
 | `generate-key`    | generate authorization key on launch | `true`, `false`    | `true`            |
 | `load-backup`     | whether to load from backup on launch| `true`, `false`, `ask`| `ask`          |
+| `enable-http`     | whether to use HTTP or TCP| `true`, `false`, `ask`| `ask`          |
 
 To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB --port 3000`).<br>
 

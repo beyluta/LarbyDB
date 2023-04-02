@@ -13,41 +13,39 @@
 Controller controller;
 Socket serverSocket;
 Timer timer;
-bool isHTTPEnabled = true;
+Parameters dbParameters;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
     controller.tempIP = ip;
 
-    if (isHTTPEnabled)
+    if (dbParameters.enable_http)
     {
         HTTP httpResponse = GetHTTP(msg);
         std::string contentType = httpResponse.properties.Get("Content-Type");
         std::string bearerToken = httpResponse.properties.Get("Authorization");
         bearerToken = bearerToken.length() > 0 ? bearerToken.substr(7, bearerToken.length() - 7) : "";
-        std::string table = httpResponse.parameters.Get("table");
+        int table = atoi(httpResponse.parameters.Get("table").c_str());
         std::string key = httpResponse.parameters.Get("key");
 
-        if (bearerToken.length() > 0)
-        {
-            if (controller.Auth(bearerToken) > 0)
-            {
-                return GetHTTPResponse(HTTPResponseCode::UNAUTHORIZED, "text/plain", "Unauthorized");
-            }
-        }
-        else
+        if (bearerToken.length() <= 0 || controller.Auth(bearerToken) > 0)
         {
             return GetHTTPResponse(HTTPResponseCode::UNAUTHORIZED, "text/plain", "Unauthorized");
         }
 
-        if (atoi(table.c_str()) <= 0 && table.length() > 0)
+        if (table <= 0)
         {
-            return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "text/plain", "Table " + table + " is out of bounds");
+            return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "text/plain", "Table " + std::to_string(table) + " is out of bounds");
         }
 
         if (httpResponse.method == "GET")
         {
-            std::string value = controller.Get(key, atoi(table.c_str()));
+            if (key == "ALL")
+            {
+                return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAll(table));
+            }
+
+            std::string value = controller.Get(key, table);
 
             if (value.length() <= 0)
             {
@@ -64,12 +62,22 @@ std::string MessageReceived(const char *msg, const char *ip)
 
         if (httpResponse.method == "POST")
         {
-            if (controller.Set(key, httpResponse.body, atoi(table.c_str())) > 0)
+            if (controller.Set(key, httpResponse.body, table > 0))
             {
                 return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "text/plain", "Error");
             }
 
             return GetHTTPResponse(HTTPResponseCode::CREATED, "text/plain", "OK");
+        }
+
+        if (httpResponse.method == "DELETE")
+        {
+            if (controller.Delete(key, table) > 0)
+            {
+                return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "text/plain", "Error");
+            }
+
+            return GetHTTPResponse(HTTPResponseCode::OK, "text/plain", "OK");
         }
     }
 
@@ -113,7 +121,6 @@ int main(int argc, char **argv)
 {
     signal(SIGPIPE, SIG_IGN);
     signal(SIGINT, OnInterrupt);
-    Parameters dbParameters;
     {
         std::vector<std::string> configArguments = ProcessConfig();
         int configSettings = SetParameters(dbParameters, configArguments);
@@ -184,6 +191,8 @@ int main(int argc, char **argv)
         }
 
         PromptBool("generate authentication key? (y/n): ", dbParameters.generate_key, DEFAULT_GENERATE_KEY);
+
+        PromptBool("enable HTTP? (y/n): ", dbParameters.enable_http, DEFAULT_ENABLE_HTTP);
     }
 
     controller.SetSize(dbParameters.num_tables);
@@ -248,6 +257,7 @@ int main(int argc, char **argv)
     std::cout
         << "Version: " << SEMANTIC_VERSION << '\n'
         << "port: " << dbParameters.port << '\n'
+        << "Transfer/Transmission protocol: " << (dbParameters.enable_http ? "HTTP" : "TCP") << '\n'
         << "tables: " << dbParameters.num_tables << '\n'
         << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
         << "backup_interval: "

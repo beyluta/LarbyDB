@@ -41,6 +41,16 @@ string Controller::Get(string key, int table)
     return hashtables[table].Get(key);
 }
 
+string Controller::GetAll(int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return "";
+    }
+
+    return hashtables[table].GetAll();
+}
+
 int Controller::Set(string key, string value, int table)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())
@@ -49,6 +59,17 @@ int Controller::Set(string key, string value, int table)
     }
 
     hashtables[table].Add(key, value);
+    return 0;
+}
+
+int Controller::Delete(string key, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return 1;
+    }
+
+    hashtables[table].Remove(key);
     return 0;
 }
 
