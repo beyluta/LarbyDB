@@ -35,10 +35,33 @@ string Controller::Get(string key, int table)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())
     {
-        return nullptr;
+        return "";
     }
 
     return hashtables[table].Get(key);
+}
+
+int Controller::Set(string key, string value, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return 1;
+    }
+
+    hashtables[table].Add(key, value);
+    return 0;
+}
+
+int Controller::Auth(string key)
+{
+    if (hashtables[0].Get(DB_KEY_POSITION) == key)
+    {
+        hashtables[0].Add(tempIP);
+        Logsys::LogActivity(tempIP + " Authorized on this machine", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
+        return 0;
+    }
+
+    return 1;
 }
 
 string Controller::GetResolvedResponse(string request)

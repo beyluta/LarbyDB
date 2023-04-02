@@ -19,6 +19,8 @@ public:
     int GetSize();
     string Get(string key, int table = 0);
     string GetResolvedResponse(string request);
+    int Set(string key, string value, int table = 0);
+    int Auth(string key);
     void GenerateKey(int length = 16);
     bool IsAuthorized();
 };

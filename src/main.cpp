@@ -18,25 +18,62 @@ bool isHTTPEnabled = true;
 std::string MessageReceived(const char *msg, const char *ip)
 {
     controller.tempIP = ip;
-    std::string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : "Not Found";
 
     if (isHTTPEnabled)
     {
         HTTP httpResponse = GetHTTP(msg);
+        std::string contentType = httpResponse.properties.Get("Content-Type");
+        std::string bearerToken = httpResponse.properties.Get("Authorization");
+        bearerToken = bearerToken.length() > 0 ? bearerToken.substr(7, bearerToken.length() - 7) : "";
+        std::string table = httpResponse.parameters.Get("table");
+        std::string key = httpResponse.parameters.Get("key");
+
+        if (bearerToken.length() > 0)
+        {
+            if (controller.Auth(bearerToken) > 0)
+            {
+                return GetHTTPResponse(HTTPResponseCode::UNAUTHORIZED, "text/plain", "Unauthorized");
+            }
+        }
+        else
+        {
+            return GetHTTPResponse(HTTPResponseCode::UNAUTHORIZED, "text/plain", "Unauthorized");
+        }
+
+        if (atoi(table.c_str()) <= 0 && table.length() > 0)
+        {
+            return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "text/plain", "Table " + table + " is out of bounds");
+        }
+
         if (httpResponse.method == "GET")
         {
-            std::string table = httpResponse.parameters.Get("table");
-            std::string key = httpResponse.parameters.Get("key");
-            std::string value = controller.Get(key, std::stoi(table));
-            std::cout << "GET Req: " << value << std::endl;
+            std::string value = controller.Get(key, atoi(table.c_str()));
+
+            if (value.length() <= 0)
+            {
+                return GetHTTPResponse(HTTPResponseCode::NOT_FOUND, "text/plain", "Not Found");
+            }
+
+            if (contentType.length() > 0)
+            {
+                return GetHTTPResponse(HTTPResponseCode::OK, contentType, value);
+            }
+
+            return GetHTTPResponse(HTTPResponseCode::OK, "text/plain", value);
         }
 
         if (httpResponse.method == "POST")
         {
-            std::cout << httpResponse.body << std::endl;
+            if (controller.Set(key, httpResponse.body, atoi(table.c_str())) > 0)
+            {
+                return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "text/plain", "Error");
+            }
+
+            return GetHTTPResponse(HTTPResponseCode::CREATED, "text/plain", "OK");
         }
     }
 
+    std::string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : "Not Found";
     return response + "\r\n\0";
 }
 

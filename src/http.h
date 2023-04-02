@@ -115,9 +115,6 @@ Hashtable GetHTTPParameters(std::string query)
 
 HTTP GetHTTP(std::string request)
 {
-    // int length = response.length();
-    // return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: " + std::to_string(length) + "\r\n\r\n" + response;
-
     std::string line = "";
     std::string method = "";
     std::string parameters = "";
@@ -131,24 +128,21 @@ HTTP GetHTTP(std::string request)
             methodFound = true;
             continue;
         }
-
-        if (methodFound && method == "GET")
+        
+        if (request[i] == '?' && !parametersFound)
         {
-            if (request[i] == '?' && !parametersFound)
-            {
-                parametersFound = true;
-                continue;
-            } 
-            else if (request[i] == ' ' && parametersFound)
-            {
-                parametersFound = false;
-                continue;
-            }
-
-            if (parametersFound) {
-                parameters += request[i];
-            }
+            parametersFound = true;
+            continue;
+        } 
+        else if (request[i] == ' ' && parametersFound)
+        {
+            parametersFound = false;
+            continue;
         }
+
+        if (parametersFound) {
+            parameters += request[i];
+        }        
 
         if (!methodFound) {
             method += request[i];
@@ -168,4 +162,10 @@ HTTP GetHTTP(std::string request)
     }
 
     return HTTP(requestProperties, GetHTTPParameters(parameters), method);
+}
+
+std::string GetHTTPResponse(HTTPResponseCode code, std::string contentType, std::string body = "")
+{
+    std::string response = "HTTP/1.1 " + std::to_string((int)code) + " OK\r\nContent-Type: " + contentType + "\r\nContent-Length: " + std::to_string(body.length()) + "\r\n\r\n" + body;
+    return response;
 }
