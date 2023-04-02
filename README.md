@@ -23,6 +23,7 @@ Developed under `g++ version 10.3.0`
 
 To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB --port 3000`).<br>
 
+# TCP Mode
 ## Database commands
 `AUTH <KEY>` - authorize current device to write and read from the database<br>
 `SET <KEY> <TABLE> <EXPIRATION IN SECONDS> <CONTENT>` - set a value<br>
@@ -37,3 +38,35 @@ To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB -
 When sending a request to the database, the response you might get could be plain text or JSON format depending on how you submitted the data. The following commands will always return a JSON response: `GET ALL`, `GET ALL <START-END>`.<br> If the data you submitted was already JSON-Formatted then you will get a JSON response from the following commands: `GET <KEY> <TABLE>`<br><br>
 Here is an example:<br> `SET users 1 0 [{"name":"John"}, {"name":"Titor"}]`<br>`GET users 1`<br>`Response: [{"name":"John"}, {"name":"Titor"}]`<br><br>
 Keep in mind that the database sends the following carriage returns that you must strip before using the response: `\r\n\0`
+
+# HTTP Mode (only if --enable-http is true)
+Add a value to the database. Send the parameters `table` and `key` in the URL and the data in the body.
+```curl
+curl -L 'localhost:8080?table=1&key=name' \
+-H 'Authorization: Bearer XXXX-XXXXX-XXXXX' \
+-H 'Content-Type: application/json' \
+-d '{
+    "name": "John Doe",
+    "age": 30
+}'
+```
+
+Get a value from the database. Send the parameters `table` and `key` in the URL.
+```curl
+curl -L 'localhost:8080?key=name&table=1' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer XXXX-XXXXX-XXXXX'
+```
+
+Get all values from the database. Send the parameter `table` in the URL and `ALL` as the value of the `key` parameter.
+```curl
+curl -L 'localhost:8080?table=1&key=ALL' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer XXXX-XXXXX-XXXXX'
+```
+
+Delete a value from the database. Send the parameters `table` and `key` in the URL.
+```curl
+curl -L -X DELETE 'localhost:8080?table=1&key=name' \
+-H 'Authorization: Bearer XXXX-XXXXX-XXXXX' \
+```
