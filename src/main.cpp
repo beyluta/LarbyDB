@@ -62,7 +62,7 @@ std::string MessageReceived(const char *msg, const char *ip)
 
         if (httpResponse.method == "POST")
         {
-            if (controller.Set(key, httpResponse.body, table > 0))
+            if (controller.Set(key, httpResponse.body, table) > 0)
             {
                 return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "text/plain", "Error");
             }
