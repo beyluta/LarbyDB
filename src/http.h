@@ -38,6 +38,12 @@ enum class HTTPResponseCode
     GATEWAY_TIMEOUT = 504
 };
 
+std::string ToLowerCase(std::string str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    return str;
+}
+
 Hashtable GetHTTPProperties(std::string request)
 {
     Hashtable properties;
@@ -48,7 +54,7 @@ Hashtable GetHTTPProperties(std::string request)
     {
         if (request[i] == '\r' || request[i] == '\n') 
         {
-            properties.Add(property, value);
+            properties.Add(ToLowerCase(property), value);
             property = "";
             value = "";
             propertyFound = false;
@@ -151,7 +157,7 @@ HTTP GetHTTP(std::string request)
 
     if (method == "POST")
     {
-        int contentLength = atoi(requestProperties.Get("Content-Length").c_str());
+        int contentLength = atoi(requestProperties.Get("content-length").c_str());
         std::string body = request.substr(request.length() - contentLength, contentLength);
         return HTTP(requestProperties, GetHTTPParameters(parameters), method, body);
     }
@@ -161,6 +167,6 @@ HTTP GetHTTP(std::string request)
 
 std::string GetHTTPResponse(HTTPResponseCode code, std::string contentType, std::string body = "")
 {
-    std::string response = "HTTP/1.1 " + std::to_string((int)code) + " OK\r\nContent-Type: " + contentType + "\r\nContent-Length: " + std::to_string(body.length()) + "\r\n\r\n" + body;
+    std::string response = "HTTP/1.1 " + std::to_string((int)code) + " OK\r\ncontent-type: " + contentType + "\r\ncontent-length: " + std::to_string(body.length()) + "\r\n\r\n" + body;
     return response;
 }

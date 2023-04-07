@@ -22,8 +22,8 @@ std::string MessageReceived(const char *msg, const char *ip)
     if (dbParameters.enable_http)
     {
         HTTP httpResponse = GetHTTP(msg);
-        std::string contentType = httpResponse.properties.Get("Content-Type");
-        std::string bearerToken = httpResponse.properties.Get("Authorization");
+        std::string contentType = httpResponse.properties.Get("content-type");
+        std::string bearerToken = httpResponse.properties.Get("authorization");
         bearerToken = bearerToken.length() > 0 ? bearerToken.substr(7, bearerToken.length() - 7) : "";
         int table = atoi(httpResponse.parameters.Get("table").c_str());
         std::string key = httpResponse.parameters.Get("key");
