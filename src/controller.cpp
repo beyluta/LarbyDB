@@ -71,6 +71,12 @@ int Controller::Delete(string key, int table)
         return 1;
     }
 
+    if (IsStringANumber(key))
+    {
+        hashtables[table].Remove(atoi(key.c_str()));
+        return 0;
+    }
+
     hashtables[table].Remove(key);
     return 0;
 }
