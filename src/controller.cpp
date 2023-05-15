@@ -58,7 +58,6 @@ int Controller::Set(string key, string value, int table)
         return 1;
     }
 
-    std::cout << "Setting " << key << " to " << value << std::endl;
     value.erase(std::remove(value.begin(), value.end(), '\n'), value.cend());
     hashtables[table].Add(key, value);
     return 0;

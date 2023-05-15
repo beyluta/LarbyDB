@@ -1,13 +1,14 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include "linknode.h"
 
 using namespace std;
 
 class Hashtable
 {
 private:
-    vector<string> table;
+    vector<LinkNode> table;
 
 public:
     int Hash(string value);
