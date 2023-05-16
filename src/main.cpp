@@ -30,12 +30,12 @@ std::string MessageReceived(const char *msg, const char *ip)
 
         if (bearerToken.length() <= 0 || controller.Auth(bearerToken) > 0)
         {
-            return GetHTTPResponse(HTTPResponseCode::UNAUTHORIZED, "text/plain", "Unauthorized");
+            return GetHTTPResponse(HTTPResponseCode::UNAUTHORIZED, "application/json", "{\"status\": 401, \"message\": \"Unauthorized\"}");
         }
 
         if (table <= 0)
         {
-            return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "text/plain", "Table " + std::to_string(table) + " is out of bounds");
+            return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Table out of bounds.\"}");
         }
 
         if (httpResponse.method == "GET")
@@ -49,7 +49,7 @@ std::string MessageReceived(const char *msg, const char *ip)
 
             if (value.length() <= 0)
             {
-                return GetHTTPResponse(HTTPResponseCode::NOT_FOUND, "text/plain", "Not Found");
+                return GetHTTPResponse(HTTPResponseCode::NOT_FOUND, "application/json", "{\"status\": 404, \"message\": \"Not Found\"}");
             }
 
             if (contentType.length() > 0)
@@ -57,27 +57,27 @@ std::string MessageReceived(const char *msg, const char *ip)
                 return GetHTTPResponse(HTTPResponseCode::OK, contentType, value);
             }
 
-            return GetHTTPResponse(HTTPResponseCode::OK, "text/plain", value);
+            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
         }
 
         if (httpResponse.method == "POST")
         {
             if (controller.Set(key, httpResponse.body, table) > 0)
             {
-                return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "text/plain", "Error");
+                return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
             }
 
-            return GetHTTPResponse(HTTPResponseCode::CREATED, "text/plain", "OK");
+            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
         }
 
         if (httpResponse.method == "DELETE")
         {
             if (controller.Delete(key, table) > 0)
             {
-                return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "text/plain", "Error");
+                return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
             }
 
-            return GetHTTPResponse(HTTPResponseCode::OK, "text/plain", "OK");
+            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
         }
     }
 
