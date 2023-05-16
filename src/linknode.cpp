@@ -1,6 +1,6 @@
 #include "linknode.h"
 
-void LinkedList::add(LinkNode *head, std::string value)
+void LinkedList::Add(LinkNode *head, std::string value)
 {
     if (head->value == "")
     {
@@ -10,7 +10,7 @@ void LinkedList::add(LinkNode *head, std::string value)
 
     if (head->next != nullptr)
     {
-        add(head->next, value);
+        Add(head->next, value);
     } else {
         LinkNode *node = new LinkNode();
         node->value = value;
@@ -18,7 +18,7 @@ void LinkedList::add(LinkNode *head, std::string value)
     }
 }
 
-std::vector<std::string> LinkedList::list(LinkNode *head) {
+std::vector<std::string> LinkedList::List(LinkNode *head) {
     std::vector<std::string> list;
     while (head != nullptr) {
         if (head->value != "") {
@@ -29,7 +29,7 @@ std::vector<std::string> LinkedList::list(LinkNode *head) {
     return list;
 }
 
-void LinkedList::unlink(LinkNode *head) {
+void LinkedList::Unlink(LinkNode *head) {
     std::vector<LinkNode*> nodePtrs;
     while (head != nullptr) {
         nodePtrs.push_back(head);

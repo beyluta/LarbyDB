@@ -11,6 +11,7 @@ private:
     vector<LinkNode> table;
 
 public:
+    std::string GetSameIndexValues(LinkNode *node);
     int Hash(string value);
     void AddTo(int hash, string value);
     void Add(string value);

@@ -10,7 +10,7 @@ public:
 
 namespace LinkedList 
 {
-    void add(LinkNode *head, std::string value);
-    std::vector<std::string> list(LinkNode *head);
-    void unlink(LinkNode *head);
+    void Add(LinkNode *head, std::string value);
+    std::vector<std::string> List(LinkNode *head);
+    void Unlink(LinkNode *head);
 };
