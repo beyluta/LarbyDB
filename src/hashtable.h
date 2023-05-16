@@ -1,15 +1,17 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include "linknode.h"
 
 using namespace std;
 
 class Hashtable
 {
 private:
-    vector<string> table;
+    vector<LinkNode> table;
 
 public:
+    std::string GetSameIndexValues(LinkNode *node);
     int Hash(string value);
     void AddTo(int hash, string value);
     void Add(string value);

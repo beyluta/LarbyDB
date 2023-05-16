@@ -1,5 +1,22 @@
 #include "hashtable.h"
 
+std::string Hashtable::GetSameIndexValues(LinkNode *node)
+{
+    std::vector<std::string> list = LinkedList::List(node);
+    std::string values = "[";
+    if (list.size() > 1) {
+        for (int j = 0; j < list.size(); j++)
+        {
+            values += list.at(j) + ",";
+        }
+    } else {
+        return "";
+    }
+    values.pop_back();
+    values += "]";
+    return values;
+}
+
 int Hashtable::Hash(string value)
 {
     int hash = 0;
@@ -19,10 +36,7 @@ void Hashtable::AddTo(int hash, string value)
         table.resize(hash + 1);
     }
 
-    if (table.at(hash) == "")
-    {
-        table.at(hash) = value;
-    }
+    LinkedList::Add(&table.at(hash), value);
 }
 
 void Hashtable::Add(string value)
@@ -34,10 +48,7 @@ void Hashtable::Add(string value)
         table.resize(hash + 1);
     }
 
-    if (table.at(hash) == "")
-    {
-        table.at(hash) = value;
-    }
+    LinkedList::Add(&table.at(hash), value);
 }
 
 int Hashtable::Add(string key, string value)
@@ -49,13 +60,9 @@ int Hashtable::Add(string key, string value)
         table.resize(hash + 1);
     }
 
-    if (table.at(hash) == "")
-    {
-        table.at(hash) = value;
-        return hash;
-    }
+    LinkedList::Add(&table.at(hash), value);
 
-    return hash; // TODO: something weird is going on with the returns, check out with the debugger later...
+    return hash;
 }
 
 string Hashtable::Get(string key)
@@ -67,7 +74,13 @@ string Hashtable::Get(string key)
         return "";
     }
 
-    return table.at(hash) == "" ? "" : table.at(hash);
+    std::string values = GetSameIndexValues(&table.at(hash));
+
+    if (values != "") {
+        return values;
+    }
+
+    return table.at(hash).value;
 }
 
 string Hashtable::GetAll()
@@ -76,10 +89,11 @@ string Hashtable::GetAll()
 
     for (int i = 0; i < table.size(); i++)
     {
-        if (table.at(i) != "")
+        if (table.at(i).value != "")
         {
-            string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},";
-            result += "{\"index\":\"" + to_string(i) + "\"," + value;
+            std::string values = GetSameIndexValues(&table.at(i));
+            string value = table.at(i).value[0] == '{' || table.at(i).value[0] == '[' ? "\"value\":" + table.at(i).value + "}," : "\"value\":\"" + table.at(i).value + "\"},";
+            result += "{\"index\":\"" + to_string(i) + "\"," + (values != "" ? "\"value\":" + values + "}," : value);
         }
     }
 
@@ -102,12 +116,13 @@ string Hashtable::GetInRange(int start, int end)
 
     for (int i = 0; i < table.size(); i++)
     {
-        if (table.at(i) != "")
+        if (table.at(i).value != "")
         {
             if (a >= start && a <= end)
             {
-                string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},\n";
-                result += "{\"index\":\"" + to_string(i) + "\"," + value;
+                std::string values = GetSameIndexValues(&table.at(i));
+                string value = table.at(i).value[0] == '{' || table.at(i).value[0] == '[' ? "\"value\":" + table.at(i).value + "}," : "\"value\":\"" + table.at(i).value + "\"},\n";
+                result += "{\"index\":\"" + to_string(i) + "\"," + (values != "" ? "\"value\":" + values + "}," : value);
             }
 
             a++;
@@ -129,12 +144,13 @@ string Hashtable::GetAmount(int amount, int skip)
 
     for (int i = 0; i < table.size(); i++)
     {
-        if (table.at(i) != "")
+        if (table.at(i).value != "")
         {
             if (a >= (skip * amount) - amount)
             {
-                string value = table.at(i)[0] == '{' || table.at(i)[0] == '[' ? "\"value\":" + table.at(i) + "}," : "\"value\":\"" + table.at(i) + "\"},\n";
-                result += "{\"index\":\"" + to_string(i) + "\"," + value;
+                std::string values = GetSameIndexValues(&table.at(i));
+                string value = table.at(i).value[0] == '{' || table.at(i).value[0] == '[' ? "\"value\":" + table.at(i).value + "}," : "\"value\":\"" + table.at(i).value + "\"},\n";
+                result += "{\"index\":\"" + to_string(i) + "\"," + (values != "" ? "\"value\":" + values + "}," : value);
             }
 
             a++;
@@ -163,7 +179,8 @@ void Hashtable::Remove(string value)
         return;
     }
 
-    table.at(hash) = "";
+    LinkedList::Unlink(&table.at(hash));
+    table.at(hash) = LinkNode();
 }
 
 void Hashtable::Remove(int hash)
@@ -173,7 +190,8 @@ void Hashtable::Remove(int hash)
         return;
     }
 
-    table.at(hash) = "";
+    LinkedList::Unlink(&table.at(hash));
+    table.at(hash) = LinkNode();
 }
 
 bool Hashtable::Contains(string value)
@@ -185,5 +203,5 @@ bool Hashtable::Contains(string value)
         return false;
     }
 
-    return table.at(hash) != "" && table.at(hash) == value ? true : false;
+    return table.at(hash).value != "" && table.at(hash).value == value ? true : false;
 }
