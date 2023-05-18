@@ -17,10 +17,18 @@ Parameters dbParameters;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
+    ulong maxSize = std::string("").max_size();
+    ulong realSize = strlen(msg);
+    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(realSize) + " out of a maximum of " + std::to_string(maxSize), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
     controller.tempIP = ip;
 
     if (dbParameters.enable_http)
     {
+        if (realSize > maxSize)
+        {
+            return GetHTTPResponse(HTTPResponseCode::CONTENT_TOO_LARGE, "application/json", "{\"status\": 413, \"message\": \"Payload is too large to handle\"}");
+        }
+
         HTTP httpResponse = GetHTTP(msg);
         std::string contentType = httpResponse.properties.Get("content-type");
         std::string bearerToken = httpResponse.properties.Get("authorization");
@@ -79,6 +87,11 @@ std::string MessageReceived(const char *msg, const char *ip)
 
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
         }
+    }
+
+    if (realSize > maxSize)
+    {
+        return "Payload is too large to handle\r\n\0";
     }
 
     std::string response = strlen(msg) > 0 ? controller.GetResolvedResponse(msg) : "Not Found";

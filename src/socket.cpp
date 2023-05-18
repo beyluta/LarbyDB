@@ -83,7 +83,6 @@ void Socket::Listen()
                     else
                     {
                         char *ipAddr = inet_ntoa(cli_addr.sin_addr);
-                        Logsys::LogActivity("Accepted connection from " + std::string(ipAddr), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
                         FD_SET(clientSocket, &sockets);
                     }
                 }
