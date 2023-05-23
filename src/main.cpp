@@ -17,8 +17,8 @@ Parameters dbParameters;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
-    ulong maxSize = std::string("").max_size();
-    ulong realSize = strlen(msg);
+    unsigned long maxSize = std::string("").max_size();
+    unsigned long realSize = strlen(msg);
     Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(realSize) + " out of a maximum of " + std::to_string(maxSize), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
     controller.tempIP = ip;
 

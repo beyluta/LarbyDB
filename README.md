@@ -1,6 +1,6 @@
 # Welcome to LarbyDB's repository
 Make sure you are under a unix system when using the Software.<br>
-Developed under `g++ version 10.3.0`
+LarbyDB supports the following compilers: `g++ version 10.3.0`, `Apple Clang version 14.0.3`
 
 ## Installation
 
