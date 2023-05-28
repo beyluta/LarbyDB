@@ -114,6 +114,7 @@ string Controller::GetResolvedResponse(string request)
     {
         if (hashtables[0].Get(DB_KEY_POSITION) == words[1])
         {
+            hashtables[0].Remove(tempIP);
             hashtables[0].Add(tempIP);
             Logsys::LogActivity(tempIP + " Authorized on this machine", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
             return "OK";
