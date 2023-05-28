@@ -65,7 +65,7 @@ std::string MessageReceived(const char *msg, const char *ip)
                 return GetHTTPResponse(HTTPResponseCode::OK, contentType, value);
             }
 
-            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
+            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", value);
         }
 
         if (httpResponse.method == "POST")
