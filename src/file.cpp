@@ -100,7 +100,7 @@ void File::DeleteDirectory(std::string dirname, bool empty)
             {
                 if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
                 {
-                    string filepath = dirname + "/" + ent->d_name;
+                    std::string filepath = dirname + "/" + ent->d_name;
                     DeleteFile(filepath);
                 }
             }
@@ -165,7 +165,7 @@ std::vector<std::string> File::GetFilesInDirectory(std::string directory)
 
     return files;
 #elif __unix__
-    vector<string> files;
+    std::vector<std::string> files;
     DIR *dir;
     struct dirent *ent;
 
