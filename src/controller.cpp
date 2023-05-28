@@ -73,6 +73,7 @@ int Controller::Auth(std::string key)
 {
     if (hashtables[0].Get(DB_KEY_POSITION) == key)
     {
+        hashtables[0].Remove(tempIP);
         hashtables[0].Add(tempIP);
         Logsys::LogActivity(tempIP + " Authorized on this machine", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
         return 0;
@@ -102,6 +103,7 @@ std::string Controller::GetResolvedResponse(std::string request)
     {
         if (hashtables[0].Get(DB_KEY_POSITION) == words[1])
         {
+            hashtables[0].Remove(tempIP);
             hashtables[0].Add(tempIP);
             Logsys::LogActivity(tempIP + " Authorized on this machine", Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
             return "OK";
