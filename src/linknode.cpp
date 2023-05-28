@@ -1,20 +1,17 @@
 #include "linknode.h"
 
-void LinkedList::Add(LinkNode *head, std::string value)
-{
-    if (head->value == "")
-    {
-        head->value = value;
-        return;
-    }
-
-    if (head->next != nullptr)
-    {
-        Add(head->next, value);
-    } else {
-        LinkNode *node = new LinkNode();
-        node->value = value;
-        head->next = node;
+void LinkedList::Add(LinkNode *head, std::string value) {
+    while (true) {
+        if (head->value == "") {
+            head->value = value;
+            break;
+        } else if (head->next == nullptr) {
+            LinkNode *node = new LinkNode();
+            node->value = value;
+            head->next = node;
+            break;
+        }
+        head = head->next;
     }
 }
 
