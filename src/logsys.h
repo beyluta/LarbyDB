@@ -6,7 +6,9 @@ using std::endl;
 using std::string;
 
 #define LOG(x) cout << x << endl;
+#ifdef __unix__
 #define LOG_PATH string(homedir) + "/LarbyDB/Logs/"
+#endif
 
 namespace Logsys
 {
