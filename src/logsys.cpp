@@ -10,7 +10,7 @@
 using namespace Logsys;
 File file;
 
-#ifdef _WIN32
+#if _WIN32
 std::string LOG_PATH = std::string(file.GetHomeDirectory()) + "\\LarbyDB\\Logs\\";
 #endif
 
@@ -33,7 +33,7 @@ void Logsys::LogToFile(string log)
 {
     string path = LOG_PATH + "log.txt";
 
-#ifdef _WIN32
+#if _WIN32
     if (!file.DirectoryExists(std::string(file.GetHomeDirectory()) + "\\LarbyDB"))
     {
         file.MakeDirectory(std::string(file.GetHomeDirectory()) + "\\LarbyDB");

@@ -1,5 +1,5 @@
 #include "file.h"
-#ifdef __unix__
+#if __unix__ || __APPLE__
 #include <dirent.h>
 #elif _WIN32
 #include <fileapi.h>
@@ -11,7 +11,7 @@
 #include <sstream>
 #include <fstream>
 
-#ifdef _WIN32
+#if _WIN32
 File::File()
 {
     SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, homedir);
@@ -33,10 +33,10 @@ void File::CreateFile(std::string filename)
 
 void File::MakeDirectory(std::string dirname)
 {
-#ifdef _WIN32
+#if _WIN32
     std::cout << dirname << std::endl;
     CreateDirectory(dirname.c_str(), nullptr);
-#elif __unix__
+#elif __unix__ ||  __APPLE__
     mkdir(dirname.c_str(), 0777);
 #endif
 }
@@ -66,7 +66,7 @@ void File::DeleteFile(std::string filename)
 
 void File::DeleteDirectory(std::string dirname, bool empty)
 {
-#ifdef _WIN32
+#if _WIN32
     if (empty)
     {
         WIN32_FIND_DATAA findData;
@@ -88,7 +88,7 @@ void File::DeleteDirectory(std::string dirname, bool empty)
     }
 
     RemoveDirectoryA(dirname.c_str());
-#elif __unix__
+#elif __unix__ || __APPLE__
     if (empty)
     {
         DIR *dir;
@@ -119,7 +119,7 @@ bool File::FileExists(std::string filename)
 
 bool File::DirectoryExists(std::string directory)
 {
-#ifdef _WIN32
+#if _WIN32
     WIN32_FIND_DATAA findData;
     HANDLE hFind = FindFirstFileA((directory + "\\*").c_str(), &findData);
 
@@ -130,7 +130,7 @@ bool File::DirectoryExists(std::string directory)
     }
 
     return false;
-#elif __unix__
+#elif __unix__ || __APPLE__
     DIR *dir;
     dir = opendir(directory.c_str());
 
@@ -145,7 +145,7 @@ bool File::DirectoryExists(std::string directory)
 
 std::vector<std::string> File::GetFilesInDirectory(std::string directory)
 {
-#ifdef _WIN32
+#if _WIN32
     std::vector<std::string> files;
     WIN32_FIND_DATAA findData;
     HANDLE hFind = FindFirstFileA((directory + "\\*").c_str(), &findData);
@@ -164,7 +164,7 @@ std::vector<std::string> File::GetFilesInDirectory(std::string directory)
     }
 
     return files;
-#elif __unix__
+#elif __unix__ || __APPLE__
     std::vector<std::string> files;
     DIR *dir;
     struct dirent *ent;

@@ -6,7 +6,7 @@ using std::endl;
 using std::string;
 
 #define LOG(x) cout << x << endl;
-#ifdef __unix__
+#if __unix__ || __APPLE__
 #define LOG_PATH string(homedir) + "/LarbyDB/Logs/"
 #endif
 

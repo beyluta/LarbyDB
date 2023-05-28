@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
-#ifdef __unix__
+#if __unix__ || __APPLE__
 #include <pwd.h>
 #include <unistd.h>
 #elif _WIN32
@@ -9,7 +9,7 @@
 #include <Windows.h>
 #endif
 
-#ifdef __unix__
+#if __unix__ || __APPLE__
 static struct passwd *pw = getpwuid(getuid());
 static const char *homedir = pw->pw_dir;
 #elif _WIN32
@@ -19,7 +19,7 @@ static char homedir[MAX_PATH];
 class File
 {
 public:
-#ifdef _WIN32
+#if _WIN32
     File();
     char *GetHomeDirectory();
 #endif

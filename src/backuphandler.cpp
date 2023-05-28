@@ -3,9 +3,9 @@
 BackupHandler::BackupHandler(Controller *controller, bool clearBackups)
 {
     BackupHandler::m_clearBackups = clearBackups;
-    #ifdef _WIN32
+    #if _WIN32
     BackupHandler::m_configPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\Backups\\";
-    #elif __unix__
+    #elif __unix__ || __APPLE__
     BackupHandler::m_configPath = std::string(homedir) + "/LarbyDB/Backups/";
     #endif
 
@@ -28,9 +28,9 @@ void BackupHandler::BeginBackup()
         BackupHandler::m_file.DeleteDirectory(BackupHandler::m_configPath, true);
     }
 
-    #ifdef _WIN32
+    #if _WIN32
     std::string dbPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\";
-    #elif __unix__
+    #elif __unix__ || __APPLE__
     std::string dbPath = std::string(homedir) + "/LarbyDB/";
     #endif
 
@@ -39,9 +39,9 @@ void BackupHandler::BeginBackup()
         BackupHandler::m_file.MakeDirectory(dbPath);
     }
 
-    #ifdef _WIN32
+    #if _WIN32
     std::string backupPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\Backups\\";
-    #elif __unix__
+    #elif __unix__ || __APPLE__
     std::string backupPath = dbPath + "Backups/";
     #endif
     
@@ -67,7 +67,7 @@ void BackupHandler::BeginBackup()
     for (int i = 0; i < BackupHandler::m_controller->GetSize(); i++)
     {
         std::string values = BackupHandler::m_controller->hashtables[i].GetAll();
-        #ifdef _WIN32
+        #if _WIN32
         values.erase(std::remove(values.begin(), values.end(), '\n'), values.end());
         values.erase(std::remove(values.begin(), values.end(), '\r'), values.end());
         #endif

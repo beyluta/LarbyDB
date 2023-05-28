@@ -133,9 +133,9 @@ void OnInterrupt(int sigInt)
 
 int main(int argc, char **argv)
 {
-    #ifdef _WIN32
+    #if _WIN32
     signal(13, SIG_IGN);
-    #elif __unix__
+    #elif __unix__ || __APPLE__
     signal(SIGPIPE, SIG_IGN);
     #endif
     signal(SIGINT, OnInterrupt);
