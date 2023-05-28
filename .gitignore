@@ -2,6 +2,7 @@
 .vscode/launch.json
 .vscode/settings.json
 LarbyDB
+LarbyDB.exe
 Backups/*
 src/main
 config.conf
