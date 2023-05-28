@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <signal.h>
+#include <string.h>
 #include "socket.h"
 #include "hashtable.h"
 #include "controller.h"
@@ -10,7 +11,6 @@
 #include "http.h"
 #include "logsys.h"
 
-
 Controller controller;
 Socket serverSocket;
 Timer timer;
@@ -18,14 +18,12 @@ Parameters dbParameters;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
-    unsigned long maxSize = std::string("").max_size();
-    unsigned long realSize = strlen(msg);
-    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(realSize) + " out of a maximum of " + std::to_string(maxSize), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(strlen(msg)) + " out of a maximum of " + std::to_string(MAX_BUFFER_SIZE), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
     controller.tempIP = ip;
 
     if (dbParameters.enable_http)
-    {
-        if (realSize > maxSize)
+    {        
+        if (strlen(msg) >= MAX_BUFFER_SIZE)
         {
             return GetHTTPResponse(HTTPResponseCode::CONTENT_TOO_LARGE, "application/json", "{\"status\": 413, \"message\": \"Payload is too large to handle\"}");
         }
@@ -90,7 +88,7 @@ std::string MessageReceived(const char *msg, const char *ip)
         }
     }
 
-    if (realSize > maxSize)
+    if (strlen(msg) >= MAX_BUFFER_SIZE)
     {
         return "Payload is too large to handle\r\n\0";
     }

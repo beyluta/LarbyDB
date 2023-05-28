@@ -144,7 +144,7 @@ void Socket::Listen()
         SOCKET client;
 
         if ((client = accept(server, reinterpret_cast<SOCKADDR *>(&clientAddr), &clientAddrSize)) != INVALID_SOCKET) {
-            char buffer[1024];
+            char buffer[MAX_BUFFER_SIZE];
             recv(client, buffer, sizeof(buffer), 0);
             char *ipAddr = inet_ntoa(clientAddr.sin_addr);
             std::string response = OnMessageReceived(buffer, ipAddr);
