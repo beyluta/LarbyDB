@@ -34,7 +34,6 @@ void File::CreateFile(std::string filename)
 void File::MakeDirectory(std::string dirname)
 {
 #if _WIN32
-    std::cout << dirname << std::endl;
     CreateDirectory(dirname.c_str(), nullptr);
 #elif __unix__ ||  __APPLE__
     mkdir(dirname.c_str(), 0777);
