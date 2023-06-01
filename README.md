@@ -15,8 +15,9 @@ Below is a table of the operating systems that LarbyDB has been tested on.
 ## Installation
 
 1. Clone the repo: `git clone https://github.com/beyluta/LarbyDB.git`
-2. Compile by typing `make` while inside the project's folder.<br>
-3. To run the software, type `./LarbyDB`
+2. Navigate to the project's root folder
+3. Compile by typing `make unix` for Linux and MacOS. Or `make win` for Windows 10/11
+4. To run the software, type `./LarbyDB`
 
 ## Settings/Launch Arguments
 
