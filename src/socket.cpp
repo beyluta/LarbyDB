@@ -3,15 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/types.h>
+#if __unix__ || __APPLE__
+#include <unistd.h>
 #include <sys/socket.h>
 #include <poll.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-
-#define MAX_BUFFER_SIZE 1048576
-#define MAX_CONN 4
 
 void Socket::Listen()
 {
@@ -117,7 +115,48 @@ void Socket::Listen()
     }
 }
 
-void Socket::SetPort(const char *portStr)
+void Socket::PortSet(const char *portStr)
 {
     port = portStr;
 }
+#elif _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <iostream>
+
+void Socket::Listen()
+{
+    WSADATA wsaData;
+    SOCKADDR_IN serverAddr, clientAddr;
+    WSAStartup(MAKEWORD(2, 0), &wsaData);
+    const auto server = socket(AF_INET, SOCK_STREAM, 0);
+    serverAddr.sin_addr.s_addr = INADDR_ANY;
+    serverAddr.sin_family = AF_INET;
+	serverAddr.sin_port = htons(atoi(Socket::port));
+    ::bind(server, reinterpret_cast<SOCKADDR *>(&serverAddr), sizeof(serverAddr));
+    listen(server, 0);
+    int clientAddrSize = sizeof(clientAddr);
+
+    for (;;) {
+        SOCKET client;
+
+        if ((client = accept(server, reinterpret_cast<SOCKADDR *>(&clientAddr), &clientAddrSize)) != INVALID_SOCKET) {
+            char buffer[MAX_BUFFER_SIZE];
+            recv(client, buffer, sizeof(buffer), 0);
+            char *ipAddr = inet_ntoa(clientAddr.sin_addr);
+            std::string response = OnMessageReceived(buffer, ipAddr);
+            int length = strlen(response.c_str());
+            send(client, response.c_str(), length, 0);
+            closesocket(client);
+        }
+    }
+}
+
+void Socket::PortSet(const char *portStr)
+{
+    Socket::port = portStr;
+}
+#endif

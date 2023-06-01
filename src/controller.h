@@ -1,14 +1,20 @@
 #pragma once
 #include "hashtable.h"
 #include "packet.h"
+#include "file.h"
+#include "socket.h"
+#include "logsys.h"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
 
-// where the authentication key is stored in the db
 #define DB_KEY_POSITION "K"
 
 class Controller
 {
 private:
-    bool IsStringANumber(string &str);
+    bool IsStringANumber(std::string &str);
 
 public:
     std::vector<Hashtable> hashtables;
@@ -17,12 +23,12 @@ public:
     bool protectedByKey;
     void SetSize(int numTables = 2);
     int GetSize();
-    string Get(string key, int table = 0);
-    string GetAll(int table = 0);
-    string GetResolvedResponse(string request);
-    int Set(string key, string value, int table = 0);
-    int Delete(string key, int table = 0);
-    int Auth(string key);
+    std::string Get(std::string key, int table = 0);
+    std::string GetAll(int table = 0);
+    std::string GetResolvedResponse(std::string request);
+    int Set(std::string key, std::string value, int table = 0);
+    int Delete(std::string key, int table = 0);
+    int Auth(std::string key);
     void GenerateKey(int length = 16);
     bool IsAuthorized();
 };

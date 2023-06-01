@@ -1,20 +1,9 @@
 #include "controller.h"
-#include "file.h"
-#include "socket.h"
-#include "logsys.h"
-#include <iostream>
-#include <string>
-#include <vector>
 
-bool Controller::IsStringANumber(string &str)
+bool Controller::IsStringANumber(std::string &str)
 {
     return std::all_of(str.begin(), str.end(), ::isdigit);
 }
-
-std::vector<Hashtable> hashtables;
-std::vector<Packet> packets;
-std::string tempIP;
-bool protectedByKey = false;
 
 void Controller::SetSize(int numTables)
 {
@@ -23,25 +12,25 @@ void Controller::SetSize(int numTables)
         numTables = 2;
     }
 
-    hashtables.resize(numTables + 1);
+    Controller::hashtables.resize(numTables + 1);
 }
 
 int Controller::GetSize()
 {
-    return hashtables.size();
+    return Controller::hashtables.size();
 }
 
-string Controller::Get(string key, int table)
+std::string Controller::Get(std::string key, int table)
 {
-    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    if (table < 0 || table >= Controller::hashtables.size() || !IsAuthorized())
     {
         return "";
     }
 
-    return hashtables[table].Get(key);
+    return Controller::hashtables[table].Get(key);
 }
 
-string Controller::GetAll(int table)
+std::string Controller::GetAll(int table)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())
     {
@@ -51,7 +40,7 @@ string Controller::GetAll(int table)
     return hashtables[table].GetAll();
 }
 
-int Controller::Set(string key, string value, int table)
+int Controller::Set(std::string key, std::string value, int table)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())
     {
@@ -63,7 +52,7 @@ int Controller::Set(string key, string value, int table)
     return 0;
 }
 
-int Controller::Delete(string key, int table)
+int Controller::Delete(std::string key, int table)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())
     {
@@ -80,7 +69,7 @@ int Controller::Delete(string key, int table)
     return 0;
 }
 
-int Controller::Auth(string key)
+int Controller::Auth(std::string key)
 {
     if (hashtables[0].Get(DB_KEY_POSITION) == key)
     {
@@ -93,10 +82,10 @@ int Controller::Auth(string key)
     return 1;
 }
 
-string Controller::GetResolvedResponse(string request)
+std::string Controller::GetResolvedResponse(std::string request)
 {
-    vector<string> words;
-    string word;
+    std::vector<std::string> words;
+    std::string word;
 
     for (int i = 0; i < request.size(); i++)
     {
@@ -110,7 +99,7 @@ string Controller::GetResolvedResponse(string request)
 
     words.back().pop_back();
 
-    if (words[0].find("AUTH") != string::npos && words.size() > 1)
+    if (words[0].find("AUTH") != std::string::npos && words.size() > 1)
     {
         if (hashtables[0].Get(DB_KEY_POSITION) == words[1])
         {
@@ -129,18 +118,18 @@ string Controller::GetResolvedResponse(string request)
 
     if (words[0].find("SET") != string::npos && words.size() > 3)
     {
-        string &key = words[1];
+        std::string &key = words[1];
         key.pop_back();
         int table = atoi(words[2].c_str());
 
         if (table <= 0)
         {
-            Logsys::LogActivity("Attempt to write to table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to write to", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+            Logsys::LogActivity("Attempt to write to table " + std::to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to write to", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             return "Forbidden";
         }
 
         int ttl = atoi(words[3].c_str());
-        string value;
+        std::string value;
 
         for (int i = 4; i < words.size(); i++)
         {
@@ -170,29 +159,29 @@ string Controller::GetResolvedResponse(string request)
         }
     }
 
-    if (words[0].find("GET") != string::npos && words.size() > 2)
+    if (words[0].find("GET") != std::string::npos && words.size() > 2)
     {
-        string &key = words[1];
+        std::string &key = words[1];
         key.pop_back();
         int table = atoi(words[2].c_str());
 
         if (table <= 0 || table >= hashtables.size())
         {
-            Logsys::LogActivity("Attempt to read from table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to read from", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+            Logsys::LogActivity("Attempt to read from table " + std::to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to read from", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             return "Forbidden";
         }
 
-        if (key.find("ALL") != string::npos)
+        if (key.find("ALL") != std::string::npos)
         {
             if (words.size() > 3)
             {
                 int dash = words[3].find("-");
 
-                if (dash != string::npos)
+                if (dash != std::string::npos)
                 {
                     int start = atoi((words[3].substr(0, dash)).c_str());
                     int end = atoi(words[3].substr(dash + 1).c_str());
-                    Logsys::LogActivity("Retrieved from table " + to_string(table) + " values rangin from " + to_string(start) + " to " + to_string(end), Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
+                    Logsys::LogActivity("Retrieved from table " + std::to_string(table) + " values rangin from " + std::to_string(start) + " to " + std::to_string(end), Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
                     return hashtables[table].GetInRange(start, end);
                 }
                 else
@@ -207,7 +196,7 @@ string Controller::GetResolvedResponse(string request)
 
                     if (amount > 0 && skip > 0)
                     {
-                        Logsys::LogActivity("Retrieved " + to_string(amount) + " values starting from " + to_string(skip), Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
+                        Logsys::LogActivity("Retrieved " + std::to_string(amount) + " values starting from " + std::to_string(skip), Logsys::IOSystem::BOTH, Logsys::Color::BLUE);
                         return hashtables[table].GetAmount(amount, skip);
                     }
                 }
@@ -225,15 +214,15 @@ string Controller::GetResolvedResponse(string request)
         }
     }
 
-    if (words[0].find("DEL") != string::npos && words.size() > 2)
+    if (words[0].find("DEL") != std::string::npos && words.size() > 2)
     {
-        string &key = words[1];
+        std::string &key = words[1];
         key.pop_back();
         int table = atoi(words[2].c_str());
 
         if (table <= 0)
         {
-            Logsys::LogActivity("Attempt to delete from table " + to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to delete from", Logsys::IOSystem::BOTH, Logsys::Color::RED);
+            Logsys::LogActivity("Attempt to delete from table " + std::to_string(table) + " failed: Does not exist, is out of bounds, or forbidden to delete from", Logsys::IOSystem::BOTH, Logsys::Color::RED);
             return "Forbidden";
         }
 
@@ -253,7 +242,7 @@ string Controller::GetResolvedResponse(string request)
 void Controller::GenerateKey(int length)
 {
     srand(time(nullptr));
-    string key;
+    std::string key;
 
     for (int i = 0; i < length; i++)
     {

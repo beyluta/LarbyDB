@@ -1,14 +1,15 @@
 #include <iostream>
 #include <cstring>
-#include "logsys.h"
+#include <signal.h>
+#include <string.h>
 #include "socket.h"
 #include "hashtable.h"
 #include "controller.h"
 #include "timer.h"
 #include "backuphandler.h"
-#include "signal.h"
 #include "config.h"
 #include "http.h"
+#include "logsys.h"
 
 Controller controller;
 Socket serverSocket;
@@ -17,14 +18,12 @@ Parameters dbParameters;
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
-    unsigned long maxSize = std::string("").max_size();
-    unsigned long realSize = strlen(msg);
-    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(realSize) + " out of a maximum of " + std::to_string(maxSize), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(strlen(msg)) + " out of a maximum of " + std::to_string(MAX_BUFFER_SIZE), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
     controller.tempIP = ip;
 
     if (dbParameters.enable_http)
-    {
-        if (realSize > maxSize)
+    {        
+        if (strlen(msg) >= MAX_BUFFER_SIZE)
         {
             return GetHTTPResponse(HTTPResponseCode::CONTENT_TOO_LARGE, "application/json", "{\"status\": 413, \"message\": \"Payload is too large to handle\"}");
         }
@@ -89,7 +88,7 @@ std::string MessageReceived(const char *msg, const char *ip)
         }
     }
 
-    if (realSize > maxSize)
+    if (strlen(msg) >= MAX_BUFFER_SIZE)
     {
         return "Payload is too large to handle\r\n\0";
     }
@@ -132,7 +131,11 @@ void OnInterrupt(int sigInt)
 
 int main(int argc, char **argv)
 {
+    #if _WIN32
+    signal(13, SIG_IGN);
+    #elif __unix__ || __APPLE__
     signal(SIGPIPE, SIG_IGN);
+    #endif
     signal(SIGINT, OnInterrupt);
     {
         std::vector<std::string> configArguments = ProcessConfig();
@@ -162,7 +165,7 @@ int main(int argc, char **argv)
             else
             {
                 setting = DEFAULT_ALLOW_BACKUP;
-                std::cout << boolalpha << "Invalid input, using the default value (" << setting << ").\n";
+                std::cout << std::boolalpha << "Invalid input, using the default value (" << setting << ").\n";
             }
         };
 
@@ -245,7 +248,8 @@ int main(int argc, char **argv)
 
     const char *port = dbParameters.port.c_str();
     serverSocket.OnMessageReceived = &MessageReceived;
-    serverSocket.SetPort(port);
+    serverSocket.PortSet(port);
+
 
     if (dbParameters.allow_backup)
     {
@@ -274,7 +278,7 @@ int main(int argc, char **argv)
         << "tables: " << dbParameters.num_tables << '\n'
         << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
         << "backup_interval: "
-        << (dbParameters.allow_backup ? to_string(dbParameters.backup_interval) + " seconds" : "unset")
+        << (dbParameters.allow_backup ? std::to_string(dbParameters.backup_interval) + " seconds" : "unset")
         << '\n'
         << "generate_key: " << BoolToStr(dbParameters.generate_key) << '\n';
 

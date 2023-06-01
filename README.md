@@ -1,6 +1,16 @@
 # Welcome to LarbyDB's repository
-Make sure you are under a unix system when using the Software.<br>
-LarbyDB supports the following compilers: `g++ version 10.3.0`, `Apple Clang version 14.0.3`
+LarbyDB is a fast, lightweight, and easy to use database written in C++. It is designed to communicate seamlessly with IoT devices or web applications. It can be used as a standalone database, cache database, or a temporary database.
+
+## Compatibility
+Below is a table of the operating systems that LarbyDB has been tested on.
+
+| **OS**              | **Status**           | *Compiler*    | *Version* |
+|---------------------|----------------------|---------------|-----------|
+| Windows >= 11       | :heavy_check_mark:   | MINGW64       | 10.3.0    |
+| Ubuntu >= 22.04.2   | :heavy_check_mark:   | g++           | 10.3.0    |
+| MacOS >= 13.4       | :heavy_check_mark:   | Apple Clang   | 14.0.3    |
+
+<i>Note: Compatibility with other operating systems is plausible but not guaranteed.</i>
 
 ## Installation
 

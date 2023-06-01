@@ -10,6 +10,10 @@
 using namespace Logsys;
 File file;
 
+#if _WIN32
+std::string LOG_PATH = std::string(file.GetHomeDirectory()) + "\\LarbyDB\\Logs\\";
+#endif
+
 string Logsys::GetTime(const char *format)
 {
     using namespace std::chrono;
@@ -18,10 +22,10 @@ string Logsys::GetTime(const char *format)
     auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
     auto timer = system_clock::to_time_t(now);
     tm bt = *localtime(&timer);
-    ostringstream oss;
+    std::ostringstream oss;
 
-    oss << put_time(&bt, format);
-    oss << '.' << setfill('0') << setw(3) << ms.count();
+    oss << std::put_time(&bt, format);
+    oss << '.' << std::setfill('0') << std::setw(3) << ms.count();
     return oss.str();
 }
 
@@ -29,9 +33,16 @@ void Logsys::LogToFile(string log)
 {
     string path = LOG_PATH + "log.txt";
 
+#if _WIN32
+    if (!file.DirectoryExists(std::string(file.GetHomeDirectory()) + "\\LarbyDB"))
+    {
+        file.MakeDirectory(std::string(file.GetHomeDirectory()) + "\\LarbyDB");
+    }
+#endif
+
     if (!file.DirectoryExists(LOG_PATH))
     {
-        file.CreateDirectory(LOG_PATH);
+        file.MakeDirectory(LOG_PATH);
     }
 
     if (!file.FileExists(path))
@@ -44,7 +55,7 @@ void Logsys::LogToFile(string log)
 
 void Logsys::LogToTerminal(string log, Logsys::Color color)
 {
-    string code = "\033[0;" + to_string((int)color) + ";49m" + log + "\033[0m";
+    string code = "\033[0;" + std::to_string((int)color) + ";49m" + log + "\033[0m";
     LOG(code);
 }
 

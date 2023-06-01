@@ -1,80 +1,89 @@
 #include "backuphandler.h"
-#include "file.h"
-#include "jsonconverter.h"
-#include <fstream>
-#include <string>
-
-Controller *m_controller;
-File m_file;
-string m_configPath;
-bool m_clearBackups = false;
 
 BackupHandler::BackupHandler(Controller *controller, bool clearBackups)
 {
-    m_clearBackups = clearBackups;
-    m_configPath = string(homedir) + "/LarbyDB/Backups/";
-    m_controller = controller;
+    BackupHandler::m_clearBackups = clearBackups;
+    #if _WIN32
+    BackupHandler::m_configPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\Backups\\";
+    #elif __unix__ || __APPLE__
+    BackupHandler::m_configPath = std::string(homedir) + "/LarbyDB/Backups/";
+    #endif
+
+    BackupHandler::m_controller = controller;
 }
 
 bool BackupHandler::CheckBackup()
 {
-    return m_file.GetFilesInDirectory(m_configPath).size() > 0 ? true : false;
+    return BackupHandler::m_file.GetFilesInDirectory(BackupHandler::m_configPath).size() > 0 ? true : false;
 }
 
 void BackupHandler::BeginBackup()
 {
     time_t date = time(0);
-    string date_str = to_string(date);
-    string configFile = m_configPath + date_str + ".txt";
+    std::string date_str = std::to_string(date);
+    std::string configFile = BackupHandler::m_configPath + date_str + ".txt";
 
     if (m_clearBackups)
     {
-        m_file.DeleteDirectory(m_configPath, true);
+        BackupHandler::m_file.DeleteDirectory(BackupHandler::m_configPath, true);
     }
 
-    string dbPath = string(homedir) + "/LarbyDB/";
+    #if _WIN32
+    std::string dbPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\";
+    #elif __unix__ || __APPLE__
+    std::string dbPath = std::string(homedir) + "/LarbyDB/";
+    #endif
 
-    if (!m_file.DirectoryExists(dbPath))
+    if (!BackupHandler::m_file.DirectoryExists(dbPath))
     {
-        m_file.CreateDirectory(dbPath);
+        BackupHandler::m_file.MakeDirectory(dbPath);
     }
 
-    string backupPath = dbPath + "Backups/";
-
-    if (!m_file.DirectoryExists(backupPath))
+    #if _WIN32
+    std::string backupPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\Backups\\";
+    #elif __unix__ || __APPLE__
+    std::string backupPath = dbPath + "Backups/";
+    #endif
+    
+    if (!BackupHandler::m_file.DirectoryExists(backupPath))
     {
-        m_file.CreateDirectory(backupPath);
+        BackupHandler::m_file.MakeDirectory(backupPath);
     }
 
-    string configStringNoSpaces = "";
+    std::string configStringNoSpaces = "";
 
     for (int i = 0; i < configFile.length(); i++)
     {
-        if (configFile[i] != ' ' && configFile[i] != '\n')
+        if (configFile[i] != ' ' && configFile[i] != '\n' && configFile[i] != '\r')
         {
             configStringNoSpaces += configFile[i];
         }
     }
 
-    m_file.CreateFile(configStringNoSpaces);
+    BackupHandler::m_file.CreateFile(configStringNoSpaces);
 
-    string content;
+    std::string content;
 
-    for (int i = 0; i < m_controller->GetSize(); i++)
+    for (int i = 0; i < BackupHandler::m_controller->GetSize(); i++)
     {
-        content += "{\"id\":\"" + to_string(i) + "\",\"data\":" + m_controller->hashtables[i].GetAll() + "}\n";
+        std::string values = BackupHandler::m_controller->hashtables[i].GetAll();
+        #if _WIN32
+        values.erase(std::remove(values.begin(), values.end(), '\n'), values.end());
+        values.erase(std::remove(values.begin(), values.end(), '\r'), values.end());
+        #endif
+        content += "{\"id\":\"" + std::to_string(i) + "\",\"data\":" + values + "}\n";
     }
 
-    m_file.OverwriteFile(configStringNoSpaces, content);
+    BackupHandler::m_file.OverwriteFile(configStringNoSpaces, content);
 }
 
 void BackupHandler::LoadBackup()
 {
-    vector<string> files = m_file.GetFilesInDirectory(m_configPath);
-    string filepath = m_configPath + files[0];
-    fstream file;
+    std::vector<std::string> files = m_file.GetFilesInDirectory(m_configPath);
+    std::string filepath = m_configPath + files[0];
+    std::fstream file;
 
-    file.open(filepath, ios::in);
+    file.open(filepath, std::ios::in);
 
     if (file.is_open())
     {
@@ -97,15 +106,15 @@ void BackupHandler::LoadBackup()
                 else
                 {
                     Json row = data[i];
-                    string index = row["index"];
-                    string value = row["value"];
+                    std::string index = row["index"];
+                    std::string value = row["value"];
 
-                    if (m_controller->GetSize() <= atoi(table.c_str()))
+                    if (BackupHandler::m_controller->GetSize() <= atoi(table.c_str()))
                     {
-                        m_controller->hashtables.resize(atoi(table.c_str()) + 1);
+                        BackupHandler::m_controller->hashtables.resize(atoi(table.c_str()) + 1);
                     }
 
-                    m_controller->hashtables[atoi(table.c_str())].AddTo(atoi(index.c_str()), value);
+                    BackupHandler::m_controller->hashtables[atoi(table.c_str())].AddTo(atoi(index.c_str()), value);
                 }
 
                 i++;

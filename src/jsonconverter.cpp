@@ -1,9 +1,9 @@
 #include "jsonconverter.h"
 #include <algorithm>
 
-vector<string> values;
+std::vector<std::string> values;
 
-int Json::Hash(string key)
+int Json::Hash(std::string key)
 {
     int hash = 0;
     for (int i = 0; i < key.size(); i++)
@@ -13,7 +13,7 @@ int Json::Hash(string key)
     return hash;
 }
 
-bool Json::Contains(string key)
+bool Json::Contains(std::string key)
 {
     if (values.size() < Hash(key))
     {
@@ -23,7 +23,7 @@ bool Json::Contains(string key)
     return values[Hash(key)].length() > 0 ? true : false;
 }
 
-void Json::Add(string key, string value)
+void Json::Add(std::string key, std::string value)
 {
     if (values.size() < Hash(key))
     {
@@ -36,14 +36,14 @@ void Json::Add(string key, string value)
     }
 }
 
-string Json::Get(string key)
+std::string Json::Get(std::string key)
 {
     return Contains(key) ? values[Hash(key)] : "";
 }
 
-vector<int> Json::GetCharCount(string includedCharacters, string json)
+std::vector<int> Json::GetCharCount(std::string includedCharacters, std::string json)
 {
-    vector<int> charIndexes;
+    std::vector<int> charIndexes;
     int openedBracesOrBrackets = 0;
     int doubleQuotes = 0;
 
@@ -95,9 +95,9 @@ vector<int> Json::GetCharCount(string includedCharacters, string json)
     return charIndexes;
 }
 
-string Json::GetSubstringBetweenIndices(string str, int start, int end, bool exclusive)
+std::string Json::GetSubstringBetweenIndices(std::string str, int start, int end, bool exclusive)
 {
-    string result;
+    std::string result;
     end = !exclusive ? end += 1 : end;
 
     for (int i = start + exclusive; i < end; i++)
@@ -122,7 +122,7 @@ bool Json::CompareAssert(char a, char b)
     return false;
 }
 
-string Json::TrimString(string str)
+std::string Json::TrimString(std::string str)
 {
     const char *typeOfWhitespaces = " \t\n\r\f\v";
     str.erase(str.find_last_not_of(typeOfWhitespaces) + 1);
@@ -130,14 +130,14 @@ string Json::TrimString(string str)
     return str;
 }
 
-string Json::GetObjectFromJsonArray(int index)
+std::string Json::GetObjectFromJsonArray(int index)
 {
-    vector<int> charIndexes = GetCharCount("{}", json);
+    std::vector<int> charIndexes = GetCharCount("{}", json);
     int iteration = 0;
 
     for (int i = 0; i < charIndexes.size(); i += 2)
     {
-        string substring = GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1], false);
+        std::string substring = GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1], false);
 
         if (iteration == index)
         {
@@ -152,9 +152,9 @@ string Json::GetObjectFromJsonArray(int index)
     return "";
 }
 
-string json;
+std::string json;
 
-Json::Json(string json)
+Json::Json(std::string json)
 {
     json = TrimString(json);
     this->json = json;
@@ -172,8 +172,8 @@ Json::Json(string json)
         removeCharsCount++;
     }
 
-    vector<int> charIndexes = GetCharCount("\"[]{}", json);
-    string lastValue;
+    std::vector<int> charIndexes = GetCharCount("\"[]{}", json);
+    std::string lastValue;
     int count = 1;
 
     for (int i = 0; i < charIndexes.size(); i++)
@@ -181,7 +181,7 @@ Json::Json(string json)
         if (CompareAssert(json[charIndexes[i]], json[charIndexes[i + 1]]))
         {
             bool isEnclosedInBracketsOrBraces = CompareAssert(json[charIndexes[i]], '[') || CompareAssert(json[charIndexes[i]], '{') ? true : false;
-            string substr = count > 0 ? GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1]) : GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1], !isEnclosedInBracketsOrBraces);
+            std::string substr = count > 0 ? GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1]) : GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1], !isEnclosedInBracketsOrBraces);
 
             if (count <= 0)
             {
@@ -196,12 +196,12 @@ Json::Json(string json)
     }
 }
 
-string Json::operator[](int key)
+std::string Json::operator[](int key)
 {
     return GetObjectFromJsonArray(key);
 }
 
-string Json::operator[](string key)
+std::string Json::operator[](std::string key)
 {
     return Get(key);
 }

@@ -1,6 +1,8 @@
 #include "file.h"
+#include <iostream>
 #include <sstream>
 #include <fstream>
+#include <vector>
 
 #define DEFAULT_PORT "8080"
 #define DEFAULT_MANUAL_CONFIG false
@@ -11,7 +13,7 @@
 #define DEFAULT_BACKUP_INTERVAL "30m"
 #define DEFAULT_LOAD_BACKUP "ask"
 #define DEFAULT_NUM_SETTINGS 8
-#define SEMANTIC_VERSION "v1.1.3"
+#define SEMANTIC_VERSION "v1.2.0"
 
 #define OPTION_MANUAL_CONFIG "manual-config"
 #define OPTION_PORT "port"
@@ -25,13 +27,13 @@
 
 struct Parameters
 {
-    string port;
+    std::string port;
     int num_tables;
     bool generate_key;
     bool allow_backup;
     bool manual_config;
     int backup_interval;
-    string load_backup;
+    std::string load_backup;
     bool enable_http;
 };
 
@@ -42,18 +44,18 @@ enum UserInputState
     INVALID = -1,
 };
 
-string BoolToStr(bool b)
+std::string BoolToStr(bool b)
 {
     return b ? "true" : "false";
 }
 
-vector<string> ProcessConfig()
+std::vector<std::string> ProcessConfig()
 {
     Parameters parameters;
     File configFile;
-    ifstream file("config.conf");
-    string line;
-    vector<string> args;
+    std::ifstream file("config.conf");
+    std::string line;
+    std::vector<std::string> args;
 
     if (!configFile.FileExists("config.conf"))
     {
@@ -71,10 +73,10 @@ vector<string> ProcessConfig()
                 continue;
             }
 
-            line = comment != string::npos ? line.substr(0, comment) : "--" + line;
+            line = comment != std::string::npos ? line.substr(0, comment) : "--" + line;
 
-            stringstream ss(line);
-            string arg;
+            std::stringstream ss(line);
+            std::string arg;
 
             while (getline(ss, arg, ' '))
             {
@@ -91,11 +93,11 @@ vector<string> ProcessConfig()
         {
             configFile.OverwriteFile("config.conf",
                                      "#LarbyDB config\n# If set to true, will ask the user to input parameters on launch:\n"+
-                                         string(OPTION_MANUAL_CONFIG)+" "+BoolToStr(DEFAULT_MANUAL_CONFIG)+
+                                         std::string(OPTION_MANUAL_CONFIG)+" "+BoolToStr(DEFAULT_MANUAL_CONFIG)+
                                          "\n\n# sets the port:\n"+
                                          OPTION_PORT+" "+DEFAULT_PORT+
                                          "\n\n# How many hashtables the db has (minimum 2):\n"+
-                                         OPTION_NUM_TABLES+" " +to_string(DEFAULT_NUM_TABLES)+
+                                         OPTION_NUM_TABLES+" " +std::to_string(DEFAULT_NUM_TABLES)+
                                          "\n\n# Should the db perform automatic backups:\n# true | false\n"+
                                          OPTION_ALLOW_BACKUP+" "+BoolToStr(DEFAULT_ALLOW_BACKUP)+
                                          "\n\n# Sets the time interval between performing backups:\n# h - hours\n# m - minutes\n# anything else counts as seconds.\n# Only positive integer values are allowed.\n"+
@@ -112,9 +114,9 @@ vector<string> ProcessConfig()
     return args;
 }
 
-void ParseBackupInterval(Parameters &params, string &intervalStr)
+void ParseBackupInterval(Parameters &params, std::string &intervalStr)
 {
-    int interval = atoi(intervalStr.c_str()) > 0 ? atoi(intervalStr.c_str()) : atoi(string(DEFAULT_BACKUP_INTERVAL).c_str());
+    int interval = atoi(intervalStr.c_str()) > 0 ? atoi(intervalStr.c_str()) : atoi(std::string(DEFAULT_BACKUP_INTERVAL).c_str());
 
     if (intervalStr.find("h") == intervalStr.size() - 1)
     {
@@ -130,7 +132,7 @@ void ParseBackupInterval(Parameters &params, string &intervalStr)
     }
 }
 
-int SetParameters(Parameters &params, vector<string> &str)
+int SetParameters(Parameters &params, std::vector<std::string> &str)
 {
     bool settings_set[DEFAULT_NUM_SETTINGS]{false};
     enum
@@ -148,7 +150,7 @@ int SetParameters(Parameters &params, vector<string> &str)
 
     for (int i = 0; i < str.size() - 1; i++)
     {
-        if (!settings_set[manual_config] && str[i].find(OPTION_MANUAL_CONFIG) != string::npos)
+        if (!settings_set[manual_config] && str[i].find(OPTION_MANUAL_CONFIG) != std::string::npos)
         {
             settings_set[manual_config] = true;
             settingsNum++;
@@ -165,12 +167,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             {
                 settingsNum--;
                 params.manual_config = DEFAULT_MANUAL_CONFIG;
-                cout << boolalpha << OPTION_MANUAL_CONFIG << ": unset, using default (" << params.manual_config << ")\n";
+                std::cout << std::boolalpha << OPTION_MANUAL_CONFIG << ": unset, using default (" << params.manual_config << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[port] && str[i].find(OPTION_PORT) != string::npos)
+        if (!settings_set[port] && str[i].find(OPTION_PORT) != std::string::npos)
         {
             settings_set[port] = true;
 
@@ -181,13 +183,13 @@ int SetParameters(Parameters &params, vector<string> &str)
             }
             else
             {
-                params.port = std::move(string(DEFAULT_PORT));
-                cout << OPTION_PORT << ": unset, using default (" << params.port << ")\n";
+                params.port = std::move(std::string(DEFAULT_PORT));
+                std::cout << OPTION_PORT << ": unset, using default (" << params.port << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[num_tables] && str[i].find(OPTION_NUM_TABLES) != string::npos)
+        if (!settings_set[num_tables] && str[i].find(OPTION_NUM_TABLES) != std::string::npos)
         {
             settings_set[num_tables] = true;
             int num = atoi(str[i + 1].c_str());
@@ -200,12 +202,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             else
             {
                 params.num_tables = DEFAULT_NUM_TABLES;
-                cout << OPTION_NUM_TABLES << ": unset, using default (" << params.num_tables << ")\n";
+                std::cout << OPTION_NUM_TABLES << ": unset, using default (" << params.num_tables << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[backup_interval] && str[i].find(OPTION_BACKUP_INTERVAL) != string::npos)
+        if (!settings_set[backup_interval] && str[i].find(OPTION_BACKUP_INTERVAL) != std::string::npos)
         {
             settings_set[backup_interval] = true;
             ParseBackupInterval(params, str[i + 1]);
@@ -213,7 +215,7 @@ int SetParameters(Parameters &params, vector<string> &str)
             continue;
         }
 
-        if (!settings_set[generate_key] && str[i].find(OPTION_GENERATE_KEY) != string::npos)
+        if (!settings_set[generate_key] && str[i].find(OPTION_GENERATE_KEY) != std::string::npos)
         {
             settings_set[generate_key] = true;
             settingsNum++;
@@ -230,12 +232,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             {
                 settingsNum--;
                 params.generate_key = DEFAULT_GENERATE_KEY;
-                cout << boolalpha << OPTION_GENERATE_KEY << ": unset, using default (" << params.generate_key << ")\n";
+                std::cout << std::boolalpha << OPTION_GENERATE_KEY << ": unset, using default (" << params.generate_key << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[allow_backup] && str[i].find(OPTION_ALLOW_BACKUP) != string::npos)
+        if (!settings_set[allow_backup] && str[i].find(OPTION_ALLOW_BACKUP) != std::string::npos)
         {
             settings_set[allow_backup] = true;
             settingsNum++;
@@ -252,12 +254,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             {
                 settingsNum--;
                 params.allow_backup = DEFAULT_ALLOW_BACKUP;
-                cout << boolalpha << OPTION_ALLOW_BACKUP << ": unset, using default (" << params.allow_backup << ")\n";
+                std::cout << std::boolalpha << OPTION_ALLOW_BACKUP << ": unset, using default (" << params.allow_backup << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[load_backup] && str[i].find(OPTION_LOAD_BACKUP) != string::npos)
+        if (!settings_set[load_backup] && str[i].find(OPTION_LOAD_BACKUP) != std::string::npos)
         {
             settings_set[load_backup] = true;
 
@@ -269,12 +271,12 @@ int SetParameters(Parameters &params, vector<string> &str)
             else
             {
                 params.load_backup = DEFAULT_LOAD_BACKUP;
-                cout << OPTION_LOAD_BACKUP << ": unset, using default (" << params.load_backup << ")\n";
+                std::cout << OPTION_LOAD_BACKUP << ": unset, using default (" << params.load_backup << ")\n";
             }
             continue;
         }
 
-        if (!settings_set[enable_http] && str[i].find(OPTION_ENABLE_HTTP) != string::npos)
+        if (!settings_set[enable_http] && str[i].find(OPTION_ENABLE_HTTP) != std::string::npos)
         {
             settings_set[enable_http] = true;
             settingsNum++;
@@ -291,7 +293,7 @@ int SetParameters(Parameters &params, vector<string> &str)
             {
                 settingsNum--;
                 params.enable_http = DEFAULT_ENABLE_HTTP;
-                cout << boolalpha << OPTION_ENABLE_HTTP << ": unset, using default (" << params.enable_http << ")\n";
+                std::cout << std::boolalpha << OPTION_ENABLE_HTTP << ": unset, using default (" << params.enable_http << ")\n";
             }
             continue;
         }
@@ -301,9 +303,9 @@ int SetParameters(Parameters &params, vector<string> &str)
 
 UserInputState PromptYN(const char *msg)
 {
-    string input;
-    cout << msg;
-    cin >> input;
+    std::string input;
+    std::cout << msg;
+    std::cin >> input;
 
     if (input == "N" || input == "n")
     {

@@ -1,25 +1,24 @@
 #pragma once
 #include <iostream>
 #include <vector>
-using namespace std;
 
 class Json
 {
 private:
-    vector<string> values;
-    int Hash(string key);
-    bool Contains(string key);
-    void Add(string key, string value);
-    string Get(string key);
-    vector<int> GetCharCount(string includedCharacters, string json);
-    string GetSubstringBetweenIndices(string str, int start, int end, bool exclusive = true);
+    std::vector<std::string> values;
+    int Hash(std::string key);
+    bool Contains(std::string key);
+    void Add(std::string key, std::string value);
+    std::string Get(std::string key);
+    std::vector<int> GetCharCount(std::string includedCharacters, std::string json);
+    std::string GetSubstringBetweenIndices(std::string str, int start, int end, bool exclusive = true);
     bool CompareAssert(char a, char b);
-    string TrimString(string str);
-    string GetObjectFromJsonArray(int index);
+    std::string TrimString(std::string str);
+    std::string GetObjectFromJsonArray(int index);
 
 public:
-    string json;
-    Json(string json);
-    string operator[](int key);
-    string operator[](string key);
+    std::string json;
+    Json(std::string json);
+    std::string operator[](int key);
+    std::string operator[](std::string key);
 };
