@@ -22,7 +22,7 @@ std::string MessageReceived(const char *msg, const char *ip)
     controller.tempIP = ip;
 
     if (dbParameters.enable_http)
-    {        
+    {
         if (strlen(msg) >= MAX_BUFFER_SIZE)
         {
             return GetHTTPResponse(HTTPResponseCode::CONTENT_TOO_LARGE, "application/json", "{\"status\": 413, \"message\": \"Payload is too large to handle\"}");
@@ -35,7 +35,7 @@ std::string MessageReceived(const char *msg, const char *ip)
         int table = atoi(httpResponse.parameters.Get("table").c_str());
         std::string key = httpResponse.parameters.Get("key");
 
-        if (bearerToken.length() <= 0 || controller.Auth(bearerToken) > 0)
+        if ((bearerToken.length() <= 0 || controller.Auth(bearerToken) > 0) && dbParameters.generate_key)
         {
             return GetHTTPResponse(HTTPResponseCode::UNAUTHORIZED, "application/json", "{\"status\": 401, \"message\": \"Unauthorized\"}");
         }
@@ -131,11 +131,11 @@ void OnInterrupt(int sigInt)
 
 int main(int argc, char **argv)
 {
-    #if _WIN32
+#if _WIN32
     signal(13, SIG_IGN);
-    #elif __unix__ || __APPLE__
+#elif __unix__ || __APPLE__
     signal(SIGPIPE, SIG_IGN);
-    #endif
+#endif
     signal(SIGINT, OnInterrupt);
     {
         std::vector<std::string> configArguments = ProcessConfig();
@@ -249,7 +249,6 @@ int main(int argc, char **argv)
     const char *port = dbParameters.port.c_str();
     serverSocket.OnMessageReceived = &MessageReceived;
     serverSocket.PortSet(port);
-
 
     if (dbParameters.allow_backup)
     {
