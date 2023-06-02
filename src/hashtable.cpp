@@ -1,5 +1,15 @@
 #include "hashtable.h"
 
+Hashtable::Hashtable() {}
+
+Hashtable::Hashtable(std::vector<std::string> values)
+{
+    for (int i = 0; i < values.size(); i++)
+    {
+        Add(values.at(i));
+    }
+}
+
 std::string Hashtable::GetSameIndexValues(LinkNode *node)
 {
     std::vector<std::string> list = LinkedList::List(node);

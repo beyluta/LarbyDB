@@ -15,6 +15,7 @@ Controller controller;
 Socket serverSocket;
 Timer timer;
 Parameters dbParameters;
+Hashtable keywordsBlacklist(std::vector<std::string>{"ALL"});
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
@@ -69,6 +70,11 @@ std::string MessageReceived(const char *msg, const char *ip)
 
         if (httpResponse.method == "POST")
         {
+            if (keywordsBlacklist.Contains(key))
+            {
+                return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Key is a reserved keyword.\"}");
+            }
+
             if (controller.Set(key, httpResponse.body, table) > 0)
             {
                 return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
