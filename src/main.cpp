@@ -15,6 +15,7 @@ Controller controller;
 Socket serverSocket;
 Timer timer;
 Parameters dbParameters;
+Hashtable keywordsBlacklist(std::vector<std::string>{"ALL"});
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
@@ -22,7 +23,7 @@ std::string MessageReceived(const char *msg, const char *ip)
     controller.tempIP = ip;
 
     if (dbParameters.enable_http)
-    {        
+    {
         if (strlen(msg) >= MAX_BUFFER_SIZE)
         {
             return GetHTTPResponse(HTTPResponseCode::CONTENT_TOO_LARGE, "application/json", "{\"status\": 413, \"message\": \"Payload is too large to handle\"}");
@@ -69,6 +70,11 @@ std::string MessageReceived(const char *msg, const char *ip)
 
         if (httpResponse.method == "POST")
         {
+            if (keywordsBlacklist.Contains(key))
+            {
+                return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Key is a reserved keyword.\"}");
+            }
+
             if (controller.Set(key, httpResponse.body, table) > 0)
             {
                 return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
@@ -131,11 +137,11 @@ void OnInterrupt(int sigInt)
 
 int main(int argc, char **argv)
 {
-    #if _WIN32
+#if _WIN32
     signal(13, SIG_IGN);
-    #elif __unix__ || __APPLE__
+#elif __unix__ || __APPLE__
     signal(SIGPIPE, SIG_IGN);
-    #endif
+#endif
     signal(SIGINT, OnInterrupt);
     {
         std::vector<std::string> configArguments = ProcessConfig();
@@ -249,7 +255,6 @@ int main(int argc, char **argv)
     const char *port = dbParameters.port.c_str();
     serverSocket.OnMessageReceived = &MessageReceived;
     serverSocket.PortSet(port);
-
 
     if (dbParameters.allow_backup)
     {

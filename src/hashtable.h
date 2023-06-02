@@ -10,6 +10,8 @@ private:
     std::vector<LinkNode> table;
 
 public:
+    Hashtable();
+    Hashtable(std::vector<std::string> values);
     std::string GetSameIndexValues(LinkNode *node);
     int Hash(std::string value);
     void AddTo(int hash, std::string value);
