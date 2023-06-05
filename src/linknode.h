@@ -5,6 +5,7 @@ class LinkNode
 {
 public:
     std::string value;
+    LinkNode *last;
     LinkNode *next;
 };
 
