@@ -12,6 +12,8 @@ void LinkedList::Add(LinkNode *head, std::string value) {
         LinkNode *node = new LinkNode();
         node->value = value;
         head->last->next = node;
+        node->last = head->last;
+        head->last = node;
     }
 }
 
