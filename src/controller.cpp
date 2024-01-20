@@ -22,7 +22,7 @@ int Controller::GetSize()
 
 std::string Controller::Get(std::string key, int table)
 {
-    if (table < 0 || table >= Controller::hashtables.size() || !IsAuthorized())
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
     {
         return "";
     }
@@ -38,6 +38,16 @@ std::string Controller::GetAll(int table)
     }
 
     return hashtables[table].GetAll();
+}
+
+std::string Controller::GetAllInRange(int table, int from, int to)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return "";
+    }
+
+    return hashtables[table].GetInRange(from, to);
 }
 
 int Controller::Set(std::string key, std::string value, int table)
