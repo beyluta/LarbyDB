@@ -50,6 +50,14 @@ std::string MessageReceived(const char *msg, const char *ip)
         {
             if (key == "ALL")
             {
+                int from = atoi(httpResponse.parameters.Get("from").c_str());
+                int to = atoi(httpResponse.parameters.Get("to").c_str());
+
+                if (from > 0 || to > 0)
+                {
+                    return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAllInRange(table, from, to));
+                }
+
                 return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAll(table));
             }
 
