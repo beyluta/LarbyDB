@@ -76,6 +76,13 @@ curl -L 'localhost:8080?table=1&key=ALL' \
 -H 'Authorization: Bearer XXXX-XXXXX-XXXXX'
 ```
 
+Get all values from the database in a certain range. Send the parameters `table`, `from`, `to`, `key` (of which its value must be `ALL`).
+```curl
+curl -L 'localhost:8080?table=1&key=ALL&from=0&to=10' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer XXXX-XXXXX-XXXXX'
+```
+
 Delete a value from the database. Send the parameters `table` and `key` in the URL.
 ```curl
 curl -L -X DELETE 'localhost:8080?table=1&key=name' \
