@@ -14,12 +14,15 @@ std::string Hashtable::GetSameIndexValues(LinkNode *node)
 {
     std::vector<std::string> list = LinkedList::List(node);
     std::string values = "[";
-    if (list.size() > 1) {
+    if (list.size() > 1)
+    {
         for (int j = 0; j < list.size(); j++)
         {
             values += list.at(j) + ",";
         }
-    } else {
+    }
+    else
+    {
         return "";
     }
     values.pop_back();
@@ -86,7 +89,8 @@ std::string Hashtable::Get(std::string key)
 
     std::string values = GetSameIndexValues(&table.at(hash));
 
-    if (values != "") {
+    if (values != "")
+    {
         return values;
     }
 
