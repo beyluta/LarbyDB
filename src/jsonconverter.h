@@ -21,4 +21,7 @@ public:
     Json(std::string json);
     std::string operator[](int key);
     std::string operator[](std::string key);
+    std::string GetObjectFromJsonArray(std::string json, int index);
+    bool IsArray(std::string json);
+    int GetSize(std::string json);
 };

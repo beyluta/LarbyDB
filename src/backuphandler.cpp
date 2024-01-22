@@ -3,11 +3,11 @@
 BackupHandler::BackupHandler(Controller *controller, bool clearBackups)
 {
     BackupHandler::m_clearBackups = clearBackups;
-    #if _WIN32
+#if _WIN32
     BackupHandler::m_configPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\Backups\\";
-    #elif __unix__ || __APPLE__
+#elif __unix__ || __APPLE__
     BackupHandler::m_configPath = std::string(homedir) + "/LarbyDB/Backups/";
-    #endif
+#endif
 
     BackupHandler::m_controller = controller;
 }
@@ -28,23 +28,23 @@ void BackupHandler::BeginBackup()
         BackupHandler::m_file.DeleteDirectory(BackupHandler::m_configPath, true);
     }
 
-    #if _WIN32
+#if _WIN32
     std::string dbPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\";
-    #elif __unix__ || __APPLE__
+#elif __unix__ || __APPLE__
     std::string dbPath = std::string(homedir) + "/LarbyDB/";
-    #endif
+#endif
 
     if (!BackupHandler::m_file.DirectoryExists(dbPath))
     {
         BackupHandler::m_file.MakeDirectory(dbPath);
     }
 
-    #if _WIN32
+#if _WIN32
     std::string backupPath = std::string(m_file.GetHomeDirectory()) + "\\LarbyDB\\Backups\\";
-    #elif __unix__ || __APPLE__
+#elif __unix__ || __APPLE__
     std::string backupPath = dbPath + "Backups/";
-    #endif
-    
+#endif
+
     if (!BackupHandler::m_file.DirectoryExists(backupPath))
     {
         BackupHandler::m_file.MakeDirectory(backupPath);
@@ -67,10 +67,10 @@ void BackupHandler::BeginBackup()
     for (int i = 0; i < BackupHandler::m_controller->GetSize(); i++)
     {
         std::string values = BackupHandler::m_controller->hashtables[i].GetAll();
-        #if _WIN32
+#if _WIN32
         values.erase(std::remove(values.begin(), values.end(), '\n'), values.end());
         values.erase(std::remove(values.begin(), values.end(), '\r'), values.end());
-        #endif
+#endif
         content += "{\"id\":\"" + std::to_string(i) + "\",\"data\":" + values + "}\n";
     }
 
@@ -114,7 +114,20 @@ void BackupHandler::LoadBackup()
                         BackupHandler::m_controller->hashtables.resize(atoi(table.c_str()) + 1);
                     }
 
-                    BackupHandler::m_controller->hashtables[atoi(table.c_str())].AddTo(atoi(index.c_str()), value);
+                    if (json.IsArray(value))
+                    {
+                        int count = json.GetSize(value);
+
+                        for (int i = 0; i < count; i++)
+                        {
+                            std::string object = json.GetObjectFromJsonArray(value, i);
+                            BackupHandler::m_controller->hashtables[atoi(table.c_str())].AddTo(atoi(index.c_str()), object);
+                        }
+                    }
+                    else
+                    {
+                        BackupHandler::m_controller->hashtables[atoi(table.c_str())].AddTo(atoi(index.c_str()), value);
+                    }
                 }
 
                 i++;
