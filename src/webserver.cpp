@@ -13,6 +13,7 @@ void WebServer::Initialize(std::string path, int port)
     httplib::Server server;
     server.Get("/", [](const httplib::Request &req, httplib::Response &res)
                { res.set_content(WebServer::GetDefaultTemplate(), "text/html"); });
+    server.listen(path, port);
 }
 
 std::string WebServer::GetDefaultTemplate()
