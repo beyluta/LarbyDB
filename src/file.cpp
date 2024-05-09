@@ -35,7 +35,7 @@ void File::MakeDirectory(std::string dirname)
 {
 #if _WIN32
     CreateDirectory(dirname.c_str(), nullptr);
-#elif __unix__ ||  __APPLE__
+#elif __unix__ || __APPLE__
     mkdir(dirname.c_str(), 0777);
 #endif
 }
@@ -181,4 +181,17 @@ std::vector<std::string> File::GetFilesInDirectory(std::string directory)
     }
     return files;
 #endif
+}
+
+std::string File::GetFileAsPlainText(std::string filePath)
+{
+    std::string outbuf;
+    std::ifstream ins(filePath);
+    std::copy_if(
+        std::istreambuf_iterator<char>(ins),
+        std::istreambuf_iterator<char>(),
+        std::back_insert_iterator<std::string>(outbuf),
+        [](char c)
+        { return !std::isspace(c); });
+    return outbuf;
 }

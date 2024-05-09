@@ -10,6 +10,7 @@
 #include "config.h"
 #include "http.h"
 #include "logsys.h"
+#include "webserver.h"
 
 Controller controller;
 Socket serverSocket;
@@ -287,6 +288,7 @@ int main(int argc, char **argv)
     std::cout
         << "Version: " << SEMANTIC_VERSION << '\n'
         << "port: " << dbParameters.port << '\n'
+        << "webinterface_port: " << dbParameters.webinterface_port << '\n'
         << "Transfer/Transmission protocol: " << (dbParameters.enable_http ? "HTTP" : "TCP") << '\n'
         << "tables: " << dbParameters.num_tables << '\n'
         << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
@@ -307,6 +309,8 @@ int main(int argc, char **argv)
     }
 
     Logsys::LogActivity("Database Initialized", Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+
+    WebServer webServer("localhost", atoi(dbParameters.webinterface_port.c_str()));
 
     serverSocket.Listen();
     return 0;

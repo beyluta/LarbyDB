@@ -5,6 +5,7 @@
 #include <vector>
 
 #define DEFAULT_PORT "8080"
+#define DEFAULT_WEBINTERFACE_PORT "8081"
 #define DEFAULT_MANUAL_CONFIG false
 #define DEFAULT_GENERATE_KEY true
 #define DEFAULT_ALLOW_BACKUP true
@@ -12,11 +13,12 @@
 #define DEFAULT_NUM_TABLES 2
 #define DEFAULT_BACKUP_INTERVAL "30m"
 #define DEFAULT_LOAD_BACKUP "ask"
-#define DEFAULT_NUM_SETTINGS 8
+#define DEFAULT_NUM_SETTINGS 9
 #define SEMANTIC_VERSION "v1.3.1"
 
 #define OPTION_MANUAL_CONFIG "manual-config"
 #define OPTION_PORT "port"
+#define OPTION_WEBINTERFACE_PORT "web-interface-port"
 #define OPTION_NUM_TABLES "num-tables"
 #define OPTION_ALLOW_BACKUP "allow-backup"
 #define OPTION_ENABLE_HTTP "enable-http"
@@ -24,10 +26,10 @@
 #define OPTION_GENERATE_KEY "generate-key"
 #define OPTION_LOAD_BACKUP "load-backup"
 
-
 struct Parameters
 {
     std::string port;
+    std::string webinterface_port;
     int num_tables;
     bool generate_key;
     bool allow_backup;
@@ -92,22 +94,24 @@ std::vector<std::string> ProcessConfig()
         if (args.size() < 1)
         {
             configFile.OverwriteFile("config.conf",
-                                     "#LarbyDB config\n# If set to true, will ask the user to input parameters on launch:\n"+
-                                         std::string(OPTION_MANUAL_CONFIG)+" "+BoolToStr(DEFAULT_MANUAL_CONFIG)+
-                                         "\n\n# sets the port:\n"+
-                                         OPTION_PORT+" "+DEFAULT_PORT+
-                                         "\n\n# How many hashtables the db has (minimum 2):\n"+
-                                         OPTION_NUM_TABLES+" " +std::to_string(DEFAULT_NUM_TABLES)+
-                                         "\n\n# Should the db perform automatic backups:\n# true | false\n"+
-                                         OPTION_ALLOW_BACKUP+" "+BoolToStr(DEFAULT_ALLOW_BACKUP)+
-                                         "\n\n# Sets the time interval between performing backups:\n# h - hours\n# m - minutes\n# anything else counts as seconds.\n# Only positive integer values are allowed.\n"+
-                                         OPTION_BACKUP_INTERVAL+" "+DEFAULT_BACKUP_INTERVAL+
-                                         "\n\n# Generate the authentication key:\n"+
-                                         OPTION_GENERATE_KEY" "+BoolToStr(DEFAULT_GENERATE_KEY)+
-                                        "\n\n# Enable Hypertext Transfer Protocol:\n"+
-                                         OPTION_ENABLE_HTTP+" "+BoolToStr(DEFAULT_ENABLE_HTTP)+
-                                         "\n\n# Should the db load from a backup file:\n# true  - load from backups\n# false - do not load from backups\n# ask   - ask the user whether to load from the backup file\n"+
-                                         OPTION_LOAD_BACKUP+" "+DEFAULT_LOAD_BACKUP);
+                                     "#LarbyDB config\n# If set to true, will ask the user to input parameters on launch:\n" +
+                                         std::string(OPTION_MANUAL_CONFIG) + " " + BoolToStr(DEFAULT_MANUAL_CONFIG) +
+                                         "\n\n# sets the port:\n" +
+                                         OPTION_PORT + " " + DEFAULT_PORT +
+                                         "\n\n# sets the port for the web interface:\n" +
+                                         OPTION_WEBINTERFACE_PORT + " " + DEFAULT_WEBINTERFACE_PORT +
+                                         "\n\n# How many hashtables the db has (minimum 2):\n" +
+                                         OPTION_NUM_TABLES + " " + std::to_string(DEFAULT_NUM_TABLES) +
+                                         "\n\n# Should the db perform automatic backups:\n# true | false\n" +
+                                         OPTION_ALLOW_BACKUP + " " + BoolToStr(DEFAULT_ALLOW_BACKUP) +
+                                         "\n\n# Sets the time interval between performing backups:\n# h - hours\n# m - minutes\n# anything else counts as seconds.\n# Only positive integer values are allowed.\n" +
+                                         OPTION_BACKUP_INTERVAL + " " + DEFAULT_BACKUP_INTERVAL +
+                                         "\n\n# Generate the authentication key:\n" +
+                                         OPTION_GENERATE_KEY " " + BoolToStr(DEFAULT_GENERATE_KEY) +
+                                         "\n\n# Enable Hypertext Transfer Protocol:\n" +
+                                         OPTION_ENABLE_HTTP + " " + BoolToStr(DEFAULT_ENABLE_HTTP) +
+                                         "\n\n# Should the db load from a backup file:\n# true  - load from backups\n# false - do not load from backups\n# ask   - ask the user whether to load from the backup file\n" +
+                                         OPTION_LOAD_BACKUP + " " + DEFAULT_LOAD_BACKUP);
             return ProcessConfig();
         }
     }
@@ -144,7 +148,8 @@ int SetParameters(Parameters &params, std::vector<std::string> &str)
         backup_interval,
         generate_key,
         load_backup,
-        enable_http
+        enable_http,
+        webinterface_port
     };
     int settingsNum = 0;
 
@@ -172,7 +177,7 @@ int SetParameters(Parameters &params, std::vector<std::string> &str)
             continue;
         }
 
-        if (!settings_set[port] && str[i].find(OPTION_PORT) != std::string::npos)
+        if (!settings_set[port] && str[i].find(OPTION_PORT) != std::string::npos && str[i].find(OPTION_WEBINTERFACE_PORT) == std::string::npos)
         {
             settings_set[port] = true;
 
@@ -294,6 +299,23 @@ int SetParameters(Parameters &params, std::vector<std::string> &str)
                 settingsNum--;
                 params.enable_http = DEFAULT_ENABLE_HTTP;
                 std::cout << std::boolalpha << OPTION_ENABLE_HTTP << ": unset, using default (" << params.enable_http << ")\n";
+            }
+            continue;
+        }
+
+        if (!settings_set[webinterface_port] && str[i].find(OPTION_WEBINTERFACE_PORT) != std::string::npos)
+        {
+            settings_set[webinterface_port] = true;
+
+            if (atoi(str[i + 1].c_str()) > 0)
+            {
+                settingsNum++;
+                params.webinterface_port = str[i + 1];
+            }
+            else
+            {
+                params.webinterface_port = std::move(std::string(DEFAULT_WEBINTERFACE_PORT));
+                std::cout << OPTION_WEBINTERFACE_PORT << ": unset, using default (" << params.webinterface_port << ")\n";
             }
             continue;
         }
