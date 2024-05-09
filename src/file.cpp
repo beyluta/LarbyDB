@@ -187,11 +187,9 @@ std::string File::GetFileAsPlainText(std::string filePath)
 {
     std::string outbuf;
     std::ifstream ins(filePath);
-    std::copy_if(
+    std::copy(
         std::istreambuf_iterator<char>(ins),
         std::istreambuf_iterator<char>(),
-        std::back_insert_iterator<std::string>(outbuf),
-        [](char c)
-        { return !std::isspace(c); });
+        std::back_inserter(outbuf));
     return outbuf;
 }

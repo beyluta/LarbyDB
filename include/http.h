@@ -5,19 +5,19 @@
 
 class HTTP
 {
-    public:
-        Hashtable properties;
-        Hashtable parameters;
-        std::string method;
-        std::string body;
+public:
+    Hashtable properties;
+    Hashtable parameters;
+    std::string method;
+    std::string body;
 
-        HTTP(Hashtable properties, Hashtable parameters, std::string method = "GET", std::string body = "")
-        {
-            this->properties = properties;
-            this->parameters = parameters;
-            this->body = body;
-            this->method = method;
-        }
+    HTTP(Hashtable properties, Hashtable parameters, std::string method = "GET", std::string body = "")
+    {
+        this->properties = properties;
+        this->parameters = parameters;
+        this->body = body;
+        this->method = method;
+    }
 };
 
 enum class HTTPResponseCode
@@ -53,7 +53,7 @@ Hashtable GetHTTPProperties(std::string request)
     bool propertyFound = false;
     for (int i = 0; i < request.length(); i++)
     {
-        if (request[i] == '\r' || request[i] == '\n') 
+        if (request[i] == '\r' || request[i] == '\n')
         {
             properties.Add(ToLowerCase(property), value);
             property = "";
@@ -72,7 +72,7 @@ Hashtable GetHTTPProperties(std::string request)
         {
             property += request[i];
         }
-        
+
         if (propertyFound && (request[i] != ' ' || value.length() > 0))
         {
             value += request[i];
@@ -110,7 +110,8 @@ Hashtable GetHTTPParameters(std::string query)
 
         if (!parameterFound)
         {
-            currentParameter += query[i];;
+            currentParameter += query[i];
+            ;
         }
         else
         {
@@ -135,23 +136,25 @@ HTTP GetHTTP(std::string request)
             methodFound = true;
             continue;
         }
-        
+
         if (request[i] == '?' && !parametersFound)
         {
             parametersFound = true;
             continue;
-        } 
+        }
         else if (request[i] == ' ' && parametersFound)
         {
             parametersFound = false;
             continue;
         }
 
-        if (parametersFound) {
+        if (parametersFound)
+        {
             parameters += request[i];
-        }        
+        }
 
-        if (!methodFound) {
+        if (!methodFound)
+        {
             method += request[i];
         }
     }
@@ -168,6 +171,11 @@ HTTP GetHTTP(std::string request)
 
 std::string GetHTTPResponse(HTTPResponseCode code, std::string contentType, std::string body = "")
 {
-    std::string response = "HTTP/1.1 " + std::to_string((int)code) + " OK\r\ncontent-type: " + contentType + "\r\ncontent-length: " + std::to_string(body.length()) + "\r\n\r\n" + body;
+    std::cout << "Content Type is" << contentType << std::endl;
+    std::string response = "HTTP/1.1 " + std::to_string((int)code) + " OK\r\n";
+    response += "content-type: " + contentType + "\r\n";
+    response += "content-length: " + std::to_string(body.length()) + "\r\n";
+    response += "access-control-allow-origin: *\r\n\r\n";
+    response += body;
     return response;
 }

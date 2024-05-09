@@ -59,6 +59,7 @@ std::string MessageReceived(const char *msg, const char *ip)
                     return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAllInRange(table, from, to));
                 }
 
+                std::cout << "Sending response back" << std::endl;
                 return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAll(table));
             }
 
