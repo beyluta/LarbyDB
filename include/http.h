@@ -111,7 +111,6 @@ Hashtable GetHTTPParameters(std::string query)
         if (!parameterFound)
         {
             currentParameter += query[i];
-            ;
         }
         else
         {
@@ -128,7 +127,9 @@ HTTP GetHTTP(std::string request)
     std::string parameters = "";
     bool methodFound = false;
     bool parametersFound = false;
+    bool ignoreParameters = false;
     Hashtable requestProperties = GetHTTPProperties(request);
+
     for (int i = 0; i < request.length(); i++)
     {
         if (request[i] == ' ' && !methodFound)
@@ -137,7 +138,7 @@ HTTP GetHTTP(std::string request)
             continue;
         }
 
-        if (request[i] == '?' && !parametersFound)
+        if (request[i] == '?' && !parametersFound && !ignoreParameters)
         {
             parametersFound = true;
             continue;
@@ -145,6 +146,7 @@ HTTP GetHTTP(std::string request)
         else if (request[i] == ' ' && parametersFound)
         {
             parametersFound = false;
+            ignoreParameters = true;
             continue;
         }
 
@@ -171,11 +173,22 @@ HTTP GetHTTP(std::string request)
 
 std::string GetHTTPResponse(HTTPResponseCode code, std::string contentType, std::string body = "")
 {
-    std::cout << "Content Type is" << contentType << std::endl;
     std::string response = "HTTP/1.1 " + std::to_string((int)code) + " OK\r\n";
     response += "content-type: " + contentType + "\r\n";
     response += "content-length: " + std::to_string(body.length()) + "\r\n";
-    response += "access-control-allow-origin: *\r\n\r\n";
-    response += body;
+    response += "access-control-allow-origin: *\r\n";
+    response += "access-control-allow-methods: GET, POST, DELETE, OPTIONS\r\n";
+    response += "access-control-allow-headers: Authorization, Content-Type\r\n";
+    response += "access-control-max-age: 86400\r\n";
+    return response += "\r\n" + body;
+}
+
+std::string GetPreflightResponse(HTTPResponseCode code)
+{
+    std::string response = "HTTP/1.1 " + std::to_string((int)code) + " OK\r\n";
+    response += "Access-Control-Allow-Origin: *\r\n";
+    response += "Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS\r\n";
+    response += "Access-Control-Allow-Headers: Authorization, Content-Type\r\n";
+    response += "Access-Control-Max-Age: 86400\r\n";
     return response;
 }

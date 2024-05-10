@@ -59,7 +59,6 @@ std::string MessageReceived(const char *msg, const char *ip)
                     return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAllInRange(table, from, to));
                 }
 
-                std::cout << "Sending response back" << std::endl;
                 return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAll(table));
             }
 
@@ -101,6 +100,11 @@ std::string MessageReceived(const char *msg, const char *ip)
             }
 
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
+        }
+
+        if (httpResponse.method == "OPTIONS")
+        {
+            return GetPreflightResponse(HTTPResponseCode::OK);
         }
     }
 

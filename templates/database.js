@@ -27,13 +27,13 @@ export class Database {
      */
     async queryAll() {
         return await new Promise((resolve, reject) => {
-            fetch(`http://${this.#uri}:${this.#port}?table=1&key=ALL`, {
+            fetch(`http://${this.#uri}:${this.#port}?key=ALL&table=1`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
             })
-                .then((response) => {
+                .then(async (response) => {
                     resolve(response.json());
                 })
                 .catch((error) => {
