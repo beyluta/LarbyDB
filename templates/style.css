@@ -61,6 +61,15 @@ Not supports in Firefox and IE */
   flex-direction: column;
 }
 
+.table {
+  height: calc(100vh - 250px);
+  overflow: auto;
+}
+
+.highlight:hover {
+  cursor: pointer;
+}
+
 .collection-item {
   padding-left: 30px;
   /* max-height: 150px; */

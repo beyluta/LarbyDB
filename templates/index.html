@@ -29,21 +29,27 @@
 
     <div class="card">
       <div class="card-content">
-        <ul class="collection with-header" id="collection">
-          <li class="collection-header"><h4>Table 1</h4></li>
-          <!-- <li class="collection-item">Alvin</li>
-          <li class="collection-item">Alvin</li>
-          <li class="collection-item">Alvin</li>
-          <li class="collection-item">Alvin</li>
-          <li class="collection-item">Alvin</li> -->
-        </ul>
-        <div class="collection-btns">
-          <a class="btn"><i class="material-icons">navigate_before</i></a>
-          <a class="btn"><i class="material-icons">navigate_next</i></a>
+        <div class="table">
+          <table class="highlight">
+            <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Value</th>
+                  <th>Total</th>
+              </tr>
+            </thead>
+    
+            <tbody id="table">
+            </tbody>
+          </table>  
         </div>
       </div>
+      <div class="collection-btns">
+        <a class="btn" id="prev-btn"><i class="material-icons">navigate_before</i></a>
+        <a class="btn" id="next-btn"><i class="material-icons">navigate_next</i></a>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@materializecss/materialize@2.0.3-alpha/dist/js/materialize.min.js"></script>
+    <script src="material.js"></script>
     <link rel="stylesheet" href="style.css" />
   </body>
 </html>
