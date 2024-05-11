@@ -52,3 +52,13 @@ void LinkedList::Unlink(LinkNode *head)
 
     nodePtrs.clear();
 }
+
+int LinkedList::Length(LinkNode *head)
+{
+    if (head == nullptr)
+    {
+        return 0;
+    }
+
+    return 1 + Length(head->next);
+}
