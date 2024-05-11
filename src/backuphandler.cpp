@@ -67,7 +67,6 @@ void BackupHandler::BeginBackup()
     for (int i = 0; i < BackupHandler::m_controller->GetSize(); i++)
     {
         std::string values = BackupHandler::m_controller->hashtables[i].GetAll();
-        std::cout << "Backing up" << values << std::endl;
 #if _WIN32
         values.erase(std::remove(values.begin(), values.end(), '\n'), values.end());
         values.erase(std::remove(values.begin(), values.end(), '\r'), values.end());

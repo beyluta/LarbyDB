@@ -68,4 +68,39 @@ export class Database {
                 });
         });
     }
+
+    async insertById(id, table, data) {
+        return await new Promise((resolve, reject) => {
+            fetch(`http://${this.#uri}:${this.#port}?key=${id}&table=${table}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+                .then(async (response) => {
+                    resolve(response.json());
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    async deleteById(id, table) {
+        return await new Promise((resolve, reject) => {
+            fetch(`http://${this.#uri}:${this.#port}?key=${id}&table=${table}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then(async (response) => {
+                    resolve(response.json());
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
 }
