@@ -2,11 +2,7 @@
 <html>
   <head>
     <title>LarbyDB | Administration</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@materializecss/materialize@2.0.3-alpha/dist/css/materialize.min.css"
-    />
-
+    <link rel="stylesheet" href="material.css" />
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
@@ -33,7 +29,18 @@
 
     <div class="card">
       <div class="card-content">
-        <div class="card-title">Table 1</div>
+        <ul class="collection with-header" id="collection">
+          <li class="collection-header"><h4>Table 1</h4></li>
+          <!-- <li class="collection-item">Alvin</li>
+          <li class="collection-item">Alvin</li>
+          <li class="collection-item">Alvin</li>
+          <li class="collection-item">Alvin</li>
+          <li class="collection-item">Alvin</li> -->
+        </ul>
+        <div class="collection-btns">
+          <a class="btn"><i class="material-icons">navigate_before</i></a>
+          <a class="btn"><i class="material-icons">navigate_next</i></a>
+        </div>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@materializecss/materialize@2.0.3-alpha/dist/js/materialize.min.js"></script>

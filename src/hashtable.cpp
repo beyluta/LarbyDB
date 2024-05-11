@@ -133,7 +133,7 @@ std::string Hashtable::GetInRange(int start, int end)
         {
             std::string values = GetSameIndexValues(&table.at(Hashtable::values.at(i)));
             std::string value = table.at(Hashtable::values.at(i)).value[0] == '{' || table.at(Hashtable::values.at(i)).value[0] == '[' ? "\"value\":" + table.at(Hashtable::values.at(i)).value + "}," : "\"value\":\"" + table.at(Hashtable::values.at(i)).value + "\"},\n";
-            result += "{\"index\":\"" + std::to_string(Hashtable::values.at(i)) + "\"," + (values != "" ? "\"value\":" + values + "}," : value);
+            result += "{\"index\":\"" + std::to_string(Hashtable::values.at(i)) + "\"," + "\"total\":" + std::to_string(Hashtable::Length()) + "," + (values != "" ? "\"value\":" + values + "}," : value);
         }
 
         a++;
@@ -159,7 +159,7 @@ std::string Hashtable::GetAmount(int amount, int skip)
         {
             std::string values = GetSameIndexValues(&table.at(Hashtable::values.at(i)));
             std::string value = table.at(Hashtable::values.at(i)).value[0] == '{' || table.at(Hashtable::values.at(i)).value[0] == '[' ? "\"value\":" + table.at(Hashtable::values.at(i)).value + "}," : "\"value\":\"" + table.at(Hashtable::values.at(i)).value + "\"},\n";
-            result += "{\"index\":\"" + std::to_string(Hashtable::values.at(i)) + "\"," + (values != "" ? "\"value\":" + values + "}," : value);
+            result += "{\"index\":\"" + std::to_string(Hashtable::values.at(i)) + "\"," + "\"total\":" + std::to_string(Hashtable::Length()) + "," + (values != "" ? "\"value\":" + values + "}," : value);
         }
 
         a++;

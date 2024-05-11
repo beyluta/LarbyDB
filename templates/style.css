@@ -2,14 +2,41 @@
 
 html,
 body {
-  background: #000000;
+  background: #f8f8f8;
   font-family: "Roboto", sans-serif;
   font-weight: 200;
   font-style: normal;
 }
 
+/* Customize website's scrollbar like Mac OS
+Not supports in Firefox and IE */
+
+/* total width */
+*::-webkit-scrollbar {
+  background-color: #fff;
+  width: 16px;
+}
+
+/* background of the scrollbar except button or resizer */
+*::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+
+/* scrollbar itself */
+*::-webkit-scrollbar-thumb {
+  background-color: #babac0;
+  border-radius: 16px;
+  border: 4px solid #fff;
+}
+
+/* set button(top and bottom of the scrollbar) */
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
 :root {
   --background-color: #191c25;
+  --primary: #2e3344;
 }
 
 .nav-wrapper {
@@ -22,7 +49,39 @@ body {
 }
 
 .card {
-  background-color: var(--background-color);
-  color: #fff;
+  background-color: #fff;
+  color: var(--background-color);
+  font-weight: 400;
   margin: 20px;
+}
+
+.collection {
+  height: calc(100vh - 300px);
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-item {
+  padding-left: 30px;
+  /* max-height: 150px; */
+  overflow-y: auto;
+}
+
+.collection-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 20px;
+}
+
+.btn {
+  background-color: var(--primary);
+}
+
+.btn:hover {
+  background-color: var(--background-color);
+}
+
+a:hover {
+  cursor: pointer;
 }

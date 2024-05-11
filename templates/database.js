@@ -23,11 +23,38 @@ export class Database {
 
     /**
      * Queries all records from the database
+     * @param {string} key
+     * @param {number} table
      * @returns {Promise<any>}
      */
-    async queryAll() {
+    async queryAll(key, table) {
         return await new Promise((resolve, reject) => {
-            fetch(`http://${this.#uri}:${this.#port}?key=ALL&table=1`, {
+            fetch(`http://${this.#uri}:${this.#port}?key=${key}&table=${table}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then(async (response) => {
+                    resolve(response.json());
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    /**
+     * Queries all records in range
+     * @param {string} key
+     * @param {number} table
+     * @param {number} start
+     * @param {number} end
+     * @returns {Promise<any>}
+     */
+    async queryByRange(key, table, start, end) {
+        return await new Promise((resolve, reject) => {
+            fetch(`http://${this.#uri}:${this.#port}?key=${key}&table=${table}&from=${start}&to=${end}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
