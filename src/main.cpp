@@ -100,6 +100,11 @@ std::string MessageReceived(const char *msg, const char *ip)
 
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
         }
+
+        if (httpResponse.method == "OPTIONS")
+        {
+            return GetPreflightResponse(HTTPResponseCode::OK);
+        }
     }
 
     if (strlen(msg) >= MAX_BUFFER_SIZE)
@@ -286,20 +291,20 @@ int main(int argc, char **argv)
 
     std::cout
         << "Version: " << SEMANTIC_VERSION << '\n'
-        << "port: " << dbParameters.port << '\n'
-        << "Transfer/Transmission protocol: " << (dbParameters.enable_http ? "HTTP" : "TCP") << '\n'
-        << "tables: " << dbParameters.num_tables << '\n'
-        << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
-        << "backup_interval: "
+        << "Port: " << dbParameters.port << '\n'
+        << "Protocol: " << (dbParameters.enable_http ? "HTTP" : "TCP") << '\n'
+        << "Tables: " << dbParameters.num_tables << '\n'
+        << "Backups: " << BoolToStr(dbParameters.allow_backup) << '\n'
+        << "Backup Timer: "
         << (dbParameters.allow_backup ? std::to_string(dbParameters.backup_interval) + " seconds" : "unset")
         << '\n'
-        << "generate_key: " << BoolToStr(dbParameters.generate_key) << '\n';
+        << "Generate Key: " << BoolToStr(dbParameters.generate_key) << '\n';
 
     if (dbParameters.generate_key)
     {
         controller.protectedByKey = true;
         controller.GenerateKey();
-        Logsys::LogActivity("Key: " + controller.hashtables[0].Get(DB_KEY_POSITION), Logsys::IOSystem::TERMINAL, Logsys::Color::WHITE, false);
+        Logsys::LogActivity("Bearer Token: " + controller.hashtables[0].Get(DB_KEY_POSITION), Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW, false);
     }
     else
     {

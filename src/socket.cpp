@@ -123,7 +123,6 @@ void Socket::PortSet(const char *portStr)
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
-#include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iostream>
 
@@ -135,15 +134,17 @@ void Socket::Listen()
     const auto server = socket(AF_INET, SOCK_STREAM, 0);
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(atoi(Socket::port));
+    serverAddr.sin_port = htons(atoi(Socket::port));
     ::bind(server, reinterpret_cast<SOCKADDR *>(&serverAddr), sizeof(serverAddr));
     listen(server, 0);
     int clientAddrSize = sizeof(clientAddr);
 
-    for (;;) {
+    for (;;)
+    {
         SOCKET client;
 
-        if ((client = accept(server, reinterpret_cast<SOCKADDR *>(&clientAddr), &clientAddrSize)) != INVALID_SOCKET) {
+        if ((client = accept(server, reinterpret_cast<SOCKADDR *>(&clientAddr), &clientAddrSize)) != INVALID_SOCKET)
+        {
             char buffer[MAX_BUFFER_SIZE];
             recv(client, buffer, sizeof(buffer), 0);
             char *ipAddr = inet_ntoa(clientAddr.sin_addr);

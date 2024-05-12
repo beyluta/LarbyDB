@@ -8,6 +8,13 @@ class Hashtable
 {
 private:
     std::vector<LinkNode> table;
+    std::vector<int> indexes;
+    std::vector<int> values;
+    enum class IndexUpdateOperation
+    {
+        Add,
+        Remove
+    };
 
 public:
     Hashtable();
@@ -24,4 +31,6 @@ public:
     void Remove(std::string value);
     void Remove(int hash);
     bool Contains(std::string value);
+    void UpdateIndex(int index, IndexUpdateOperation operation);
+    int Length();
 };
