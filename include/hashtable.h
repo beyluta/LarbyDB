@@ -4,6 +4,8 @@
 #include <string>
 #include "linknode.h"
 
+#define MAX_CAPACITY 2'000'000
+
 class Hashtable
 {
 private:

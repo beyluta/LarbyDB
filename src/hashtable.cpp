@@ -1,12 +1,15 @@
 #include "hashtable.h"
 
-Hashtable::Hashtable() {}
+Hashtable::Hashtable()
+{
+    Hashtable::table.reserve(MAX_CAPACITY);
+}
 
-Hashtable::Hashtable(std::vector<std::string> values)
+Hashtable::Hashtable(std::vector<std::string> values) : Hashtable()
 {
     for (int i = 0; i < values.size(); i++)
     {
-        Add(values.at(i));
+        Hashtable::Add(values.at(i));
     }
 }
 
@@ -39,7 +42,7 @@ int Hashtable::Hash(std::string value)
         hash += value[i];
     }
 
-    return hash;
+    return hash % MAX_CAPACITY;
 }
 
 void Hashtable::AddTo(int hash, std::string value)
