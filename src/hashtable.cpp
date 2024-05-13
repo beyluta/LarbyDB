@@ -1,12 +1,15 @@
 #include "hashtable.h"
 
-Hashtable::Hashtable() {}
+Hashtable::Hashtable()
+{
+    Hashtable::table.reserve(MAX_CAPACITY);
+}
 
-Hashtable::Hashtable(std::vector<std::string> values)
+Hashtable::Hashtable(std::vector<std::string> values) : Hashtable()
 {
     for (int i = 0; i < values.size(); i++)
     {
-        Add(values.at(i));
+        Hashtable::Add(values.at(i));
     }
 }
 
@@ -32,15 +35,16 @@ std::string Hashtable::GetSameIndexValues(LinkNode *node)
 
 int Hashtable::Hash(std::string value)
 {
-    int hash = 0;
+    unsigned long hash = 5381;
 
-    for (int i = 0; i < value.length(); i++)
+    for (int i = 0; i < value.size(); i++)
     {
-        hash += value[i];
+        hash = ((hash << 5) + hash) + value[i];
     }
 
-    return hash;
+    return hash % MAX_CAPACITY;
 }
+
 
 void Hashtable::AddTo(int hash, std::string value)
 {
