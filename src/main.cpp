@@ -19,7 +19,7 @@ Hashtable keywordsBlacklist(std::vector<std::string>{"ALL"});
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
-    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(strlen(msg)) + " out of a maximum of " + std::to_string(MAX_BUFFER_SIZE), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(strlen(msg)) + " out of a maximum of " + std::to_string(MAX_BUFFER_SIZE), Logsys::IOSystem::FILESYSTEM, Logsys::Color::GREEN);
     controller.tempIP = ip;
 
     if (dbParameters.enable_http)
@@ -29,12 +29,18 @@ std::string MessageReceived(const char *msg, const char *ip)
             return GetHTTPResponse(HTTPResponseCode::CONTENT_TOO_LARGE, "application/json", "{\"status\": 413, \"message\": \"Payload is too large to handle\"}");
         }
 
-        HTTP httpResponse = GetHTTP(msg);
-        std::string contentType = httpResponse.properties.Get("content-type");
-        std::string bearerToken = httpResponse.properties.Get("authorization");
+        HTTP response = GetHTTP(msg);
+
+        if (response.method.size() <= 0)
+        {
+            return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Could not handle request\"}");
+        }
+
+        std::string contentType = response.properties.Get("content-type");
+        std::string bearerToken = response.properties.Get("authorization");
         bearerToken = bearerToken.length() > 0 ? bearerToken.substr(7, bearerToken.length() - 7) : "";
-        int table = atoi(httpResponse.parameters.Get("table").c_str());
-        std::string key = httpResponse.parameters.Get("key");
+        int table = atoi(response.parameters.Get("table").c_str());
+        std::string key = response.parameters.Get("key");
 
         if ((bearerToken.length() <= 0 || controller.Auth(bearerToken) > 0) && dbParameters.generate_key)
         {
@@ -46,12 +52,12 @@ std::string MessageReceived(const char *msg, const char *ip)
             return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Table out of bounds.\"}");
         }
 
-        if (httpResponse.method == "GET")
+        if (response.method == "GET")
         {
             if (key == "ALL")
             {
-                int from = atoi(httpResponse.parameters.Get("from").c_str());
-                int to = atoi(httpResponse.parameters.Get("to").c_str());
+                int from = atoi(response.parameters.Get("from").c_str());
+                int to = atoi(response.parameters.Get("to").c_str());
 
                 if (from > 0 || to > 0)
                 {
@@ -76,14 +82,14 @@ std::string MessageReceived(const char *msg, const char *ip)
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", value);
         }
 
-        if (httpResponse.method == "POST")
+        if (response.method == "POST")
         {
             if (keywordsBlacklist.Contains(key))
             {
                 return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Key is a reserved keyword.\"}");
             }
 
-            if (controller.Set(key, httpResponse.body, table) > 0)
+            if (controller.Set(key, response.body, table) > 0)
             {
                 return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
             }
@@ -91,7 +97,7 @@ std::string MessageReceived(const char *msg, const char *ip)
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
         }
 
-        if (httpResponse.method == "DELETE")
+        if (response.method == "DELETE")
         {
             if (controller.Delete(key, table) > 0)
             {
@@ -101,7 +107,7 @@ std::string MessageReceived(const char *msg, const char *ip)
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
         }
 
-        if (httpResponse.method == "OPTIONS")
+        if (response.method == "OPTIONS")
         {
             return GetPreflightResponse(HTTPResponseCode::OK);
         }

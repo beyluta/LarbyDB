@@ -11,6 +11,7 @@ public:
     std::string method;
     std::string body;
 
+    HTTP() = default;
     HTTP(Hashtable properties, Hashtable parameters, std::string method = "GET", std::string body = "")
     {
         this->properties = properties;
@@ -122,6 +123,7 @@ Hashtable GetHTTPParameters(std::string query)
 
 HTTP GetHTTP(std::string request)
 {
+    // std::cout << request << "\n" << request.length() << std::endl;
     std::string line = "";
     std::string method = "";
     std::string parameters = "";
@@ -164,6 +166,12 @@ HTTP GetHTTP(std::string request)
     if (method == "POST")
     {
         int contentLength = atoi(requestProperties.Get("content-length").c_str());
+
+        if (contentLength >= request.length())
+        {
+            return HTTP();
+        }
+
         std::string body = request.substr(request.length() - contentLength, contentLength);
         return HTTP(requestProperties, GetHTTPParameters(parameters), method, body);
     }
