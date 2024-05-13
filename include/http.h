@@ -123,7 +123,6 @@ Hashtable GetHTTPParameters(std::string query)
 
 HTTP GetHTTP(std::string request)
 {
-    // std::cout << request << "\n" << request.length() << std::endl;
     std::string line = "";
     std::string method = "";
     std::string parameters = "";
