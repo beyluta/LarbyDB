@@ -72,7 +72,7 @@ curl -L 'localhost:8080?table=1&key=name' \
 Use the parameter `autoincrement` to automatically generate and assign an index to the value.
 
 ```curl
-curl -L 'localhost:8080?table=1' \
+curl -L 'localhost:8080?table=1&autoincrement=true' \
 -H 'Authorization: Bearer XXXX-XXXXX-XXXXX' \
 -H 'Content-Type: application/json' \
 -d '{
