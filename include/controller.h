@@ -28,6 +28,7 @@ public:
     std::string GetAllInRange(int table = 0, int from = 0, int to = 0);
     std::string GetResolvedResponse(std::string request);
     int Set(std::string key, std::string value, int table = 0);
+    int Set(std::string value, int table = 0);
     int Delete(std::string key, int table = 0);
     int Auth(std::string key);
     void GenerateKey(int length = 16);

@@ -62,6 +62,17 @@ int Controller::Set(std::string key, std::string value, int table)
     return 0;
 }
 
+int Controller::Set(std::string value, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return 1;
+    }
+
+    value.erase(std::remove(value.begin(), value.end(), '\n'), value.cend());
+    return hashtables[table].Add(value, true);
+}
+
 int Controller::Delete(std::string key, int table)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())

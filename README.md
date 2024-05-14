@@ -23,16 +23,16 @@ Below is a table of the operating systems that LarbyDB has been tested on.
 
 ## Settings/Launch Arguments
 
-| **Setting**          | **Description**                                                                 | **Arguments**                                                                                  | **Default value** |
-| -------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | :---------------: |
-| `manual-config`      | if set to true, asks the user to input<br>parameters upon launching the program | `true`, `false`                                                                                |      `false`      |
-| `port`               | sets the port                                                                   | _positive integer_                                                                             |      `8080`       |
-| `num-tables`         | sets the number of tables                                                       | _positive integer_                                                                             |        `2`        |
-| `allow-backup`       | allow automatic backups                                                         | `true`, `false`                                                                                |      `true`       |
-| `backup-interval`    | time interval between backups                                                   | _positive int for seconds_,<br>_positive int+`h` for hours_,<br>_positive int+`m` for minutes_ |       `30m`       |
-| `generate-key`       | generate authorization key on launch                                            | `true`, `false`                                                                                |      `true`       |
-| `load-backup`        | whether to load from backup on launch                                           | `true`, `false`, `ask`                                                                         |       `ask`       |
-| `enable-http`        | whether to use HTTP or TCP                                                      | `true`, `false`, `ask`                                                                         |       `ask`       |
+| **Setting**       | **Description**                                                                 | **Arguments**                                                                                  | **Default value** |
+| ----------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | :---------------: |
+| `manual-config`   | if set to true, asks the user to input<br>parameters upon launching the program | `true`, `false`                                                                                |      `false`      |
+| `port`            | sets the port                                                                   | _positive integer_                                                                             |      `8080`       |
+| `num-tables`      | sets the number of tables                                                       | _positive integer_                                                                             |        `2`        |
+| `allow-backup`    | allow automatic backups                                                         | `true`, `false`                                                                                |      `true`       |
+| `backup-interval` | time interval between backups                                                   | _positive int for seconds_,<br>_positive int+`h` for hours_,<br>_positive int+`m` for minutes_ |       `30m`       |
+| `generate-key`    | generate authorization key on launch                                            | `true`, `false`                                                                                |      `true`       |
+| `load-backup`     | whether to load from backup on launch                                           | `true`, `false`, `ask`                                                                         |       `ask`       |
+| `enable-http`     | whether to use HTTP or TCP                                                      | `true`, `false`, `ask`                                                                         |       `ask`       |
 
 To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB --port 3000`).<br>
 
@@ -66,6 +66,18 @@ curl -L 'localhost:8080?table=1&key=name' \
 -d '{
     "name": "John Doe",
     "age": 30
+}'
+```
+
+Use the parameter `autoincrement` to automatically generate and assign an index to the value.
+
+```curl
+curl -L 'localhost:8080?table=1&autoincrement=true' \
+-H 'Authorization: Bearer XXXX-XXXXX-XXXXX' \
+-H 'Content-Type: application/json' \
+-d '{
+    "name": "Jhonny Test",
+    "age": 14
 }'
 ```
 
