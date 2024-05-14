@@ -89,9 +89,19 @@ std::string MessageReceived(const char *msg, const char *ip)
                 return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Key is a reserved keyword.\"}");
             }
 
-            if (controller.Set(key, response.body, table) > 0)
+            if (response.parameters.Get("autoincrement").size() <= 0)
             {
-                return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
+                if (controller.Set(key, response.body, table) > 0)
+                {
+                    return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
+                }
+            }
+            else
+            {
+                if (controller.Set(response.body, table) > 0)
+                {
+                    return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"No unique indexes left\"}");
+                }
             }
 
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");

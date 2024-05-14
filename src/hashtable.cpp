@@ -33,6 +33,30 @@ std::string Hashtable::GetSameIndexValues(LinkNode *node)
     return values;
 }
 
+int Hashtable::Hash()
+{
+    if (values.size() <= 0)
+    {
+        return 0;
+    }
+
+    Sort::MergeSort(values);
+
+    int index = values[0] - 1;
+
+    if (index < 0)
+    {
+        index = values[values.size() - 1] + 1;
+
+        if (index >= MAX_CAPACITY)
+        {
+            return -1;
+        }
+    }
+
+    return index;
+}
+
 int Hashtable::Hash(std::string value)
 {
     unsigned long hash = 5381;
@@ -57,9 +81,14 @@ void Hashtable::AddTo(int hash, std::string value)
     Hashtable::UpdateIndex(hash, Hashtable::IndexUpdateOperation::Add);
 }
 
-void Hashtable::Add(std::string value)
+int Hashtable::Add(std::string value, bool autoIncrement)
 {
-    int hash = Hash(value);
+    int hash = autoIncrement ? Hash() : Hash(value);
+
+    if (hash < 0)
+    {
+        return 1;
+    }
 
     if (table.size() <= hash)
     {
@@ -68,6 +97,7 @@ void Hashtable::Add(std::string value)
 
     LinkedList::Add(&table.at(hash), value);
     Hashtable::UpdateIndex(hash, Hashtable::IndexUpdateOperation::Add);
+    return 0;
 }
 
 int Hashtable::Add(std::string key, std::string value)
