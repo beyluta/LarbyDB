@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <optional>
 #include "linknode.h"
 #include "sort.h"
 
