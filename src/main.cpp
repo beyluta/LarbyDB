@@ -67,7 +67,15 @@ std::string MessageReceived(const char *msg, const char *ip)
                 return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAll(table));
             }
 
-            std::string value = controller.Get(key, table);
+            std::string value;
+            if (std::all_of(key.begin(), key.end(), ::isdigit))
+            {
+                value = controller.Get(atoi(key.c_str()), table);
+            }
+            else
+            {
+                value = controller.Get(key, table);
+            }
 
             if (value.length() <= 0)
             {
@@ -89,6 +97,8 @@ std::string MessageReceived(const char *msg, const char *ip)
                 return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Key is a reserved keyword.\"}");
             }
 
+            int hash = 0;
+
             if (response.parameters.Get("autoincrement").size() <= 0)
             {
                 if (controller.Set(key, response.body, table) > 0)
@@ -98,13 +108,13 @@ std::string MessageReceived(const char *msg, const char *ip)
             }
             else
             {
-                if (controller.Set(response.body, table) > 0)
+                if (controller.Set(response.body, table, hash) > 0)
                 {
                     return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"No unique indexes left\"}");
                 }
             }
 
-            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
+            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\", \"hash\": " + std::to_string(hash) + "}");
         }
 
         if (response.method == "DELETE")

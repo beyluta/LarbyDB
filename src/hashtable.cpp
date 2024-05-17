@@ -69,7 +69,6 @@ int Hashtable::Hash(std::string value)
     return hash % MAX_CAPACITY;
 }
 
-
 void Hashtable::AddTo(int hash, std::string value)
 {
     if (table.size() <= hash)
@@ -81,9 +80,14 @@ void Hashtable::AddTo(int hash, std::string value)
     Hashtable::UpdateIndex(hash, Hashtable::IndexUpdateOperation::Add);
 }
 
-int Hashtable::Add(std::string value, bool autoIncrement)
+int Hashtable::Add(std::string value, bool autoIncrement, int &newHash)
 {
     int hash = autoIncrement ? Hash() : Hash(value);
+
+    if (autoIncrement)
+    {
+        newHash = hash;
+    }
 
     if (hash < 0)
     {
@@ -131,6 +135,23 @@ std::string Hashtable::Get(std::string key)
     }
 
     return table.at(hash).value;
+}
+
+std::string Hashtable::Get(int key)
+{
+    if (table.size() <= key)
+    {
+        return "";
+    }
+
+    std::string values = GetSameIndexValues(&table.at(key));
+
+    if (values != "")
+    {
+        return values;
+    }
+
+    return table.at(key).value;
 }
 
 std::string Hashtable::GetAll()

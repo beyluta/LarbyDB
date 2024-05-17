@@ -13,7 +13,7 @@
 #define DEFAULT_BACKUP_INTERVAL "30m"
 #define DEFAULT_LOAD_BACKUP "ask"
 #define DEFAULT_NUM_SETTINGS 8
-#define SEMANTIC_VERSION "v1.4.1"
+#define SEMANTIC_VERSION "v1.4.2"
 
 #define OPTION_MANUAL_CONFIG "manual-config"
 #define OPTION_PORT "port"

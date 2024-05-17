@@ -24,11 +24,12 @@ public:
     void SetSize(int numTables = 2);
     int GetSize();
     std::string Get(std::string key, int table = 0);
+    std::string Get(int key, int table = 0);
     std::string GetAll(int table = 0);
     std::string GetAllInRange(int table = 0, int from = 0, int to = 0);
     std::string GetResolvedResponse(std::string request);
     int Set(std::string key, std::string value, int table = 0);
-    int Set(std::string value, int table = 0);
+    int Set(std::string value, int table = 0, int &hash = *(int *)nullptr);
     int Delete(std::string key, int table = 0);
     int Auth(std::string key);
     void GenerateKey(int length = 16);

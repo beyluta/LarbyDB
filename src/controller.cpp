@@ -30,6 +30,16 @@ std::string Controller::Get(std::string key, int table)
     return Controller::hashtables[table].Get(key);
 }
 
+std::string Controller::Get(int key, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return "";
+    }
+
+    return Controller::hashtables[table].Get(key);
+}
+
 std::string Controller::GetAll(int table)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())
@@ -62,7 +72,7 @@ int Controller::Set(std::string key, std::string value, int table)
     return 0;
 }
 
-int Controller::Set(std::string value, int table)
+int Controller::Set(std::string value, int table, int &hash)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())
     {
@@ -70,7 +80,7 @@ int Controller::Set(std::string value, int table)
     }
 
     value.erase(std::remove(value.begin(), value.end(), '\n'), value.cend());
-    return hashtables[table].Add(value, true);
+    return hashtables[table].Add(value, true, hash);
 }
 
 int Controller::Delete(std::string key, int table)

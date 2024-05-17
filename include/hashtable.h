@@ -20,7 +20,6 @@ private:
     std::vector<int> values;
     void UpdateIndex(int index, IndexUpdateOperation operation);
 
-
 public:
     Hashtable();
     Hashtable(std::vector<std::string> values);
@@ -28,9 +27,10 @@ public:
     int Hash();
     int Hash(std::string value);
     void AddTo(int hash, std::string value);
-    int Add(std::string value, bool autoIncrement = false);
+    int Add(std::string value, bool autoIncrement = false, int &newHash = *(int *)nullptr);
     int Add(std::string key, std::string value);
     std::string Get(std::string key);
+    std::string Get(int key);
     std::string GetAll();
     std::string GetInRange(int start, int end);
     std::string GetAmount(int amount, int skip);
