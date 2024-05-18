@@ -68,6 +68,13 @@ int Controller::Set(std::string key, std::string value, int table)
     }
 
     value.erase(std::remove(value.begin(), value.end(), '\n'), value.cend());
+
+    if (std::all_of(key.begin(), key.end(), ::isdigit))
+    {
+        hashtables[table].AddTo(atoi(key.c_str()), value);
+        return 0;
+    }
+
     hashtables[table].Add(key, value);
     return 0;
 }
