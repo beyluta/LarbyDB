@@ -25,6 +25,7 @@ public:
     int GetSize();
     std::string Get(std::string key, int table = 0);
     std::string Get(int key, int table = 0);
+    std::string Get(std::vector<std::string> keys, int table = 0);
     std::string GetAll(int table = 0);
     std::string GetAllInRange(int table = 0, int from = 0, int to = 0);
     std::string GetResolvedResponse(std::string request);

@@ -40,6 +40,47 @@ std::string Controller::Get(int key, int table)
     return Controller::hashtables[table].Get(key);
 }
 
+std::string Controller::Get(std::vector<std::string> keys, int table)
+{
+    if (table < 0 || table >= hashtables.size() || !IsAuthorized())
+    {
+        return "";
+    }
+
+    std::string response = "[";
+
+    for (int i = 0; i < keys.size(); i++)
+    {
+        std::string currentItem;
+        if (IsStringANumber(keys[i]))
+        {
+            currentItem = hashtables[table].Get(atoi(keys[i].c_str()));
+        }
+        else
+        {
+            currentItem = hashtables[table].Get(keys[i]);
+        }
+
+        response += currentItem;
+
+        if (currentItem.length() <= 0)
+        {
+            continue;
+        }
+
+        if (i != keys.size() - 1)
+        {
+            response += ", ";
+        }
+        else
+        {
+            response += "\n";
+        }
+    }
+
+    return response + "]";
+}
+
 std::string Controller::GetAll(int table)
 {
     if (table < 0 || table >= hashtables.size() || !IsAuthorized())

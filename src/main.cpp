@@ -41,6 +41,7 @@ std::string MessageReceived(const char *msg, const char *ip)
         bearerToken = bearerToken.length() > 0 ? bearerToken.substr(7, bearerToken.length() - 7) : "";
         int table = atoi(response.parameters.Get("table").c_str());
         std::string key = response.parameters.Get("key");
+        std::string keys = response.parameters.Get("keys");
 
         if ((bearerToken.length() <= 0 || controller.Auth(bearerToken) > 0) && dbParameters.generate_key)
         {
@@ -54,6 +55,32 @@ std::string MessageReceived(const char *msg, const char *ip)
 
         if (response.method == "GET")
         {
+            if (keys.length() > 0)
+            {
+                std::vector<std::string> keyList;
+                std::string key = "";
+                for (int i = 0; i < keys.length(); i++)
+                {
+                    if (i >= keys.length() - 1)
+                    {
+                        key += keys[i];
+                        keyList.push_back(key);
+                        break;
+                    }
+
+                    if (keys[i] == ',')
+                    {
+                        keyList.push_back(key);
+                        key = "";
+                        continue;
+                    }
+
+                    key += keys[i];
+                }
+
+                return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.Get(keyList, table));
+            }
+
             if (key == "ALL")
             {
                 int from = atoi(response.parameters.Get("from").c_str());
