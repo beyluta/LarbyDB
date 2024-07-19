@@ -32,4 +32,5 @@ public:
     bool FileExists(std::string filename);
     bool DirectoryExists(std::string directory);
     std::vector<std::string> GetFilesInDirectory(std::string directory);
+    std::string GetFileAsPlainText(std::string filePath);
 };

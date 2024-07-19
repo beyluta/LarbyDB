@@ -19,7 +19,7 @@ Hashtable keywordsBlacklist(std::vector<std::string>{"ALL"});
 
 std::string MessageReceived(const char *msg, const char *ip)
 {
-    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(strlen(msg)) + " out of a maximum of " + std::to_string(MAX_BUFFER_SIZE), Logsys::IOSystem::BOTH, Logsys::Color::GREEN);
+    Logsys::LogActivity("Processing request from " + std::string(ip) + " of char size " + std::to_string(strlen(msg)) + " out of a maximum of " + std::to_string(MAX_BUFFER_SIZE), Logsys::IOSystem::FILESYSTEM, Logsys::Color::GREEN);
     controller.tempIP = ip;
 
     if (dbParameters.enable_http)
@@ -29,12 +29,19 @@ std::string MessageReceived(const char *msg, const char *ip)
             return GetHTTPResponse(HTTPResponseCode::CONTENT_TOO_LARGE, "application/json", "{\"status\": 413, \"message\": \"Payload is too large to handle\"}");
         }
 
-        HTTP httpResponse = GetHTTP(msg);
-        std::string contentType = httpResponse.properties.Get("content-type");
-        std::string bearerToken = httpResponse.properties.Get("authorization");
+        HTTP response = GetHTTP(msg);
+
+        if (response.method.size() <= 0)
+        {
+            return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Could not handle request\"}");
+        }
+
+        std::string contentType = response.properties.Get("content-type");
+        std::string bearerToken = response.properties.Get("authorization");
         bearerToken = bearerToken.length() > 0 ? bearerToken.substr(7, bearerToken.length() - 7) : "";
-        int table = atoi(httpResponse.parameters.Get("table").c_str());
-        std::string key = httpResponse.parameters.Get("key");
+        int table = atoi(response.parameters.Get("table").c_str());
+        std::string key = response.parameters.Get("key");
+        std::string keys = response.parameters.Get("keys");
 
         if ((bearerToken.length() <= 0 || controller.Auth(bearerToken) > 0) && dbParameters.generate_key)
         {
@@ -46,12 +53,38 @@ std::string MessageReceived(const char *msg, const char *ip)
             return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Table out of bounds.\"}");
         }
 
-        if (httpResponse.method == "GET")
+        if (response.method == "GET")
         {
+            if (keys.length() > 0)
+            {
+                std::vector<std::string> keyList;
+                std::string key = "";
+                for (int i = 0; i < keys.length(); i++)
+                {
+                    if (i >= keys.length() - 1)
+                    {
+                        key += keys[i];
+                        keyList.push_back(key);
+                        break;
+                    }
+
+                    if (keys[i] == ',')
+                    {
+                        keyList.push_back(key);
+                        key = "";
+                        continue;
+                    }
+
+                    key += keys[i];
+                }
+
+                return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.Get(keyList, table));
+            }
+
             if (key == "ALL")
             {
-                int from = atoi(httpResponse.parameters.Get("from").c_str());
-                int to = atoi(httpResponse.parameters.Get("to").c_str());
+                int from = atoi(response.parameters.Get("from").c_str());
+                int to = atoi(response.parameters.Get("to").c_str());
 
                 if (from > 0 || to > 0)
                 {
@@ -61,7 +94,15 @@ std::string MessageReceived(const char *msg, const char *ip)
                 return GetHTTPResponse(HTTPResponseCode::OK, contentType, controller.GetAll(table));
             }
 
-            std::string value = controller.Get(key, table);
+            std::string value;
+            if (std::all_of(key.begin(), key.end(), ::isdigit))
+            {
+                value = controller.Get(atoi(key.c_str()), table);
+            }
+            else
+            {
+                value = controller.Get(key, table);
+            }
 
             if (value.length() <= 0)
             {
@@ -76,22 +117,34 @@ std::string MessageReceived(const char *msg, const char *ip)
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", value);
         }
 
-        if (httpResponse.method == "POST")
+        if (response.method == "POST")
         {
             if (keywordsBlacklist.Contains(key))
             {
                 return GetHTTPResponse(HTTPResponseCode::FORBIDDEN, "application/json", "{\"status\": 403, \"message\": \"Forbidden. Key is a reserved keyword.\"}");
             }
 
-            if (controller.Set(key, httpResponse.body, table) > 0)
+            int hash = 0;
+
+            if (response.parameters.Get("autoincrement").size() <= 0)
             {
-                return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
+                if (controller.Set(key, response.body, table) > 0)
+                {
+                    return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"Internal server error\"}");
+                }
+            }
+            else
+            {
+                if (controller.Set(response.body, table, hash) > 0)
+                {
+                    return GetHTTPResponse(HTTPResponseCode::INTERNAL_SERVER_ERROR, "application/json", "{\"status\": 500, \"message\": \"No unique indexes left\"}");
+                }
             }
 
-            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
+            return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\", \"hash\": " + std::to_string(hash) + "}");
         }
 
-        if (httpResponse.method == "DELETE")
+        if (response.method == "DELETE")
         {
             if (controller.Delete(key, table) > 0)
             {
@@ -99,6 +152,11 @@ std::string MessageReceived(const char *msg, const char *ip)
             }
 
             return GetHTTPResponse(HTTPResponseCode::OK, "application/json", "{\"status\": 200, \"message\": \"Ok\"}");
+        }
+
+        if (response.method == "OPTIONS")
+        {
+            return GetPreflightResponse(HTTPResponseCode::OK);
         }
     }
 
@@ -286,20 +344,20 @@ int main(int argc, char **argv)
 
     std::cout
         << "Version: " << SEMANTIC_VERSION << '\n'
-        << "port: " << dbParameters.port << '\n'
-        << "Transfer/Transmission protocol: " << (dbParameters.enable_http ? "HTTP" : "TCP") << '\n'
-        << "tables: " << dbParameters.num_tables << '\n'
-        << "allow_backup: " << BoolToStr(dbParameters.allow_backup) << '\n'
-        << "backup_interval: "
+        << "Port: " << dbParameters.port << '\n'
+        << "Protocol: " << (dbParameters.enable_http ? "HTTP" : "TCP") << '\n'
+        << "Tables: " << dbParameters.num_tables << '\n'
+        << "Backups: " << BoolToStr(dbParameters.allow_backup) << '\n'
+        << "Backup Timer: "
         << (dbParameters.allow_backup ? std::to_string(dbParameters.backup_interval) + " seconds" : "unset")
         << '\n'
-        << "generate_key: " << BoolToStr(dbParameters.generate_key) << '\n';
+        << "Generate Key: " << BoolToStr(dbParameters.generate_key) << '\n';
 
     if (dbParameters.generate_key)
     {
         controller.protectedByKey = true;
         controller.GenerateKey();
-        Logsys::LogActivity("Key: " + controller.hashtables[0].Get(DB_KEY_POSITION), Logsys::IOSystem::TERMINAL, Logsys::Color::WHITE, false);
+        Logsys::LogActivity("Bearer Token: " + controller.hashtables[0].Get(DB_KEY_POSITION), Logsys::IOSystem::TERMINAL, Logsys::Color::YELLOW, false);
     }
     else
     {

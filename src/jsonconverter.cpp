@@ -130,6 +130,28 @@ std::string Json::TrimString(std::string str)
     return str;
 }
 
+std::string Json::GetObjectFromJsonArray(std::string json, int index)
+{
+    std::vector<int> charIndexes = GetCharCount("{}", json);
+    int iteration = 0;
+
+    for (int i = 0; i < charIndexes.size(); i += 2)
+    {
+        std::string substring = GetSubstringBetweenIndices(json, charIndexes[i], charIndexes[i + 1], false);
+
+        if (iteration == index)
+        {
+            return substring;
+        }
+        else if (i % 2 == 0)
+        {
+            iteration++;
+        }
+    }
+
+    return "";
+}
+
 std::string Json::GetObjectFromJsonArray(int index)
 {
     std::vector<int> charIndexes = GetCharCount("{}", json);
@@ -194,6 +216,27 @@ Json::Json(std::string json)
             i++;
         }
     }
+}
+
+bool Json::IsArray(std::string json)
+{
+    json = Json::TrimString(json);
+    return json[0] == '[' && json[json.length() - 1] == ']';
+}
+
+int Json::GetSize(std::string json)
+{
+    int commaCount = 0;
+
+    for (int i = 0; i < json.length(); i++)
+    {
+        if (json[i] == ',')
+        {
+            commaCount++;
+        }
+    }
+
+    return commaCount + 1;
 }
 
 std::string Json::operator[](int key)
