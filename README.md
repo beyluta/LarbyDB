@@ -38,6 +38,8 @@ To run with launch arguments add `--` before the parameter name (e.g. `LarbyDB -
 
 # TCP Mode
 
+Default mode of the Database. Make requests using TCP.
+
 ## Database commands
 
 `AUTH <KEY>` - authorize current device to write and read from the database<br>
@@ -56,6 +58,10 @@ Here is an example:<br> `SET users 1 0 [{"name":"John"}, {"name":"Titor"}]`<br>`
 Keep in mind that the database sends the following carriage returns that you must strip before using the response: `\r\n\0`
 
 # HTTP Mode (only if --enable-http is true)
+
+Only available if `--enable-http` is set to true. Make requests against LarbyDB using the http protocol.
+
+## POST
 
 Add a value to the database. Send the parameters `table` and `key` in the URL and the data in the body.
 
@@ -81,10 +87,20 @@ curl -L 'localhost:8080?table=1&autoincrement=true' \
 }'
 ```
 
+## GET
+
 Get a value from the database. Send the parameters `table` and `key` in the URL.
 
 ```curl
-curl -L 'localhost:8080?key=name&table=1' \
+curl -L 'localhost:8080?table=1&key=name' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer XXXX-XXXXX-XXXXX'
+```
+
+Get a range of values by their keys. Send the parameters `table` and `keys` to get all of them in one request.
+
+```curl
+curl -L 'localhost:8080?table=1&keys=test1,test2,test3' \
 -H 'Content-Type: application/json' \
 -H 'Authorization: Bearer XXXX-XXXXX-XXXXX'
 ```
@@ -104,6 +120,8 @@ curl -L 'localhost:8080?table=1&key=ALL&from=0&to=10' \
 -H 'Content-Type: application/json' \
 -H 'Authorization: Bearer XXXX-XXXXX-XXXXX'
 ```
+
+## DELETE
 
 Delete a value from the database. Send the parameters `table` and `key` in the URL.
 
